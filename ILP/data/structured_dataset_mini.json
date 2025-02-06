@@ -1,0 +1,157 @@
+{
+    "statements": [
+        {
+            "id": 7,
+            "text": "The knife found in Miss Smith's yard had Mr. Scott's fingerprints on it."
+        },
+        {
+            "id": 9,
+            "text": "The elevator man saw Mr. Kelley's wife go to Mr. Scott's apartment at 11:30 p.m."
+        },
+        {
+            "id": 10,
+            "text": "The elevator operator said that Mr. Kelley's wife frequently left the building with Mr. Scott."
+        },
+        {
+            "id": 14,
+            "text": "The elevator man saw Mr. Kelley go to Mr. Scott's room at 12:25 a.m."
+        },
+        {
+            "id": 15,
+            "text": "The elevator man went off duty at 12:30 a.m."
+        },
+        {
+            "id": 18,
+            "text": "Mr. Kelley's wife disappeared after the murder."
+        },
+        {
+            "id": 19,
+            "text": "Police were unable to locate Mr. Scott after the murder."
+        },
+        {
+            "id": 21,
+            "text": "The elevator man said that Miss Smith was in the lobby of the apartment building when he went off duty."
+        }
+    ],
+    "entities": [
+        {
+            "id": 0,
+            "name": "Mr. Kelley"
+        },
+        {
+            "id": 2,
+            "name": "Mr. Scott"
+        },
+        {
+            "id": 3,
+            "name": "Miss Smith"
+        },
+        {
+            "id": 4,
+            "name": "Elevator Operator/Man"
+        },
+        {
+            "id": 5,
+            "name": "Mr. Kelley's Wife"
+        },
+        {
+            "id": 6,
+            "name": "Police"
+        },
+        {
+            "id": 9,
+            "name": "Knife"
+        },
+        {
+            "id": 14,
+            "name": "Apartment Building"
+        },
+        {
+            "id": 16,
+            "name": "Mr. Scott's Apartment/Room"
+        },
+        {
+            "id": 17,
+            "name": "Miss Smith's Yard"
+        },
+        {
+            "id": 19,
+            "name": "Lobby of the Apartment Building"
+        },
+        {
+            "id": 20,
+            "name": "The Murder"
+        },
+        {
+            "id": 21,
+            "name": "11:30 p.m."
+        },
+        {
+            "id": 25,
+            "name": "12:25 a.m."
+        },
+        {
+            "id": 26,
+            "name": "12:30 a.m."
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            14
+        ],
+        "2": [
+            7,
+            9,
+            10,
+            14,
+            19
+        ],
+        "3": [
+            21
+        ],
+        "4": [
+            9,
+            10,
+            14,
+            15,
+            21
+        ],
+        "5": [
+            9,
+            10,
+            18
+        ],
+        "6": [
+            19
+        ],
+        "9": [
+            7
+        ],
+        "14": [
+            21
+        ],
+        "16": [
+            9,
+            14
+        ],
+        "17": [
+            7
+        ],
+        "19": [
+            21
+        ],
+        "20": [
+            18,
+            19
+        ],
+        "21": [
+            9
+        ],
+        "25": [
+            14
+        ],
+        "26": [
+            15
+        ]
+    }
+}

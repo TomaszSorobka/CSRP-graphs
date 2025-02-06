@@ -1,0 +1,46 @@
+{
+    "statements": [
+        {"id": 0, "text": "The knife found in Miss Smith's yard had Mr. Scott's fingerprints on it."},
+        {"id": 1, "text": "The elevator man saw Mr. Kelley's wife go to Mr. Scott's apartment at 11:30 p.m."},
+        {"id": 2, "text": "The elevator operator said that Mr. Kelley's wife frequently left the building with Mr. Scott."},
+        {"id": 3, "text": "The elevator man saw Mr. Kelley go to Mr. Scott's room at 12:25 a.m."},
+        {"id": 4, "text": "The elevator man went off duty at 12:30 a.m."},
+        {"id": 5, "text": "Mr. Kelley's wife disappeared after the murder."},
+        {"id": 6, "text": "Police were unable to locate Mr. Scott after the murder."},
+        {"id": 7, "text": "The elevator man said that Miss Smith was in the lobby of the apartment building when he went off duty."}
+    ],
+    "entities": [
+        {"id": 0, "name": "Mr. Kelley"},
+        {"id": 1, "name": "Mr. Scott"},
+        {"id": 2, "name": "Miss Smith"},
+        {"id": 3, "name": "Elevator Operator/Man"},
+        {"id": 4, "name": "Mr. Kelley's Wife"},
+        {"id": 5, "name": "Police"},
+        {"id": 6, "name": "Knife"},
+        {"id": 7, "name": "Apartment Building"},
+        {"id": 8, "name": "Mr. Scott's Apartment/Room"},
+        {"id": 9, "name": "Miss Smith's Yard"},
+        {"id": 10, "name": "Lobby of the Apartment Building"},
+        {"id": 11, "name": "The Murder"},
+        {"id": 12, "name": "11:30 p.m."},
+        {"id": 13, "name": "12:25 a.m."},
+        {"id": 14, "name": "12:30 a.m."}
+    ],
+    "entity_statements": {
+        "0": [3],
+        "1": [0, 1, 2, 3, 6],
+        "2": [7],
+        "3": [1, 2, 3, 4, 7],
+        "4": [1, 2, 5],
+        "5": [6],
+        "6": [0],
+        "7": [7],
+        "8": [1, 3],
+        "9": [0],
+        "10": [7],
+        "11": [5, 6],
+        "12": [1],
+        "13": [3],
+        "14": [4]
+    }
+}
