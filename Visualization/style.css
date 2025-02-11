@@ -1,0 +1,12 @@
+body{
+    margin: 10px;
+    background-color: #fff;
+    color: #fff;
+}
+
+div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  
