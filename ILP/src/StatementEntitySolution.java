@@ -17,6 +17,10 @@ public class StatementEntitySolution {
     // same for statements
     int[][] statementCoordinates;
 
+    // Total dimensions of the solution
+    int w;
+    int h;
+
     // shorthand for the number of entities and statements
     int nEntities;
     int nStatements;
@@ -339,22 +343,27 @@ public class StatementEntitySolution {
             model.addConstr(negativeDiff, GRB.GREATER_EQUAL, 0, "H10_-diff");
 
             // Objective function
-            GRBQuadExpr MINIMIZE_ME = new GRBQuadExpr();
+            GRBLinExpr MINIMIZE_ME = new GRBLinExpr();
             MINIMIZE_ME.addTerm(1.0, diff);
             MINIMIZE_ME.addTerm(1.0, maxHeight);
             MINIMIZE_ME.addTerm(1.0, maxWidth);
 
             for (int i = 0; i < nEntities; i++) {
-                MINIMIZE_ME.addTerm(1.0, grbEntityCoord[i][2], grbEntityCoord[i][3]);
-                MINIMIZE_ME.addTerm(-1.0, grbEntityCoord[i][0], grbEntityCoord[i][3]);
-                MINIMIZE_ME.addTerm(-1.0, grbEntityCoord[i][2], grbEntityCoord[i][1]);
-                MINIMIZE_ME.addTerm(1.0, grbEntityCoord[i][0], grbEntityCoord[i][1]);
+                // MINIMIZE_ME.addTerm(1.0, grbEntityCoord[i][2], grbEntityCoord[i][3]);
+                // MINIMIZE_ME.addTerm(-1.0, grbEntityCoord[i][0], grbEntityCoord[i][3]);
+                // MINIMIZE_ME.addTerm(-1.0, grbEntityCoord[i][2], grbEntityCoord[i][1]);
+                // MINIMIZE_ME.addTerm(1.0, grbEntityCoord[i][0], grbEntityCoord[i][1]);
+
+                MINIMIZE_ME.addTerm(1.0, grbEntityCoord[i][2]);
+                MINIMIZE_ME.addTerm(-1.0, grbEntityCoord[i][0]);
+                MINIMIZE_ME.addTerm(-1.0, grbEntityCoord[i][1]);
+                MINIMIZE_ME.addTerm(1.0, grbEntityCoord[i][3]);
             }
 
             model.setObjective(MINIMIZE_ME, GRB.MINIMIZE);
 
             // Set the time limit for the optimization (in seconds)
-            model.set(GRB.DoubleParam.TimeLimit, 1000.0);
+            model.set(GRB.DoubleParam.TimeLimit, 100.0);
 
             model.optimize();
 
@@ -365,6 +374,8 @@ public class StatementEntitySolution {
             if (status == GRB.Status.OPTIMAL || status == GRB.Status.TIME_LIMIT) {
                 // Best solution found
                 // System.out.println("Best solution found: " + model.getObjective().getValue());
+                w = (int) maxWidth.get(GRB.DoubleAttr.X);
+                h = (int) maxHeight.get(GRB.DoubleAttr.X);
                 
                 // Extract solution
                 for (int i = 0; i < nEntities; i++) {
@@ -392,16 +403,18 @@ public class StatementEntitySolution {
     }
 
     public static void main(String[] args) {
-        String jsonFilePath = "data\\structured_dataset_small.json"; // Adjust path as needed
+        String jsonFilePath = "ILP\\data\\structured_dataset_not_so_small.json";
         StatementEntityInstance instance = new StatementEntityInstance(jsonFilePath);
         StatementEntitySolution solution = new StatementEntitySolution(instance);
         solution.computeILPCoord();
         System.out.println("Solution:");
+        System.out.println("w: " + solution.w);
+        System.out.println("h: " + solution.h);
         for (int i = 0; i < solution.nEntities; i++) {
-            System.out.println("Entity " + i + ": (" + solution.entityCoordinates[i][0] + ", " + solution.entityCoordinates[i][1] + ") - (" + solution.entityCoordinates[i][2] + ", " + solution.entityCoordinates[i][3] + ")");
+            System.out.println("Entity " + instance.entities[i] + ": (" + solution.entityCoordinates[i][0] + ", " + solution.entityCoordinates[i][1] + ") - (" + solution.entityCoordinates[i][2] + ", " + solution.entityCoordinates[i][3] + ")");
         }
         for (int i = 0; i < solution.nStatements; i++) {
-            System.out.println("Statement " + i + ": (" + solution.statementCoordinates[i][0] + ", " + solution.statementCoordinates[i][1] + ")");
+            System.out.println("Statement " + instance.statements[i] + ": (" + solution.statementCoordinates[i][0] + ", " + solution.statementCoordinates[i][1] + ")");
         }
     }
 }

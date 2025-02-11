@@ -1,0 +1,19 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "javac",
+            "type": "shell",
+            "command": "javac",
+            "args": [
+                "-d", "bin",
+                "-cp", "lib/*",
+                "${workspaceFolder}/ILP/src/*.java"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
