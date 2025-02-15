@@ -1,12 +1,14 @@
 class Statement {
-    constructor(x, y, i, text) {
+    constructor(id, x, y, i, text, entities) {
+        this.id = id;
         this.x = x;
         this.y = y;
         this.i = i;
         this.xStart;
-        this.xEnd;
+        this.yStart;
         this.text = text;
         this.textLines = this.preprocessText();
+        this.entities = entities;
     }
 
     preprocessText() {
@@ -30,6 +32,7 @@ class Statement {
 
         lines.push(line);
         
+        // Remove leading spaces
         for (let i = 0; i < lines.length; i++) {
             if (lines[i][0] == " ") lines[i] = lines[i].slice(1);
         }
@@ -53,8 +56,8 @@ class Statement {
             combinedPreviousCellHeight += cellHeights[i];
         }
 
-        let cellXPos = this.x*backgroundCellSize*cellWidth;
-        let cellYPos = backgroundCellSize*combinedPreviousCellHeight;
+        let cellXPos = this.x * backgroundCellSize * cellWidth;
+        let cellYPos = backgroundCellSize * combinedPreviousCellHeight;
         let cellXGap = cumulativeRowGap * backgroundCellSize;
         let cellYGap = cumulativeColumnGap * backgroundCellSize;
 
@@ -64,7 +67,7 @@ class Statement {
 
     draw() {
         c.fillStyle = "rgba(255, 255, 255, 0.7)";
-        c.fillRect(this.xStart, this.yStart, backgroundCellSize*cellWidth, backgroundCellSize*cellHeights[this.y]);
+        c.fillRect(this.xStart, this.yStart, backgroundCellSize * cellWidth, backgroundCellSize * cellHeights[this.y]);
 
         c.fillStyle = "#000";
         for (let i = 0; i < this.textLines.length; i++) {

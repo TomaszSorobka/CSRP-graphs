@@ -60,17 +60,49 @@ function parseData(fileContent) {
     // Extract entities
     while ((match = entityRegex.exec(fileContent)) !== null) {
         let [_, name, x1, y1, x2, y2] = match;
-        entities.push({ name, x1: Number(x1), y1: Number(y1), x2: Number(x2), y2: Number(y2) });
+        const id = entities.length; // Assigning a unique ID based on the current length of the array
+        entities.push({
+            id,
+            name,
+            x1: Number(x1),
+            y1: Number(y1),
+            x2: Number(x2),
+            y2: Number(y2),
+            statements: [] // Initialize empty statements array for each entity
+        });
     }
 
-    // Extract statements
+    // Extract statements and associate them with entities
     while ((match = statementRegex.exec(fileContent)) !== null) {
         let [_, text, x, y] = match;
-        statements.push({ text, x: Number(x), y: Number(y) });
+        const statementId = statements.length; // Assigning a unique ID based on the current length of the array
+        const statement = {
+            id: statementId,
+            text,
+            x: Number(x),
+            y: Number(y),
+            entities: []
+        };
+        statements.push(statement);
+
+        // Now associate this statement with entities whose coordinates match
+        entities.forEach(entity => {
+            if ((x >= entity.x1 && x <= entity.x2) && (y >= entity.y1 && y <= entity.y2)) {
+                entity.statements.push(statementId); // Add statement ID to the entity's list of statements
+                statement.entities.push(entity);
+            }
+        });
     }
 
     // Sort entities by size
     entities.sort((a, b) => ((a.x2 - a.x1) + (a.y2 - a.y1)) - ((b.x2 - b.x1) + (b.y2 - b.y1)));
+
+    // Set cell width to fit longest entity name
+    let maxNameLength = 0;
+    entities.forEach(e => {
+        if (c.measureText(e.name).width > maxNameLength) maxNameLength = c.measureText(e.name).width;
+    });
+    cellWidth = Math.max(cellWidth, Math.ceil(maxNameLength / backgroundCellSize));
 }
 
 function generateDistinctDarkColors(n) {
@@ -114,21 +146,39 @@ function generateDistinctDarkColors(n) {
 }
 
 function initializeElements() {
-    let colors = generateDistinctDarkColors(entities.length);
+    let randomColors = generateDistinctDarkColors(entities.length);
 
     for (var i = 0; i < entities.length; i++) {
-        let x = entities[i].x1;
-        let y = entities[i].y1;
-        let width = entities[i].x2 - entities[i].x1;
-        let height = entities[i].y2 - entities[i].y1;
-        entityRects[i] = new Entity(x, y, i, width, height, colors[i]);
+        let id = entities[i].id;
+        let name = entities[i].name;
+        let x1 = entities[i].x1;
+        let y1 = entities[i].y1;
+        let x2 = entities[i].x2;
+        let y2 = entities[i].y2;
+        let statements = entities[i].statements;
+        entityRects[i] = new Entity(id, name, x1, y1, x2, y2, randomColors[i], statements);
     }
 
     for (var i = 0; i < statements.length; i++) {
+        let id = statements[i].id;
         let x = statements[i].x;
         let y = statements[i].y;
         let text = statements[i].text;
-        statementCells[i] = new Statement(x, y, i, text);
+        let entities = statements[i].entities;
+        statementCells[i] = new Statement(id, x, y, i, text, entities);
+    }
+}
+
+function mergeEntitiesWithSameStatements() {
+    for (let i = 0; i < entityRects.length; i++) {
+        for (let j = i + 1; j < entityRects.length; j++) {
+            if (entityRects[i].statements.sort().join(',') === entityRects[j].statements.sort().join(',')) {
+                entityRects[i].headers.push(entityRects[j].name);
+                entityRects[i].colors.push(entityRects[j].color);
+                entityRects[i].marginTop += 2;
+                entityRects.splice(j, 1);
+            }
+        }
     }
 }
 
@@ -141,21 +191,21 @@ function calculateGapsAndMargins() {
     columnEntities = [];
 
     for (let i = 0; i <= w; i++) {
-        rowGaps[i] = 2;
+        rowGaps[i] = 1;
         rowEntities[i] = [];
     }
 
     for (let i = 0; i <= h; i++) {
-        columnGaps[i] = 2;
+        columnGaps[i] = 1;
         columnEntities[i] = [];
     }
 
     // Record on which rows and columns entities start and end
-    for (let i = 0; i < entities.length; i++) {
-        let x1 = parseInt(entities[i].x1);
-        let x2 = parseInt(entities[i].x2);
-        let y1 = parseInt(entities[i].y1);
-        let y2 = parseInt(entities[i].y2);
+    for (let i = 0; i < entityRects.length; i++) {
+        let x1 = entityRects[i].x1;
+        let x2 = entityRects[i].x2;
+        let y1 = entityRects[i].y1;
+        let y2 = entityRects[i].y2;
 
         rowEntities[x1].push([i, "x1"]);
         rowEntities[x2 + 1].push([i, "x2"]);
@@ -163,16 +213,16 @@ function calculateGapsAndMargins() {
         columnEntities[y2 + 1].push([i, "y2"]);
     }
 
-    // Set vertical entity margins
+    // Set horizontal entity margins
     for (let i = 0; i < rowEntities.length; i++) {
         for (let j = 0; j < rowEntities[i].length; j++) {
             for (let k = j + 1; k < rowEntities[i].length; k++) {
                 // Get entity coordinates
-                let firstY1 = parseInt(entities[rowEntities[i][j][0]].y1);
-                let firstY2 = parseInt(entities[rowEntities[i][j][0]].y2);
+                let firstY1 = entityRects[rowEntities[i][j][0]].y1;
+                let firstY2 = entityRects[rowEntities[i][j][0]].y2;
 
-                let secondY1 = parseInt(entities[rowEntities[i][k][0]].y1);
-                let secondY2 = parseInt(entities[rowEntities[i][k][0]].y2);
+                let secondY1 = entityRects[rowEntities[i][k][0]].y1;
+                let secondY2 = entityRects[rowEntities[i][k][0]].y2;
 
                 // Entities overlap
                 if ((firstY1 >= secondY1 && firstY1 <= secondY2) || (secondY1 >= firstY1 && secondY1 <= firstY2)) {
@@ -192,11 +242,11 @@ function calculateGapsAndMargins() {
         for (let j = 0; j < rowEntities[i].length; j++) {
             for (let k = j + 1; k < rowEntities[i].length; k++) {
                 // Get entity coordinates
-                let firstY1 = parseInt(entities[rowEntities[i][j][0]].y1);
-                let firstY2 = parseInt(entities[rowEntities[i][j][0]].y2);
+                let firstY1 = entityRects[rowEntities[i][j][0]].y1;
+                let firstY2 = entityRects[rowEntities[i][j][0]].y2;
 
-                let secondY1 = parseInt(entities[rowEntities[i][k][0]].y1);
-                let secondY2 = parseInt(entities[rowEntities[i][k][0]].y2);
+                let secondY1 = entityRects[rowEntities[i][k][0]].y1;
+                let secondY2 = entityRects[rowEntities[i][k][0]].y2;
 
                 // Entities overlap
                 if ((firstY1 >= secondY1 && firstY1 <= secondY2) || (secondY1 >= firstY1 && secondY1 <= firstY2)) {
@@ -213,23 +263,30 @@ function calculateGapsAndMargins() {
         }  
     }
 
-    // Set horizontal entity margins
+    // Set vertical entity margins
     for (let i = 0; i < columnEntities.length; i++) {
         for (let j = 0; j < columnEntities[i].length; j++) {
             for (let k = j + 1; k < columnEntities[i].length; k++) {
                 // Get entity coordinates
-                let firstX1 = parseInt(entities[columnEntities[i][j][0]].x1);
-                let firstX2 = parseInt(entities[columnEntities[i][j][0]].x2);
+                let firstX1 = entityRects[columnEntities[i][j][0]].x1;
+                let firstX2 = entityRects[columnEntities[i][j][0]].x2;
 
-                let secondX1 = parseInt(entities[columnEntities[i][k][0]].x1);
-                let secondX2 = parseInt(entities[columnEntities[i][k][0]].x2);
+                let secondX1 = entityRects[columnEntities[i][k][0]].x1;
+                let secondX2 = entityRects[columnEntities[i][k][0]].x2;
 
                 // Entities overlap
                 if ((firstX1 >= secondX1 && firstX1 <= secondX2) || (secondX1 >= firstX1 && secondX1 <= firstX2)) {
 
                     // Increase the bigger entity's margin
-                    if (columnEntities[i][j][1] == "y1" && columnEntities[i][k][1] == "y1" && entityRects[columnEntities[i][k][0]].marginTop == entityRects[columnEntities[i][j][0]].marginTop) {
-                        entityRects[columnEntities[i][k][0]].marginTop = entityRects[columnEntities[i][j][0]].marginTop + 3;
+                    if (columnEntities[i][j][1] == "y1" && columnEntities[i][k][1] == "y1" && entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][j][0]].marginTop <= entityRects[columnEntities[i][k][0]].headers.length * 2 + 1) {
+                        // If their headers overlap, increase (preferably) the bigger entity's top margin such that there is enough space for all its headers
+                        if (entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][k][0]].headers.length * 2 >= entityRects[columnEntities[i][j][0]].marginTop - entityRects[columnEntities[i][j][0]].headers.length * 2) {
+                            entityRects[columnEntities[i][k][0]].marginTop = entityRects[columnEntities[i][j][0]].marginTop + entityRects[columnEntities[i][k][0]].headers.length * 2 + 1;
+                        }
+                        else {
+                            // If the smaller entity's header is above the bigger entity's header just increase the smaller entity's header as that's a smaller increase
+                            entityRects[columnEntities[i][j][0]].marginTop = entityRects[columnEntities[i][k][0]].marginTop + entityRects[columnEntities[i][j][0]].headers.length * 2 + 1;
+                        }
                     }
                     else if (columnEntities[i][j][1] == "y2" && columnEntities[i][k][1] == "y2" && entityRects[columnEntities[i][k][0]].marginBottom == entityRects[columnEntities[i][j][0]].marginBottom) {
                         entityRects[columnEntities[i][k][0]].marginBottom = entityRects[columnEntities[i][j][0]].marginBottom + 1;
@@ -242,18 +299,25 @@ function calculateGapsAndMargins() {
         for (let j = 0; j < columnEntities[i].length; j++) {
             for (let k = j + 1; k < columnEntities[i].length; k++) {
                 // Get entity coordinates
-                let firstX1 = parseInt(entities[columnEntities[i][j][0]].x1);
-                let firstX2 = parseInt(entities[columnEntities[i][j][0]].x2);
+                let firstX1 = entityRects[columnEntities[i][j][0]].x1;
+                let firstX2 = entityRects[columnEntities[i][j][0]].x2;
 
-                let secondX1 = parseInt(entities[columnEntities[i][k][0]].x1);
-                let secondX2 = parseInt(entities[columnEntities[i][k][0]].x2);
+                let secondX1 = entityRects[columnEntities[i][k][0]].x1;
+                let secondX2 = entityRects[columnEntities[i][k][0]].x2;
 
                 // Entities overlap
                 if ((firstX1 >= secondX1 && firstX1 <= secondX2) || (secondX1 >= firstX1 && secondX1 <= firstX2)) {
 
                     // Increase the bigger entity's margin
-                    if (columnEntities[i][j][1] == "y1" && columnEntities[i][k][1] == "y1" && entityRects[columnEntities[i][k][0]].marginTop == entityRects[columnEntities[i][j][0]].marginTop) {
-                        entityRects[columnEntities[i][k][0]].marginTop = entityRects[columnEntities[i][j][0]].marginTop + 3;
+                    if (columnEntities[i][j][1] == "y1" && columnEntities[i][k][1] == "y1" && entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][j][0]].marginTop <= entityRects[columnEntities[i][k][0]].headers.length * 2 + 1) {
+                        // If their headers overlap, increase (preferably) the bigger entity's top margin such that there is enough space for all its headers
+                        if (entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][k][0]].headers.length * 2 >= entityRects[columnEntities[i][j][0]].marginTop - entityRects[columnEntities[i][j][0]].headers.length * 2) {
+                            entityRects[columnEntities[i][k][0]].marginTop = entityRects[columnEntities[i][j][0]].marginTop + entityRects[columnEntities[i][k][0]].headers.length * 2 + 1;
+                        }
+                        else {
+                            // If the smaller entity's header is above the bigger entity's header just increase the smaller entity's header as that's a smaller increase
+                            entityRects[columnEntities[i][j][0]].marginTop = entityRects[columnEntities[i][k][0]].marginTop + entityRects[columnEntities[i][j][0]].headers.length * 2 + 1;
+                        }
                     }
                     else if (columnEntities[i][j][1] == "y2" && columnEntities[i][k][1] == "y2" && entityRects[columnEntities[i][k][0]].marginBottom == entityRects[columnEntities[i][j][0]].marginBottom) {
                         entityRects[columnEntities[i][k][0]].marginBottom = entityRects[columnEntities[i][j][0]].marginBottom + 1;
@@ -268,11 +332,35 @@ function calculateGapsAndMargins() {
         let maxMargin = 0;
 
         for (let j = 0; j < rowEntities[i].length; j++) {
-            if (rowEntities[i][j][1] == "x1" && entityRects[rowEntities[i][j][0]].marginLeft > maxMargin) {
-                maxMargin = entityRects[rowEntities[i][j][0]].marginLeft;
-            }
-            else if (rowEntities[i][j][1] == "x2" && entityRects[rowEntities[i][j][0]].marginRight > maxMargin) {
-                maxMargin = entityRects[rowEntities[i][j][0]].marginRight;
+            for (let k = 0; k < statementCells.length; k++) {
+                if (rowEntities[i][j][1] == "x1" && entityRects[rowEntities[i][j][0]].marginLeft > maxMargin) {
+                    // Check if there is a statement in the previous column that would overlap with the entity if the gap is not increased
+                    let ey1 = entityRects[rowEntities[i][j][0]].y1;
+                    let ey2 = entityRects[rowEntities[i][j][0]].y2;
+                    let sx = statementCells[k].x;
+                    let sy = statementCells[k].y;
+                    let statementInPreviousColumn = (sx + 1 == i);
+                    let statementAndEntityOverlap = (sy <= ey2 && sy >= ey1);
+
+                    // Increase the gap for the first and last column or if such a statement was found
+                    if (i == 0 || i == rowEntities.length - 1 || (statementInPreviousColumn && statementAndEntityOverlap)) {
+                        maxMargin = entityRects[rowEntities[i][j][0]].marginLeft;
+                    }
+                }
+                else if (rowEntities[i][j][1] == "x2" && entityRects[rowEntities[i][j][0]].marginRight > maxMargin) {
+                    // Check if there is a statement in the next column that would overlap with the entity if the gap is not increased
+                    let ey1 = entityRects[rowEntities[i][j][0]].y1;
+                    let ey2 = entityRects[rowEntities[i][j][0]].y2;
+                    let sx = statementCells[k].x;
+                    let sy = statementCells[k].y;
+                    let statementInNextColumn = (sx - 1 == i);
+                    let statementAndEntityOverlap = (sy <= ey2 && sy >= ey1);
+
+                    // Increase the gap for the first and last column or if such a statement was found
+                    if (i == 0 || i == rowEntities.length - 1 || (statementInNextColumn && statementAndEntityOverlap)) {
+                        maxMargin = entityRects[rowEntities[i][j][0]].marginRight;
+                    }
+                }
             }
         }  
         
@@ -284,11 +372,35 @@ function calculateGapsAndMargins() {
         let maxMargin = 0;
 
         for (let j = 0; j < columnEntities[i].length; j++) {
-            if (columnEntities[i][j][1] == "y1" && entityRects[columnEntities[i][j][0]].marginTop > maxMargin) {
-                maxMargin = entityRects[columnEntities[i][j][0]].marginTop;
-            }
-            else if (columnEntities[i][j][1] == "y2" && entityRects[columnEntities[i][j][0]].marginBottom > maxMargin) {
-                maxMargin = entityRects[columnEntities[i][j][0]].marginBottom;
+            for (let k = 0; k < statementCells.length; k++) {
+                if (columnEntities[i][j][1] == "y1" && entityRects[columnEntities[i][j][0]].marginTop > maxMargin) {
+                    // Check if there is a statement in the previous row that would overlap with the entity if the gap is not increased
+                    let ex1 = entityRects[columnEntities[i][j][0]].x1;
+                    let ex2 = entityRects[columnEntities[i][j][0]].x2;
+                    let sx = statementCells[k].x;
+                    let sy = statementCells[k].y;
+                    let statementInPreviousRow = (sy + 1 == i);
+                    let statementAndEntityOverlap = (sx <= ex2 && sx >= ex1);
+
+                    // Increase the gap for the first and last row or if such a statement was found
+                    if (i == 0 || i == columnEntities.length - 1 || (statementInPreviousRow && statementAndEntityOverlap)) {
+                        maxMargin = entityRects[columnEntities[i][j][0]].marginTop;
+                    }
+                }
+                else if (columnEntities[i][j][1] == "y2" && entityRects[columnEntities[i][j][0]].marginBottom > maxMargin) {
+                    // Check if there is a statement in the next row that would overlap with the entity if the gap is not increased
+                    let ex1 = entityRects[columnEntities[i][j][0]].x1;
+                    let ex2 = entityRects[columnEntities[i][j][0]].x2;
+                    let sx = statementCells[k].x;
+                    let sy = statementCells[k].y;
+                    let statementInNextRow = (sy - 1 == i);
+                    let statementAndEntityOverlap = (sx <= ex2 && sx >= ex1);
+
+                    // Increase the gap for the first and last row or if such a statement was found
+                    if (i == 0 || i == columnEntities.length - 1 || (statementInNextRow && statementAndEntityOverlap)) {
+                        maxMargin = entityRects[columnEntities[i][j][0]].marginBottom;
+                    }
+                }
             }
         }  
         
@@ -300,11 +412,11 @@ function calculateGapsAndMargins() {
         for (let j = 0; j < rowEntities[i].length; j++) {
             for (let k = j + 1; k < rowEntities[i].length; k++) {
                 // Get entity coordinates
-                let firstY1 = parseInt(entities[rowEntities[i][j][0]].y1);
-                let firstY2 = parseInt(entities[rowEntities[i][j][0]].y2);
+                let firstY1 = entityRects[rowEntities[i][j][0]].y1;
+                let firstY2 = entityRects[rowEntities[i][j][0]].y2;
 
-                let secondY1 = parseInt(entities[rowEntities[i][k][0]].y1);
-                let secondY2 = parseInt(entities[rowEntities[i][k][0]].y2);
+                let secondY1 = entityRects[rowEntities[i][k][0]].y1;
+                let secondY2 = entityRects[rowEntities[i][k][0]].y2;
 
                 // Entities overlap
                 if ((firstY1 >= secondY1 && firstY1 <= secondY2) || (secondY1 >= firstY1 && secondY1 <= firstY2)) {
@@ -328,11 +440,11 @@ function calculateGapsAndMargins() {
         for (let j = 0; j < columnEntities[i].length; j++) {
             for (let k = j + 1; k < columnEntities[i].length; k++) {
                 // Get entity coordinates
-                let firstX1 = parseInt(entities[columnEntities[i][j][0]].x1);
-                let firstX2 = parseInt(entities[columnEntities[i][j][0]].x2);
+                let firstX1 = entityRects[columnEntities[i][j][0]].x1;
+                let firstX2 = entityRects[columnEntities[i][j][0]].x2;
 
-                let secondX1 = parseInt(entities[columnEntities[i][k][0]].x1);
-                let secondX2 = parseInt(entities[columnEntities[i][k][0]].x2);
+                let secondX1 = entityRects[columnEntities[i][k][0]].x1;
+                let secondX2 = entityRects[columnEntities[i][k][0]].x2;
 
                 // Entities overlap
                 if ((firstX1 >= secondX1 && firstX1 <= secondX2) || (secondX1 >= firstX1 && secondX1 <= firstX2)) {
@@ -423,7 +535,7 @@ function drawElements() {
 }
 
 function reset() {
-    console.log(entityRects);
+    // console.log(entityRects);
 
     // Clear variables
     for (const entity in entityRects) {
@@ -433,7 +545,7 @@ function reset() {
     // Clear previous visualizations
     c.clearRect(0, 0, canvas.width, canvas.height);
 
-    console.log(entityRects);
+    // console.log(entityRects);
 }
 
 function visualize() {
@@ -442,11 +554,12 @@ function visualize() {
 
     // Prepare and process data
     initializeElements();
+    mergeEntitiesWithSameStatements();
     calculateGapsAndMargins();
     calculateCellHeights();
     setCanvasDimensions();
 
     // Draw solution
-    // drawBackgroundGrid();
+    drawBackgroundGrid();
     drawElements();
 }
