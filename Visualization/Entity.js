@@ -78,15 +78,21 @@ class Entity {
     }
 
     draw() {
-        for (let i = 0; i < this.colors.length; i++) {
-            let r = this.colors[i][0];
-            let g = this.colors[i][1];
-            let b = this.colors[i][2];
-
-            c.fillStyle = `rgba(${r}, ${g}, ${b}, 0.15)`;
-            c.fillRect(this.xStart, this.yStart, this.xEnd - this.xStart, this.yEnd - this.yStart);
-
-            c.strokeStyle = `rgba(${r}, ${g}, ${b}, ${100.0 / this.colors.length})`;
+        if (this.statements.length > 1) {
+            for (let i = 0; i < this.colors.length; i++) {
+                let r = this.colors[i][0];
+                let g = this.colors[i][1];
+                let b = this.colors[i][2];
+    
+                c.fillStyle = `rgba(${r}, ${g}, ${b}, 0.15)`;
+                c.fillRect(this.xStart, this.yStart, this.xEnd - this.xStart, this.yEnd - this.yStart);
+            }
+    
+            let r = this.colors[0][0];
+            let g = this.colors[0][1];
+            let b = this.colors[0][2];
+    
+            c.strokeStyle = `rgb(${r}, ${g}, ${b})`;
             c.beginPath();
             c.moveTo(this.xStart, this.yStart);
             c.lineTo(this.xEnd, this.yStart);
@@ -98,16 +104,18 @@ class Entity {
     }
 
     label() {
-        for (let i = 0; i < this.headers.length; i++) {
-            let r = this.colors[i][0];
-            let g = this.colors[i][1];
-            let b = this.colors[i][2];
-
-            c.fillStyle = `rgb(${r}, ${g}, ${b})`;
-            c.fillRect(this.xStart + 1, this.yStart + 2 * i * backgroundCellSize + 1, this.xEnd - this.xStart - 2, 2 * backgroundCellSize);
-
-            c.fillStyle = "#fff";
-            c.fillText(this.headers[i], this.xStart + backgroundCellSize + 1, this.yStart + 2 * i * backgroundCellSize + 1.25 * backgroundCellSize + 1);
+        if (this.statements.length > 1) {
+            for (let i = 0; i < this.headers.length; i++) {
+                let r = this.colors[i][0];
+                let g = this.colors[i][1];
+                let b = this.colors[i][2];
+    
+                c.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                c.fillRect(this.xStart + 1, this.yStart + 2 * i * backgroundCellSize + 1, this.xEnd - this.xStart - 2, 2 * backgroundCellSize);
+    
+                c.fillStyle = "#fff";
+                c.fillText(this.headers[i], this.xStart + backgroundCellSize + 1, this.yStart + 2 * i * backgroundCellSize + 1.25 * backgroundCellSize + 1);
+            }
         }
     }
 }

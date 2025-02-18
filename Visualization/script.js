@@ -89,7 +89,6 @@ function parseData(fileContent) {
         entities.forEach(entity => {
             if ((x >= entity.x1 && x <= entity.x2) && (y >= entity.y1 && y <= entity.y2)) {
                 entity.statements.push(statementId); // Add statement ID to the entity's list of statements
-                statement.entities.push(entity);
             }
         });
     }
@@ -125,9 +124,9 @@ function generateDistinctDarkColors(n) {
     let attempts = 0;
 
     while (colors.length < n && attempts < maxAttempts) {
-        let r = Math.floor(Math.random() * 160) + 30;
-        let g = Math.floor(Math.random() * 160) + 30;
-        let b = Math.floor(Math.random() * 160) + 30;
+        let r = Math.floor(Math.random() * 160) + 50;
+        let g = Math.floor(Math.random() * 160) + 50;
+        let b = Math.floor(Math.random() * 160) + 50;
 
         let newColor = [r, g, b];
 
@@ -180,6 +179,15 @@ function mergeEntitiesWithSameStatements() {
             }
         }
     }
+
+    // Add entities to statements' entity lists after merging
+    for (let i = 0; i < entityRects.length; i++) {
+        for (let j = 0; j < statements.length; j++) {
+            if (entityRects[i].statements.includes(statements[j].id)) {
+                statements[j].entities.push(entityRects[i]);
+            }
+        } 
+    }
 }
 
 function calculateGapsAndMargins() {
@@ -213,6 +221,16 @@ function calculateGapsAndMargins() {
         columnEntities[y2 + 1].push([i, "y2"]);
     }
 
+    // Remove default margins from singleton sets
+    for (let i = 0; i < entityRects.length; i++) {
+        if (entityRects[i].statements.length == 1) {
+            entityRects[i].marginBottom = 0;
+            entityRects[i].marginTop = 0;
+            entityRects[i].marginRight = 0;
+            entityRects[i].marginLeft = 0;
+        }
+    }
+
     // Set horizontal entity margins
     for (let i = 0; i < rowEntities.length; i++) {
         for (let j = 0; j < rowEntities[i].length; j++) {
@@ -229,10 +247,10 @@ function calculateGapsAndMargins() {
 
                     // Increase the bigger entity's margin
                     if (rowEntities[i][j][1] == "x1" && rowEntities[i][k][1] == "x1" && entityRects[rowEntities[i][k][0]].marginLeft == entityRects[rowEntities[i][j][0]].marginLeft) {
-                        entityRects[rowEntities[i][k][0]].marginLeft = entityRects[rowEntities[i][j][0]].marginLeft + 1;
+                        if (entityRects[rowEntities[i][k][0]].statements.length > 1) entityRects[rowEntities[i][k][0]].marginLeft = entityRects[rowEntities[i][j][0]].marginLeft + 1;
                     }
                     else if (rowEntities[i][j][1] == "x2" && rowEntities[i][k][1] == "x2" && entityRects[rowEntities[i][k][0]].marginRight == entityRects[rowEntities[i][j][0]].marginRight) {
-                        entityRects[rowEntities[i][k][0]].marginRight = entityRects[rowEntities[i][j][0]].marginRight + 1;
+                        if (entityRects[rowEntities[i][k][0]].statements.length > 1) entityRects[rowEntities[i][k][0]].marginRight = entityRects[rowEntities[i][j][0]].marginRight + 1;
                     }       
                 }
             }
@@ -253,10 +271,10 @@ function calculateGapsAndMargins() {
 
                     // Increase the bigger entity's margin
                     if (rowEntities[i][j][1] == "x1" && rowEntities[i][k][1] == "x1" && entityRects[rowEntities[i][k][0]].marginLeft == entityRects[rowEntities[i][j][0]].marginLeft) {
-                        entityRects[rowEntities[i][k][0]].marginLeft = entityRects[rowEntities[i][j][0]].marginLeft + 1;
+                        if (entityRects[rowEntities[i][k][0]].statements.length > 1) entityRects[rowEntities[i][k][0]].marginLeft = entityRects[rowEntities[i][j][0]].marginLeft + 1;
                     }
                     else if (rowEntities[i][j][1] == "x2" && rowEntities[i][k][1] == "x2" && entityRects[rowEntities[i][k][0]].marginRight == entityRects[rowEntities[i][j][0]].marginRight) {
-                        entityRects[rowEntities[i][k][0]].marginRight = entityRects[rowEntities[i][j][0]].marginRight + 1;
+                        if (entityRects[rowEntities[i][k][0]].statements.length > 1) entityRects[rowEntities[i][k][0]].marginRight = entityRects[rowEntities[i][j][0]].marginRight + 1;
                     }       
                 }
             }
@@ -281,15 +299,15 @@ function calculateGapsAndMargins() {
                     if (columnEntities[i][j][1] == "y1" && columnEntities[i][k][1] == "y1" && entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][j][0]].marginTop <= entityRects[columnEntities[i][k][0]].headers.length * 2 + 1) {
                         // If their headers overlap, increase (preferably) the bigger entity's top margin such that there is enough space for all its headers
                         if (entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][k][0]].headers.length * 2 >= entityRects[columnEntities[i][j][0]].marginTop - entityRects[columnEntities[i][j][0]].headers.length * 2) {
-                            entityRects[columnEntities[i][k][0]].marginTop = entityRects[columnEntities[i][j][0]].marginTop + entityRects[columnEntities[i][k][0]].headers.length * 2 + 1;
+                            if (entityRects[columnEntities[i][k][0]].statements.length > 1) entityRects[columnEntities[i][k][0]].marginTop = entityRects[columnEntities[i][j][0]].marginTop + entityRects[columnEntities[i][k][0]].headers.length * 2 + 1;
                         }
                         else {
                             // If the smaller entity's header is above the bigger entity's header just increase the smaller entity's header as that's a smaller increase
-                            entityRects[columnEntities[i][j][0]].marginTop = entityRects[columnEntities[i][k][0]].marginTop + entityRects[columnEntities[i][j][0]].headers.length * 2 + 1;
+                            if (entityRects[columnEntities[i][j][0]].statements.length > 1) entityRects[columnEntities[i][j][0]].marginTop = entityRects[columnEntities[i][k][0]].marginTop + entityRects[columnEntities[i][j][0]].headers.length * 2 + 1;
                         }
                     }
                     else if (columnEntities[i][j][1] == "y2" && columnEntities[i][k][1] == "y2" && entityRects[columnEntities[i][k][0]].marginBottom == entityRects[columnEntities[i][j][0]].marginBottom) {
-                        entityRects[columnEntities[i][k][0]].marginBottom = entityRects[columnEntities[i][j][0]].marginBottom + 1;
+                        if (entityRects[columnEntities[i][k][0]].statements.length > 1) entityRects[columnEntities[i][k][0]].marginBottom = entityRects[columnEntities[i][j][0]].marginBottom + 1;
                     }        
                 }
             }
@@ -312,15 +330,15 @@ function calculateGapsAndMargins() {
                     if (columnEntities[i][j][1] == "y1" && columnEntities[i][k][1] == "y1" && entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][j][0]].marginTop <= entityRects[columnEntities[i][k][0]].headers.length * 2 + 1) {
                         // If their headers overlap, increase (preferably) the bigger entity's top margin such that there is enough space for all its headers
                         if (entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][k][0]].headers.length * 2 >= entityRects[columnEntities[i][j][0]].marginTop - entityRects[columnEntities[i][j][0]].headers.length * 2) {
-                            entityRects[columnEntities[i][k][0]].marginTop = entityRects[columnEntities[i][j][0]].marginTop + entityRects[columnEntities[i][k][0]].headers.length * 2 + 1;
+                            if (entityRects[columnEntities[i][k][0]].statements.length > 1) entityRects[columnEntities[i][k][0]].marginTop = entityRects[columnEntities[i][j][0]].marginTop + entityRects[columnEntities[i][k][0]].headers.length * 2 + 1;
                         }
                         else {
                             // If the smaller entity's header is above the bigger entity's header just increase the smaller entity's header as that's a smaller increase
-                            entityRects[columnEntities[i][j][0]].marginTop = entityRects[columnEntities[i][k][0]].marginTop + entityRects[columnEntities[i][j][0]].headers.length * 2 + 1;
+                            if (entityRects[columnEntities[i][j][0]].statements.length > 1) entityRects[columnEntities[i][j][0]].marginTop = entityRects[columnEntities[i][k][0]].marginTop + entityRects[columnEntities[i][j][0]].headers.length * 2 + 1;
                         }
                     }
                     else if (columnEntities[i][j][1] == "y2" && columnEntities[i][k][1] == "y2" && entityRects[columnEntities[i][k][0]].marginBottom == entityRects[columnEntities[i][j][0]].marginBottom) {
-                        entityRects[columnEntities[i][k][0]].marginBottom = entityRects[columnEntities[i][j][0]].marginBottom + 1;
+                        if (entityRects[columnEntities[i][k][0]].statements.length > 1) entityRects[columnEntities[i][k][0]].marginBottom = entityRects[columnEntities[i][j][0]].marginBottom + 1;
                     }        
                 }
             }
@@ -519,7 +537,6 @@ function drawBackgroundGrid() {
 }
 
 function drawElements() {
-
     for (let i = 0; i < entityRects.length; i++) {
         entityRects[i].position();
         entityRects[i].draw();
