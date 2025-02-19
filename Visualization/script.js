@@ -372,7 +372,7 @@ function calculateGapsAndMargins() {
                     let ey2 = entityRects[rowEntities[i][j][0]].y2;
                     let sx = statementCells[k].x;
                     let sy = statementCells[k].y;
-                    let statementInPreviousColumn = (sx + 1 == i);
+                    let statementInPreviousColumn = (sx == i);
                     let statementAndEntityOverlap = (sy <= ey2 && sy >= ey1);
 
                     // Increase the gap for the first and last column or if such a statement was found
@@ -386,7 +386,7 @@ function calculateGapsAndMargins() {
                     let ey2 = entityRects[rowEntities[i][j][0]].y2;
                     let sx = statementCells[k].x;
                     let sy = statementCells[k].y;
-                    let statementInNextColumn = (sx - 1 == i);
+                    let statementInNextColumn = (sx == i);
                     let statementAndEntityOverlap = (sy <= ey2 && sy >= ey1);
 
                     // Increase the gap for the first and last column or if such a statement was found
@@ -412,7 +412,7 @@ function calculateGapsAndMargins() {
                     let ex2 = entityRects[columnEntities[i][j][0]].x2;
                     let sx = statementCells[k].x;
                     let sy = statementCells[k].y;
-                    let statementInPreviousRow = (sy + 1 == i);
+                    let statementInPreviousRow = (sy == i);
                     let statementAndEntityOverlap = (sx <= ex2 && sx >= ex1);
 
                     // Increase the gap for the first and last row or if such a statement was found
@@ -426,8 +426,11 @@ function calculateGapsAndMargins() {
                     let ex2 = entityRects[columnEntities[i][j][0]].x2;
                     let sx = statementCells[k].x;
                     let sy = statementCells[k].y;
-                    let statementInNextRow = (sy - 1 == i);
+                    let statementInNextRow = (sy == i);
                     let statementAndEntityOverlap = (sx <= ex2 && sx >= ex1);
+
+                    // if (statementAndEntityOverlap && statementInNextRow) console.log(statementCells[k].id + " " + entityRects[columnEntities[i][j][0]].name);
+                    if (statementInNextRow) console.log(statementCells[k].id + " " + entityRects[columnEntities[i][j][0]].name + " " + i);
 
                     // Increase the gap for the first and last row or if such a statement was found
                     if (i == 0 || i == columnEntities.length - 1 || (statementInNextRow && statementAndEntityOverlap)) {
@@ -438,7 +441,6 @@ function calculateGapsAndMargins() {
         }  
         
         columnGaps[i] += maxMargin;
-        console.log(i + " " + columnGaps[i]);
     }
 
     // Increase row gaps to fit highest sum of margins from neighbouring columns
@@ -593,6 +595,6 @@ function visualize() {
     setCanvasDimensions();
 
     // Draw solution
-    // drawBackgroundGrid();
+    drawBackgroundGrid();
     drawElements();
 }
