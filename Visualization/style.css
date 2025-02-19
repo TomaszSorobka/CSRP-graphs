@@ -2,11 +2,20 @@ body{
     margin: 10px;
     background-color: #fff;
     color: #fff;
+    position: relative;
+    height: 100vh;
 }
 
-div{
+div {
     display: flex;
     justify-content: center;
     align-items: center;
 }
-  
+
+canvas{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: max-content;
+    height: max-content;
+}

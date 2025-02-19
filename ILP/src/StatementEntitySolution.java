@@ -363,7 +363,7 @@ public class StatementEntitySolution {
             model.setObjective(MINIMIZE_ME, GRB.MINIMIZE);
 
             // Set the time limit for the optimization (in seconds)
-            model.set(GRB.DoubleParam.TimeLimit, 100.0);
+            model.set(GRB.DoubleParam.TimeLimit, 4000.0);
 
             model.optimize();
 
@@ -403,7 +403,7 @@ public class StatementEntitySolution {
     }
 
     public static void main(String[] args) {
-        String jsonFilePath = "ILP\\data\\structured_dataset_not_so_small.json";
+        String jsonFilePath = "ILP\\data\\structured_dataset_repeat.json";
         StatementEntityInstance instance = new StatementEntityInstance(jsonFilePath);
         StatementEntitySolution solution = new StatementEntitySolution(instance);
         solution.computeILPCoord();

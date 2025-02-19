@@ -172,12 +172,29 @@ class Statement {
                 // If we are no longer drawing an entity switch back to black
                 if (!drawingName) c.fillStyle = "#000";
 
+                // Check if we are drawing the name of a singleton set and update the font
+                let drawingBold = false;
+                if (c.fillStyle == "#ffffff") {
+                    c.fillStyle = "#000";
+                    c.font = "bold 10px sans-serif";
+                    drawingBold = true;
+                }
+
                 // Draw next character
                 c.fillText(this.textLines[i][j], this.xStart + backgroundCellSize + lengthSoFar, this.yStart + (2 + i) * backgroundCellSize);
 
+                // Reset font if needed
+                if (drawingBold) {
+                    c.font = "normal 10px sans-serif";
+                    c.fillStyle = "#ffffff";
+                }
+
                 // Update pointers
                 if (drawingName) currentNameLength--;
-                if (currentNameLength == 0) drawingName = false;
+                if (currentNameLength == 0) {
+                    drawingName = false;
+                    drawingBold = false;
+                }
                 currentIndex++;
                 lengthSoFar += c.measureText(this.textLines[i][j]).width;
             }

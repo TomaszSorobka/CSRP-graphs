@@ -7,6 +7,7 @@ let statements = [];
 // Canvas
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
+c.font = "normal 10px sans-serif";
 
 // Grid sizes
 const backgroundCellSize = 10;
@@ -124,9 +125,9 @@ function generateDistinctDarkColors(n) {
     let attempts = 0;
 
     while (colors.length < n && attempts < maxAttempts) {
-        let r = Math.floor(Math.random() * 160) + 50;
-        let g = Math.floor(Math.random() * 160) + 50;
-        let b = Math.floor(Math.random() * 160) + 50;
+        let r = Math.floor(Math.random() * 160) + 30;
+        let g = Math.floor(Math.random() * 160) + 30;
+        let b = Math.floor(Math.random() * 160) + 30;
 
         let newColor = [r, g, b];
 
@@ -145,8 +146,16 @@ function generateDistinctDarkColors(n) {
 }
 
 function initializeElements() {
-    let randomColors = generateDistinctDarkColors(entities.length);
+    let nonSingletonEntities = [];
+    entities.forEach(e => {
+        if (e.statements.length > 1) {
+            nonSingletonEntities.push(e.id);
+        }
+    });
 
+    let randomColors = generateDistinctDarkColors(nonSingletonEntities.length);
+    let nextColor = 0;
+    
     for (var i = 0; i < entities.length; i++) {
         let id = entities[i].id;
         let name = entities[i].name;
@@ -155,7 +164,13 @@ function initializeElements() {
         let x2 = entities[i].x2;
         let y2 = entities[i].y2;
         let statements = entities[i].statements;
-        entityRects[i] = new Entity(id, name, x1, y1, x2, y2, randomColors[i], statements);
+        if (nonSingletonEntities.indexOf(id) > -1) {
+            entityRects[i] = new Entity(id, name, x1, y1, x2, y2, randomColors[nextColor], statements);
+            nextColor++;
+        }
+        else {
+            entityRects[i] = new Entity(id, name, x1, y1, x2, y2, [255, 255, 255], statements);
+        }
     }
 
     for (var i = 0; i < statements.length; i++) {
@@ -401,7 +416,7 @@ function calculateGapsAndMargins() {
                     let statementAndEntityOverlap = (sx <= ex2 && sx >= ex1);
 
                     // Increase the gap for the first and last row or if such a statement was found
-                    if (i == 0 || i == columnEntities.length - 1 || (statementInPreviousRow && statementAndEntityOverlap)) {
+                    if ((i == 0 || i == columnEntities.length - 1 || (statementInPreviousRow && statementAndEntityOverlap))) {
                         maxMargin = entityRects[columnEntities[i][j][0]].marginTop;
                     }
                 }
@@ -423,6 +438,7 @@ function calculateGapsAndMargins() {
         }  
         
         columnGaps[i] += maxMargin;
+        console.log(i + " " + columnGaps[i]);
     }
 
     // Increase row gaps to fit highest sum of margins from neighbouring columns
@@ -577,6 +593,6 @@ function visualize() {
     setCanvasDimensions();
 
     // Draw solution
-    drawBackgroundGrid();
+    // drawBackgroundGrid();
     drawElements();
 }
