@@ -176,12 +176,17 @@ class Statement {
                 let drawingBold = false;
                 if (c.fillStyle == "#ffffff") {
                     c.fillStyle = "#000";
-                    c.font = "bold 10px sans-serif";
+                    c.font = "bolder 10px sans-serif";
                     drawingBold = true;
                 }
 
                 // Draw next character
                 c.fillText(this.textLines[i][j], this.xStart + backgroundCellSize + lengthSoFar, this.yStart + (2 + i) * backgroundCellSize);
+
+                // Draw underline
+                if (drawingBold) {
+                    c.fillRect(this.xStart + backgroundCellSize + lengthSoFar, this.yStart + (2 + i) * backgroundCellSize + 1, c.measureText(this.textLines[i][j]).width + 0.3, 1);
+                }
 
                 // Reset font if needed
                 if (drawingBold) {

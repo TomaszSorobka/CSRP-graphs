@@ -8,6 +8,7 @@ let statements = [];
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 c.font = "normal 10px sans-serif";
+c.globalCompositeOperation = "source-over";
 
 // Grid sizes
 const backgroundCellSize = 10;
@@ -595,6 +596,6 @@ function visualize() {
     setCanvasDimensions();
 
     // Draw solution
-    drawBackgroundGrid();
+    // drawBackgroundGrid();
     drawElements();
 }
