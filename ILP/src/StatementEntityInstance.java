@@ -2,7 +2,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -64,6 +63,30 @@ public class StatementEntityInstance {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public StatementEntityInstance(int[] entities, int[] statements, HashMap<Integer, int[]> entityStatements, StatementEntityInstance inst) {
+        numberOfEntities = entities.length;
+        numberOfStatements = statements.length;
+
+        // Add entities
+        this.entities = new String[numberOfEntities];
+
+        for (int i = 0; i < numberOfEntities; i++) {
+            String name = inst.entities[entities[i]];
+            this.entities[i] = name;
+        }
+
+        // Add statements
+        this.statements = new String[numberOfStatements];
+
+        for (int i = 0; i < numberOfStatements; i++) {
+            String text = inst.statements[statements[i]];
+            this.entities[i] = text;
+        }
+
+        // Add entity to statement map
+        this.entityIndToStatements = entityStatements;
     }
     
     public static void main(String[] args) {
