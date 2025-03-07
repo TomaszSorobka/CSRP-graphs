@@ -8,8 +8,8 @@ import org.json.JSONObject;
 public class StatementEntityInstance {
     int numberOfStatements;
     int numberOfEntities;
-    String[] statements;
-    String[] entities;
+    HashMap<Integer, String> statements;
+    HashMap<Integer, String> entities;
     
     // map from entity index to statement indices corresponding to the indices in the arrays entities, statements
     HashMap<Integer, int[]> entityIndToStatements;
@@ -30,19 +30,19 @@ public class StatementEntityInstance {
             // Load statements
             JSONArray statementArray = jsonData.getJSONArray("statements");
             numberOfStatements = statementArray.length();
-            statements = new String[numberOfStatements];
+            statements = new HashMap<>();
             
             for (int i = 0; i < numberOfStatements; i++) {
-                statements[i] = statementArray.getJSONObject(i).getString("text");
+                statements.put(i, statementArray.getJSONObject(i).getString("text"));
             }
 
             // Load entities
             JSONArray entityArray = jsonData.getJSONArray("entities");
             numberOfEntities = entityArray.length();
-            entities = new String[numberOfEntities];
+            entities = new HashMap<>();
             
             for (int i = 0; i < numberOfEntities; i++) {
-                entities[i] = entityArray.getJSONObject(i).getString("name");
+                entities.put(i, entityArray.getJSONObject(i).getString("name"));
             }
             
             // Load entity to statement mappings
@@ -70,19 +70,19 @@ public class StatementEntityInstance {
         numberOfStatements = statements.length;
 
         // Add entities
-        this.entities = new String[numberOfEntities];
+        this.entities = new HashMap<>();
 
         for (int i = 0; i < numberOfEntities; i++) {
-            String name = inst.entities[entities[i]];
-            this.entities[i] = name;
+            String name = inst.entities.get(entities[i]);
+            this.entities.put(entities[i], name);
         }
 
         // Add statements
-        this.statements = new String[numberOfStatements];
+        this.statements = new HashMap<>();
 
         for (int i = 0; i < numberOfStatements; i++) {
-            String text = inst.statements[statements[i]];
-            this.entities[i] = text;
+            String text = inst.statements.get(statements[i]);
+            this.entities.put(statements[i], text);
         }
 
         // Add entity to statement map

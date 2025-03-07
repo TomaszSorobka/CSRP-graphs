@@ -1,6 +1,10 @@
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 class Node {
     ArrayList<Edge> adj = new ArrayList<>();
@@ -8,9 +12,20 @@ class Node {
     int comp = -1;
     boolean deleted = false;
     boolean visited = false;
+    HashSet<Integer> uniqueStatements = new HashSet<>();
 
     Node(int id) {
         this.id = id;
+    }
+
+    public Node copy() {
+        Node copy = new Node(id);
+        copy.comp = this.comp;
+        copy.deleted = this.deleted;
+        copy.visited = this.visited;
+        copy.uniqueStatements = this.uniqueStatements; // same for all copies
+
+        return copy;
     }
 }
 
@@ -65,7 +80,7 @@ public class GreedySplit {
 
         for (Edge e : intersectionGraph[entity2].adj) {
             if (e.target == entity1) {
-                e.statements.add(instance.entityIndToStatements.get(entity2)[stInd]);
+                e.statements.add(instance.entityIndToStatements.get(entity1)[stInd]);
             }
         }
     }
@@ -202,6 +217,46 @@ public class GreedySplit {
         }
     }
 
+    private ArrayList<Integer> findSharedStatements(Node node) {
+        // Get only statements shared with another entity
+        ArrayList<Integer> sharedStatements = new ArrayList<>();
+
+        // Fill the shared statements list
+        for (Edge e : node.adj) {
+            sharedStatements.addAll(e.statements);
+        }
+
+        return sharedStatements;
+    }
+
+    private void findUniqueStatements(Node node) {
+        // Get all statements of this node
+        int[] allStatements = instance.entityIndToStatements.get(node.id);
+        // Get only statements shared with another entity
+        ArrayList<Integer> sharedStatements = findSharedStatements(node);
+
+        // Get all statement which are only in this entity
+        for (int i = 0; i < allStatements.length; i++) {
+            if (!sharedStatements.contains(allStatements[i])) {
+                node.uniqueStatements.add(allStatements[i]);
+            }
+        }
+    }
+
+    private StatementEntityInstance findSmallestInstance(ArrayList<StatementEntityInstance> instances) {
+        int minStatements = Integer.MAX_VALUE;
+        StatementEntityInstance smallestInstance = null;
+
+        for (StatementEntityInstance inst : instances) {
+            if (inst.statements.size() < minStatements) {
+                minStatements = inst.statements.size();
+                smallestInstance = inst;
+            }
+        }
+
+        return smallestInstance;
+    }
+
     public ArrayList<StatementEntityInstance> findSplit() {
         ArrayList<StatementEntityInstance> result = new ArrayList<>();
 
@@ -213,36 +268,57 @@ public class GreedySplit {
 
         // Add a copy of each deleted node to each component
         for (Node node : deletedNodes) {
+            findUniqueStatements(node);
+
             for (ArrayList<Node> component : components) {
-                component.add(node);
+                component.add(node.copy());
 
                 // Remove edges outside of the component
-                for (Edge e : node.adj) {
+                for (Edge e : component.get(component.size() - 1).adj) {
                     if (!component.contains(intersectionGraph[e.target])) {
-                        node.adj.remove(e);
+                        component.get(component.size() - 1).adj.remove(e);
                     }
                 }
             }
         }
 
         for (ArrayList<Node> component : components) {
+            // Store all entities in this component
             int[] entities = new int[component.size()];
+
+            // Store all statements in this component
             HashSet<Integer> statements = new HashSet<>();
+
+            // Store the entity-statement map for this component
             HashMap<Integer, int[]> entToSt = new HashMap<>();
 
             for (int i = 0; i < component.size(); i++) {
+                // Add each entity
                 Node ent = component.get(i);
-                HashSet<Integer> entStatements = new HashSet<>();
-
                 entities[i] = ent.id;
 
-                for (Edge e : ent.adj) {
-                    statements.addAll(e.statements);
-                    entStatements.addAll(e.statements);
-                }
+                // For non deleted nodes get their statements from the instance
+                if (!ent.deleted) {
+                    // Add the statements of this entity to the map of this component
+                    int[] arr = instance.entityIndToStatements.get(ent.id);
+                    entToSt.put(ent.id, arr);
 
-                int[] arr = entStatements.stream().mapToInt(Integer::intValue).toArray();
-                entToSt.put(ent.id, arr);
+                    // Convert the statement array to an ArrayList (to be added to the hashset)
+                    ArrayList<Integer> entStatements = new ArrayList<>();
+                    for (int j = 0; j < arr.length; j++) {
+                        entStatements.add(arr[j]);
+                    }
+
+                    // Add to global statement list for this component
+                    statements.addAll(entStatements);
+                }
+                // For deleted nodes add only their shared statements to the instance
+                else {
+                    ArrayList<Integer> shared = findSharedStatements(ent);
+                    int[] arr =  shared.stream().mapToInt(k -> k).toArray();
+
+                    entToSt.put(ent.id, arr);
+                }
             }
 
             int[] stArr = statements.stream().mapToInt(Integer::intValue).toArray();
@@ -252,16 +328,37 @@ public class GreedySplit {
 
         }
 
+        // Sort deleted nodes in decreasing order based on number of unique statements
+        Collections.sort(deletedNodes, (o1, o2) -> (Integer.compare(o2.uniqueStatements.size(), o1.uniqueStatements.size())));
+
+        // Add statements contained only in deleted nodes to the smallest new instance
+        for (Node node : deletedNodes) {
+            // Find the current smallest instance
+            StatementEntityInstance smallestInstance = findSmallestInstance(result);
+            
+            // Create a map of the statements unique to this deleted node
+            HashMap<Integer, String> uniqueStatementMap = new HashMap<>();
+
+            // Fill the map
+            for (Integer statementId : node.uniqueStatements) {
+                String text = instance.statements.get(statementId);
+                uniqueStatementMap.put(statementId, text);
+            }
+
+            // Add the statements from the map to the smallest instance
+            smallestInstance.statements.putAll(uniqueStatementMap);
+        }
+
         return result;
 
     }
 
     public void printGraph() {
         for (int i = 0; i < intersectionGraph.length; i++) {
-            System.out.println(instance.entities[intersectionGraph[i].id] + " connects to ");
+            System.out.println(instance.entities.get(intersectionGraph[i].id) + " connects to ");
 
             for (int j = 0; j < intersectionGraph[i].adj.size(); j++) {
-                System.out.print(instance.entities[intersectionGraph[i].adj.get(j).target] + " ");
+                System.out.print(instance.entities.get(intersectionGraph[i].adj.get(j).target) + " ");
             }
 
             System.out.println("\n");
@@ -274,5 +371,6 @@ public class GreedySplit {
         GreedySplit splitInstance = new GreedySplit(instance);
 
         splitInstance.createGraph();
+        splitInstance.printGraph();
     }
 }
