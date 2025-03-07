@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import com.gurobi.gurobi.GRB;
 import com.gurobi.gurobi.GRBEnv;
@@ -24,21 +26,28 @@ public class StatementEntitySolution {
     int nEntities;
     int nStatements;
 
+    // List of entity IDs
+    List<Integer> entityIds;
+
+    // List of statement IDs
+    List<Integer> statementIds;
+
     // cost of the solution
     double cost; 
 
     // dimensions of the entities and statements, statementDimensions[i] = {width, height}
     double[] statementDimensions;
-    // double margin;
 
     public StatementEntitySolution(StatementEntityInstance instance) {
         this.instance = instance;
         nEntities = instance.numberOfEntities;
         nStatements = instance.numberOfStatements;
+        entityIds = new ArrayList<>(instance.entities.keySet());
+        statementIds = new ArrayList<>(instance.statements.keySet());
+
         entityCoordinates = new int[nEntities][4];
         statementCoordinates = new int[nStatements][2];
         statementDimensions = new double[2];   // width, height
-        // margin = 0.1;  // margin for placing statements inside entities
     }
 
     // Method to make a copy of the solution
@@ -63,6 +72,28 @@ public class StatementEntitySolution {
         return copy;
     }
 
+    // private int getEntityIndexFromId(int id) {
+    //     int i = 0;
+    //     for (Integer entity : instance.entities.keySet()) {
+    //         if (entity == id) return i;
+    //         i++;
+    //     }
+
+    //     System.out.println("you fucked up");
+    //     return -1;
+    // }
+
+    // private int getStatementIndexFromId(int id) {
+    //     int i = 0;
+    //     for (Integer statement : instance.statements.keySet()) {
+    //         if (statement == id) return i;
+    //         i++;
+    //     }
+
+    //     System.out.println("you fucked up");
+    //     return -1;
+    // }
+
     // Method to compute the best solution with ILP
     public void computeILPCoord() {
         try {
@@ -85,20 +116,10 @@ public class StatementEntitySolution {
                 }
             }
 
-            // Constraints
+            /*********************************************************************************************************
+             *                                              CONSTRAINTS                                              *
+             *********************************************************************************************************/
 
-            // // Statement size is fixed (H0)
-            // for (int i = 0; i < nStatements; i++) {
-            //     GRBLinExpr expr = new GRBLinExpr();
-            //     expr.addTerm(1.0, grbStatementCoord[i][2]);
-            //     expr.addTerm(-1.0, grbStatementCoord[i][0]);
-            //     model.addConstr(expr, GRB.EQUAL, statementDimensions[0], "H0w_" + i);
-
-            //     expr = new GRBLinExpr();
-            //     expr.addTerm(1.0, grbStatementCoord[i][3]);
-            //     expr.addTerm(-1.0, grbStatementCoord[i][1]);
-            //     model.addConstr(expr, GRB.EQUAL, statementDimensions[1], "H0h_" + i);
-            // }
 
             // All coordinates are non-negative (H0)
             for (int i = 0; i < nStatements; i++) {
@@ -124,7 +145,7 @@ public class StatementEntitySolution {
 
             // Positioning statements inside entities (H1)
             for(int i = 0; i < nEntities; i++) {
-                int[] statementsOfEntity = instance.entityIndToStatements.get(i);
+                int[] statementsOfEntity = instance.entityIndToStatements.get(entityIds.get(i));
                 for (int j = 0; j < statementsOfEntity.length; j++) {
                     int statementIndex = statementsOfEntity[j];
                     
@@ -155,8 +176,8 @@ public class StatementEntitySolution {
 
                 // Keep statements outside of entities they do not belong to (H2)
                 for (int j = 0; j < nStatements; j++) {
-                    final int statementIndexFinal = j;
-                    if (Arrays.stream(instance.entityIndToStatements.get(i)).noneMatch(x -> x == statementIndexFinal)) {
+                    final int statementIdFinal = statementIds.get(j);
+                    if (Arrays.stream(instance.entityIndToStatements.get(entityIds.get(i))).noneMatch(x -> x == statementIdFinal)) {
                     
                         GRBVar[] vars = new GRBVar[4];
                         for (int k = 0; k < 4; k++) {
@@ -204,8 +225,8 @@ public class StatementEntitySolution {
             // Make entities with non-overlapping statements not overlap coordinates (H6)
             for (int i = 0; i < nEntities; i++) {
                 for (int j = i + 1; j < nEntities; j++) {
-                    int[] statementsOfEntity1 = instance.entityIndToStatements.get(i);
-                    int[] statementsOfEntity2 = instance.entityIndToStatements.get(j);
+                    int[] statementsOfEntity1 = instance.entityIndToStatements.get(entityIds.get(i));
+                    int[] statementsOfEntity2 = instance.entityIndToStatements.get(entityIds.get(j));
                     boolean overlap = false;
                     for (int k = 0; k < statementsOfEntity1.length; k++) {
                         for (int l = 0; l < statementsOfEntity2.length; l++) {
@@ -304,7 +325,7 @@ public class StatementEntitySolution {
 
             // Single statement entities take up only 1 cell (H5)
             for (int i = 0; i < nEntities; i++) {
-                if (instance.entityIndToStatements.get(i).length == 1) {
+                if (instance.entityIndToStatements.get(entityIds.get(i)).length == 1) {
                     GRBLinExpr expr = new GRBLinExpr();
                     expr.addTerm(1.0, grbEntityCoord[i][2]);
                     expr.addTerm(-1.0, grbEntityCoord[i][0]);
@@ -359,11 +380,6 @@ public class StatementEntitySolution {
             MINIMIZE_ME.addTerm(1.0, maxWidth);
 
             for (int i = 0; i < nEntities; i++) {
-                // MINIMIZE_ME.addTerm(1.0, grbEntityCoord[i][2], grbEntityCoord[i][3]);
-                // MINIMIZE_ME.addTerm(-1.0, grbEntityCoord[i][0], grbEntityCoord[i][3]);
-                // MINIMIZE_ME.addTerm(-1.0, grbEntityCoord[i][2], grbEntityCoord[i][1]);
-                // MINIMIZE_ME.addTerm(1.0, grbEntityCoord[i][0], grbEntityCoord[i][1]);
-
                 MINIMIZE_ME.addTerm(1.0, grbEntityCoord[i][2]);
                 MINIMIZE_ME.addTerm(-1.0, grbEntityCoord[i][0]);
                 MINIMIZE_ME.addTerm(-1.0, grbEntityCoord[i][1]);
@@ -419,7 +435,7 @@ public class StatementEntitySolution {
     }
 
     public static void main(String[] args) {
-        String jsonFilePath = "ILP\\data\\structured_dataset_repeat.json";
+        String jsonFilePath = "ILP\\data\\structured_dataset_small.json";
         StatementEntityInstance instance = new StatementEntityInstance(jsonFilePath);
         StatementEntitySolution solution = new StatementEntitySolution(instance);
         solution.computeILPCoord();
@@ -427,10 +443,19 @@ public class StatementEntitySolution {
         System.out.println("w: " + solution.w);
         System.out.println("h: " + solution.h);
         for (int i = 0; i < solution.nEntities; i++) {
-            System.out.println("Entity " + instance.entities[i] + ": (" + solution.entityCoordinates[i][0] + ", " + solution.entityCoordinates[i][1] + ") - (" + solution.entityCoordinates[i][2] + ", " + solution.entityCoordinates[i][3] + ")");
+            
         }
-        for (int i = 0; i < solution.nStatements; i++) {
-            System.out.println("Statement " + instance.statements[i] + ": (" + solution.statementCoordinates[i][0] + ", " + solution.statementCoordinates[i][1] + ")");
+
+        int i = 0;
+        for (Integer entity : solution.instance.entities.keySet()) {
+            System.out.println("Entity " + instance.entities.get(entity) + ": (" + solution.entityCoordinates[i][0] + ", " + solution.entityCoordinates[i][1] + ") - (" + solution.entityCoordinates[i][2] + ", " + solution.entityCoordinates[i][3] + ")");
+            i++;
+        }
+
+        int j = 0;
+        for (Integer statement : solution.instance.statements.keySet()) {
+            System.out.println("Statement " + instance.statements.get(statement) + ": (" + solution.statementCoordinates[j][0] + ", " + solution.statementCoordinates[j][1] + ")");
+            j++;
         }
     }
 }

@@ -14,8 +14,59 @@ public class StatementEntityInstance {
     // map from entity index to statement indices corresponding to the indices in the arrays entities, statements
     HashMap<Integer, int[]> entityIndToStatements;
 
-    // Constructor to load JSON data from file
-    public StatementEntityInstance(String jsonFilePath) {
+    // // Constructor to load JSON data from file
+    // public StatementEntityInstance(String jsonFilePath) {
+    //     try {
+    //         StringBuilder jsonContent = new StringBuilder();
+    //         BufferedReader reader = new BufferedReader(new FileReader(jsonFilePath));
+    //         String line;
+    //         while ((line = reader.readLine()) != null) {
+    //             jsonContent.append(line);
+    //         }
+    //         reader.close();
+
+    //         JSONObject jsonData = new JSONObject(jsonContent.toString());
+            
+    //         // Load statements
+    //         JSONArray statementArray = jsonData.getJSONArray("statements");
+    //         numberOfStatements = statementArray.length();
+    //         statements = new HashMap<>();
+            
+    //         for (int i = 0; i < numberOfStatements; i++) {
+    //             statements.put(i, statementArray.getJSONObject(i).getString("text"));
+    //         }
+
+    //         // Load entities
+    //         JSONArray entityArray = jsonData.getJSONArray("entities");
+    //         numberOfEntities = entityArray.length();
+    //         entities = new HashMap<>();
+            
+    //         for (int i = 0; i < numberOfEntities; i++) {
+    //             entities.put(i, entityArray.getJSONObject(i).getString("name"));
+    //         }
+            
+    //         // Load entity to statement mappings
+    //         JSONObject entityStatementsObject = jsonData.getJSONObject("entity_statements");
+    //         entityIndToStatements = new HashMap<>();
+            
+    //         for (String key : entityStatementsObject.keySet()) {
+    //             int entityIndex = Integer.parseInt(key);
+    //             JSONArray statementIndicesArray = entityStatementsObject.getJSONArray(key);
+    //             int[] statementIndices = new int[statementIndicesArray.length()];
+                
+    //             for (int j = 0; j < statementIndicesArray.length(); j++) {
+    //                 statementIndices[j] = statementIndicesArray.getInt(j);
+    //             }
+                
+    //             entityIndToStatements.put(entityIndex, statementIndices);
+    //         }
+    //     } catch (IOException e) {
+    //         e.printStackTrace();
+    //     }
+    // }
+
+     // NEW Constructor to load JSON data from file (keeping the ids from the dataset)
+     public StatementEntityInstance(String jsonFilePath) {
         try {
             StringBuilder jsonContent = new StringBuilder();
             BufferedReader reader = new BufferedReader(new FileReader(jsonFilePath));
@@ -26,39 +77,49 @@ public class StatementEntityInstance {
             reader.close();
 
             JSONObject jsonData = new JSONObject(jsonContent.toString());
-            
-            // Load statements
+
+            // Load statements using their IDs
             JSONArray statementArray = jsonData.getJSONArray("statements");
             numberOfStatements = statementArray.length();
             statements = new HashMap<>();
-            
-            for (int i = 0; i < numberOfStatements; i++) {
-                statements.put(i, statementArray.getJSONObject(i).getString("text"));
+
+            System.out.println("Statements array has size: " + statementArray.length());
+            for (int i = 0; i < statementArray.length(); i++) {
+                JSONObject statementObj = statementArray.getJSONObject(i);
+                int id = statementObj.getInt("id");  // Get statement ID
+                String text = statementObj.getString("text");
+                System.out.println("Statement " + id + ": " + text + "\n successfully added to the map");
+                statements.put(id, text);  // Store using the actual ID
             }
 
-            // Load entities
+            // Load entities using their IDs
             JSONArray entityArray = jsonData.getJSONArray("entities");
             numberOfEntities = entityArray.length();
             entities = new HashMap<>();
-            
-            for (int i = 0; i < numberOfEntities; i++) {
-                entities.put(i, entityArray.getJSONObject(i).getString("name"));
+
+            System.out.println("Entity array has size: " + entityArray.length());
+            for (int i = 0; i < entityArray.length(); i++) {
+                JSONObject entityObj = entityArray.getJSONObject(i);
+                int id = entityObj.getInt("id");  // Get entity ID
+                String name = entityObj.getString("name");
+                System.out.println("Entity " + id + ": " + name + "\n successfully added to the map");
+                entities.put(id, name);  // Store using the actual ID
             }
-            
+
             // Load entity to statement mappings
             JSONObject entityStatementsObject = jsonData.getJSONObject("entity_statements");
             entityIndToStatements = new HashMap<>();
-            
+
             for (String key : entityStatementsObject.keySet()) {
-                int entityIndex = Integer.parseInt(key);
+                int entityId = Integer.parseInt(key);  // Entity ID from JSON
                 JSONArray statementIndicesArray = entityStatementsObject.getJSONArray(key);
-                int[] statementIndices = new int[statementIndicesArray.length()];
-                
+                int[] statementIds = new int[statementIndicesArray.length()];
+
                 for (int j = 0; j < statementIndicesArray.length(); j++) {
-                    statementIndices[j] = statementIndicesArray.getInt(j);
+                    statementIds[j] = statementIndicesArray.getInt(j);  // Store statement ID
                 }
-                
-                entityIndToStatements.put(entityIndex, statementIndices);
+
+                entityIndToStatements.put(entityId, statementIds);  // Store using the actual entity ID
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -82,15 +143,15 @@ public class StatementEntityInstance {
 
         for (int i = 0; i < numberOfStatements; i++) {
             String text = inst.statements.get(statements[i]);
-            this.entities.put(statements[i], text);
+            this.statements.put(statements[i], text);
         }
 
         // Add entity to statement map
-        this.entityIndToStatements = entityStatements;
+        this.entityIndToStatements = new HashMap<>(entityStatements);
     }
     
     public static void main(String[] args) {
-        String jsonFilePath = "C:\\Users\\vesko\\OneDrive - TU Eindhoven\\Research\\ILP\\data\\structured_dataset.json"; // Adjust path as needed
+        String jsonFilePath = "ILP\\data\\structured_dataset_small.json";
         StatementEntityInstance instance = new StatementEntityInstance(jsonFilePath);
         System.out.println("Loaded " + instance.numberOfStatements + " statements and " + instance.numberOfEntities + " entities.");
     }

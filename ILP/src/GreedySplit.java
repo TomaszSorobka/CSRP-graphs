@@ -60,25 +60,26 @@ public class GreedySplit {
 
     private void initEdge(int entity1, int entity2) {
         boolean edgeExists = false;
-        for (Edge e : intersectionGraph[entity1].adj) {
+        for (Edge e : intersectionGraph[getGraphIndexFromId(entity1)].adj) {
             if (e.target == entity2) {
                 edgeExists = true;
             }
         }
+
         if (!edgeExists) {
-            intersectionGraph[entity1].adj.add(new Edge(entity2));
-            intersectionGraph[entity2].adj.add(new Edge(entity1));
+            intersectionGraph[getGraphIndexFromId(entity1)].adj.add(new Edge(entity2));
+            intersectionGraph[getGraphIndexFromId(entity2)].adj.add(new Edge(entity1));
         }
     }
 
     private void addStatement(int entity1, int entity2, int stInd) {
-        for (Edge e : intersectionGraph[entity1].adj) {
+        for (Edge e : intersectionGraph[getGraphIndexFromId(entity1)].adj) {
             if (e.target == entity2) {
                 e.statements.add(instance.entityIndToStatements.get(entity1)[stInd]);
             }
         }
 
-        for (Edge e : intersectionGraph[entity2].adj) {
+        for (Edge e : intersectionGraph[getGraphIndexFromId(entity2)].adj) {
             if (e.target == entity1) {
                 e.statements.add(instance.entityIndToStatements.get(entity1)[stInd]);
             }
@@ -99,14 +100,21 @@ public class GreedySplit {
     }
 
     private void createGraph() {
-        for (int i = 0; i < nEntities; i++) {
-            intersectionGraph[i] = new Node(i);
+        int ind = 0;
+        for (Integer entityId : instance.entities.keySet()) {
+            intersectionGraph[ind] = new Node(entityId);
+            ind++;
         }
 
         // Create edges
-        for (int i = 0; i < nEntities; i++) {
-            for (int j = i + 1; j < nEntities; j++) {
-                createEdge(i, j);
+        List<Integer> keys = new ArrayList<>(instance.entities.keySet()); // Get all keys as a list
+
+        for (int i = 0; i < keys.size(); i++) {
+            for (int j = i + 1; j < keys.size(); j++) {
+                int entity1 = keys.get(i);
+                int entity2 = keys.get(j);
+
+                createEdge(entity1, entity2);
             }
         }
 
@@ -131,8 +139,9 @@ public class GreedySplit {
         for (int i = 0; i < intersectionGraph.length; i++) {
             if (!intersectionGraph[i].deleted) {
                 for (Edge e : intersectionGraph[i].adj) {
-                    if (e.target == largest) {
+                    if (e.target == intersectionGraph[largest].id) {
                         intersectionGraph[i].adj.remove(e);
+                        break;
                     }
                 }
             }
@@ -160,7 +169,7 @@ public class GreedySplit {
         // Find component of deleted node
         for (ArrayList<Node> comp : components) {
             if (comp.contains(intersectionGraph[deletedIndex])) {
-                comp.remove(deletedIndex);
+                comp.remove(intersectionGraph[deletedIndex]);
                 affectedComponent = comp;
             }
         }
@@ -193,7 +202,7 @@ public class GreedySplit {
 
         // Assign nodes to new components
         for (int i = 0; i < affectedComponent.size(); i++) {
-            int currNodeCompIndex = affectedComponent.get(i).comp - (maxComponent - nrNewComponents);
+            int currNodeCompIndex = affectedComponent.get(i).comp - (maxComponent - nrNewComponents + 1);
             newComponents.get(currNodeCompIndex).add(affectedComponent.get(i));
         }
 
@@ -213,7 +222,7 @@ public class GreedySplit {
         intersectionGraph[node].comp = component;
 
         for (Edge e : intersectionGraph[node].adj) {
-            dfs(e.target, component);
+            dfs(getGraphIndexFromId(e.target), component);
         }
     }
 
@@ -257,6 +266,17 @@ public class GreedySplit {
         return smallestInstance;
     }
 
+    private int getGraphIndexFromId(int id) {
+        for (int i = 0; i < intersectionGraph.length; i++) {
+            if (intersectionGraph[i].id == id) {
+                return i;
+            }
+        }
+
+        System.out.println("you fucked up");
+        return -1;
+    }
+
     public ArrayList<StatementEntityInstance> findSplit() {
         ArrayList<StatementEntityInstance> result = new ArrayList<>();
 
@@ -275,7 +295,7 @@ public class GreedySplit {
 
                 // Remove edges outside of the component
                 for (Edge e : component.get(component.size() - 1).adj) {
-                    if (!component.contains(intersectionGraph[e.target])) {
+                    if (!component.contains(intersectionGraph[getGraphIndexFromId(e.target)])) {
                         component.get(component.size() - 1).adj.remove(e);
                     }
                 }
@@ -350,7 +370,6 @@ public class GreedySplit {
         }
 
         return result;
-
     }
 
     public void printGraph() {
@@ -361,7 +380,7 @@ public class GreedySplit {
                 System.out.print(instance.entities.get(intersectionGraph[i].adj.get(j).target) + " ");
             }
 
-            System.out.println("\n");
+            System.out.println("end of this entity \n");
         }
     }
 
@@ -371,6 +390,21 @@ public class GreedySplit {
         GreedySplit splitInstance = new GreedySplit(instance);
 
         splitInstance.createGraph();
-        splitInstance.printGraph();
+        // splitInstance.printGraph();
+
+        ArrayList<StatementEntityInstance> split = splitInstance.findSplit();
+
+        for (int i = 0; i < splitInstance.deletedNodes.size(); i++) {
+            System.out.println("DELETED: " + splitInstance.instance.entities.get(splitInstance.deletedNodes.get(i).id));
+        }
+
+        for (StatementEntityInstance statementEntityInstance : split) {
+            GreedySplit newSplit = new GreedySplit(statementEntityInstance);
+            newSplit.createGraph();
+
+            System.out.println("NEW GRAPH");
+            newSplit.printGraph();
+            System.out.println("END OF GRAPH");
+        }
     }
 }
