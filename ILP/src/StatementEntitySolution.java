@@ -9,93 +9,97 @@ import com.gurobi.gurobi.GRBLinExpr;
 import com.gurobi.gurobi.GRBModel;
 import com.gurobi.gurobi.GRBVar;
 
-public class StatementEntitySolution {
-
-    StatementEntityInstance instance;
-    // Solution representation - coordinate of top left corner and bottom right corner of each entity
-    // entity 0 has coordinates entityCoordinates[0] = {xt, yt, xb, yb}
-    int[][] entityCoordinates;
-    // same for statements
-    int[][] statementCoordinates;
-
-    // Total dimensions of the solution
+class Solution {
     int w;
     int h;
+    int[][] entityCoordinates;
+    int[][] statementCoordinates;
 
-    // shorthand for the number of entities and statements
-    int nEntities;
-    int nStatements;
-
-    // List of entity IDs
-    List<Integer> entityIds;
-
-    // List of statement IDs
-    List<Integer> statementIds;
-
-    // cost of the solution
-    double cost; 
-
-    // dimensions of the entities and statements, statementDimensions[i] = {width, height}
-    double[] statementDimensions;
-
-    public StatementEntitySolution(StatementEntityInstance instance) {
-        this.instance = instance;
-        nEntities = instance.numberOfEntities;
-        nStatements = instance.numberOfStatements;
-        entityIds = new ArrayList<>(instance.entities.keySet());
-        statementIds = new ArrayList<>(instance.statements.keySet());
-
-        entityCoordinates = new int[nEntities][4];
-        statementCoordinates = new int[nStatements][2];
-        statementDimensions = new double[2];   // width, height
+    public Solution(int w, int h, int[][] eCoords, int[][] sCoords) {
+        this.w = w;
+        this.h = h;
+        this.entityCoordinates = eCoords;
+        this.statementCoordinates = sCoords;
     }
+}
+public class StatementEntitySolution {
 
-    // Method to make a copy of the solution
-    public StatementEntitySolution copy() {
-        StatementEntitySolution copy = new StatementEntitySolution(instance);
+    // StatementEntityInstance instance;
+    // // Solution representation - coordinate of top left corner and bottom right corner of each entity
+    // // entity 0 has coordinates entityCoordinates[0] = {xt, yt, xb, yb}
+    // int[][] entityCoordinates;
+    // // same for statements
+    // int[][] statementCoordinates;
 
-        for (int i = 0; i < nEntities; i++) {
-            copy.entityCoordinates[i][0] = entityCoordinates[i][0];
-            copy.entityCoordinates[i][1] = entityCoordinates[i][1];
-            copy.entityCoordinates[i][2] = entityCoordinates[i][2];
-            copy.entityCoordinates[i][3] = entityCoordinates[i][3];
-        }
+    // // Total dimensions of the solution
+    // int w;
+    // int h;
 
-        for (int i = 0; i < nStatements; i++) {
-            copy.statementCoordinates[i][0] = statementCoordinates[i][0];
-            copy.statementCoordinates[i][1] = statementCoordinates[i][1];
-        }
+    // // shorthand for the number of entities and statements
+    // int nEntities;
+    // int nStatements;
 
-        copy.statementDimensions[0] = statementDimensions[0];
-        copy.statementDimensions[1] = statementDimensions[1];
-        copy.cost = cost;
-        return copy;
-    }
+    // // List of entity IDs
+    // List<Integer> entityIds;
 
-    // private int getEntityIndexFromId(int id) {
-    //     int i = 0;
-    //     for (Integer entity : instance.entities.keySet()) {
-    //         if (entity == id) return i;
-    //         i++;
-    //     }
+    // // List of statement IDs
+    // List<Integer> statementIds;
 
-    //     System.out.println("you fucked up");
-    //     return -1;
+    // // cost of the solution
+    // double cost; 
+
+    // // dimensions of the entities and statements, statementDimensions[i] = {width, height}
+    // double[] statementDimensions;
+
+    // public StatementEntitySolution(StatementEntityInstance instance) {
+    //     this.instance = instance;
+    //     nEntities = instance.numberOfEntities;
+    //     nStatements = instance.numberOfStatements;
+    //     entityIds = new ArrayList<>(instance.entities.keySet());
+    //     statementIds = new ArrayList<>(instance.statements.keySet());
+
+    //     entityCoordinates = new int[nEntities][4];
+    //     statementCoordinates = new int[nStatements][2];
+    //     statementDimensions = new double[2];   // width, height
     // }
 
-    // private int getStatementIndexFromId(int id) {
-    //     int i = 0;
-    //     for (Integer statement : instance.statements.keySet()) {
-    //         if (statement == id) return i;
-    //         i++;
+    ArrayList<Solution> solutions = new ArrayList<>();
+
+    // Method to make a copy of the solution
+    // public StatementEntitySolution copy() {
+    //     StatementEntitySolution copy = new StatementEntitySolution(instance);
+
+    //     for (int i = 0; i < nEntities; i++) {
+    //         copy.entityCoordinates[i][0] = entityCoordinates[i][0];
+    //         copy.entityCoordinates[i][1] = entityCoordinates[i][1];
+    //         copy.entityCoordinates[i][2] = entityCoordinates[i][2];
+    //         copy.entityCoordinates[i][3] = entityCoordinates[i][3];
     //     }
 
-    //     System.out.println("you fucked up");
-    //     return -1;
+    //     for (int i = 0; i < nStatements; i++) {
+    //         copy.statementCoordinates[i][0] = statementCoordinates[i][0];
+    //         copy.statementCoordinates[i][1] = statementCoordinates[i][1];
+    //     }
+
+    //     copy.statementDimensions[0] = statementDimensions[0];
+    //     copy.statementDimensions[1] = statementDimensions[1];
+    //     copy.cost = cost;
+    //     return copy;
     // }
 
     // Method to compute the best solution with ILP
-    public void computeILPCoord() {
+    public void computeILPCoord(StatementEntityInstance instance, ArrayList<Solution> sols) {
+        // Setup
+        int nEntities = instance.numberOfEntities;
+        int nStatements = instance.numberOfStatements;
+        ArrayList<Integer> entityIds = new ArrayList<>(instance.entities.keySet());
+        ArrayList<Integer> statementIds = new ArrayList<>(instance.statements.keySet());
+
+        int w;
+        int h;
+        int[][] entityCoordinates = new int[nEntities][4];
+        int[][] statementCoordinates = new int[nStatements][2];
+
         try {
             GRBEnv env = new GRBEnv();
             GRBModel model = new GRBModel(env);
@@ -132,7 +136,7 @@ public class StatementEntitySolution {
                 }
             }
 
-            // All coordinates are at most 6/ Restrict solution size (H00)
+            // All coordinates are at most 4 / Restrict solution size (H00)
             for (int i = 0; i < nStatements; i++) {
                 model.addConstr(grbStatementCoord[i][0], GRB.LESS_EQUAL, 4, "H00_" + i + "_x");
                 model.addConstr(grbStatementCoord[i][1], GRB.LESS_EQUAL, 4, "H00_" + i + "_y");
@@ -147,7 +151,7 @@ public class StatementEntitySolution {
             for(int i = 0; i < nEntities; i++) {
                 int[] statementsOfEntity = instance.entityIndToStatements.get(entityIds.get(i));
                 for (int j = 0; j < statementsOfEntity.length; j++) {
-                    int statementIndex = statementsOfEntity[j];
+                    int statementIndex = statementIds.indexOf(statementsOfEntity[j]);
                     
                     // statement x >= entity x1 (right of entity's left side)
                     GRBLinExpr expr = new GRBLinExpr();
@@ -403,13 +407,11 @@ public class StatementEntitySolution {
             int status = model.get(GRB.IntAttr.Status);
 
             // Check if the optimization was interrupted or completed
-            if (status == GRB.Status.OPTIMAL || status == GRB.Status.TIME_LIMIT) {
-                // Best solution found
-                // System.out.println("Best solution found: " + model.getObjective().getValue());
+            if (status == GRB.Status.OPTIMAL) {
+                // Extract solution
                 w = (int) maxWidth.get(GRB.DoubleAttr.X);
                 h = (int) maxHeight.get(GRB.DoubleAttr.X);
                 
-                // Extract solution
                 for (int i = 0; i < nEntities; i++) {
                     entityCoordinates[i][0] = (int) grbEntityCoord[i][0].get(GRB.DoubleAttr.X);
                     entityCoordinates[i][1] = (int) grbEntityCoord[i][1].get(GRB.DoubleAttr.X);
@@ -421,10 +423,21 @@ public class StatementEntitySolution {
                     statementCoordinates[i][0] = (int) grbStatementCoord[i][0].get(GRB.DoubleAttr.X);
                     statementCoordinates[i][1] = (int) grbStatementCoord[i][1].get(GRB.DoubleAttr.X);
                 }
-            } else {
+
+                Solution newSolution = new Solution(w, h, entityCoordinates, statementCoordinates);
+                sols.add(newSolution);
+            } 
+            else {
                 System.out.println("No optimal solution found.");
+
+                GreedySplit splitInst = new GreedySplit(instance);
+                ArrayList<StatementEntityInstance> split = splitInst.findSplit();
+
+                for (StatementEntityInstance inst : split) {
+                    computeILPCoord(inst, sols);
+                }
             }
-            
+
             // Clean up
             model.dispose();
             env.dispose();
@@ -434,28 +447,43 @@ public class StatementEntitySolution {
         }
     }
 
+    // private ArrayList<StatementEntitySolution> splitAndSolve(StatementEntityInstance instance) {
+    //     ArrayList<StatementEntitySolution> solutions = new ArrayList<>();
+    //     GreedySplit splitInst = new GreedySplit(instance);
+    //     ArrayList<StatementEntityInstance> split = splitInst.findSplit();
+
+    //     for (StatementEntityInstance inst : split) {
+    //         StatementEntitySolution solution = new StatementEntitySolution(inst);
+    //         solutions.addAll(solution.computeILPCoord());
+    //     }
+
+    //     return solutions;
+    // }
+
     public static void main(String[] args) {
-        String jsonFilePath = "ILP\\data\\structured_dataset_small.json";
+        String jsonFilePath = "ILP\\data\\structured_dataset.json";
         StatementEntityInstance instance = new StatementEntityInstance(jsonFilePath);
-        StatementEntitySolution solution = new StatementEntitySolution(instance);
-        solution.computeILPCoord();
-        System.out.println("Solution:");
-        System.out.println("w: " + solution.w);
-        System.out.println("h: " + solution.h);
-        for (int i = 0; i < solution.nEntities; i++) {
-            
-        }
+        StatementEntitySolution solution = new StatementEntitySolution();
+        solution.computeILPCoord(instance, new ArrayList<>());
 
-        int i = 0;
-        for (Integer entity : solution.instance.entities.keySet()) {
-            System.out.println("Entity " + instance.entities.get(entity) + ": (" + solution.entityCoordinates[i][0] + ", " + solution.entityCoordinates[i][1] + ") - (" + solution.entityCoordinates[i][2] + ", " + solution.entityCoordinates[i][3] + ")");
-            i++;
-        }
+        System.out.println("Solutions:");
 
-        int j = 0;
-        for (Integer statement : solution.instance.statements.keySet()) {
-            System.out.println("Statement " + instance.statements.get(statement) + ": (" + solution.statementCoordinates[j][0] + ", " + solution.statementCoordinates[j][1] + ")");
-            j++;
+        for (Solution s : solution.solutions) {
+            System.out.println(s.w + " " + s.h);
         }
+        // System.out.println("w: " + solution.w);
+        // System.out.println("h: " + solution.h);
+
+        // int i = 0;
+        // for (Integer entity : solution.instance.entities.keySet()) {
+        //     System.out.println("Entity " + instance.entities.get(entity) + ": (" + solution.entityCoordinates[i][0] + ", " + solution.entityCoordinates[i][1] + ") - (" + solution.entityCoordinates[i][2] + ", " + solution.entityCoordinates[i][3] + ")");
+        //     i++;
+        // }
+
+        // int j = 0;
+        // for (Integer statement : solution.instance.statements.keySet()) {
+        //     System.out.println("Statement " + instance.statements.get(statement) + ": (" + solution.statementCoordinates[j][0] + ", " + solution.statementCoordinates[j][1] + ")");
+        //     j++;
+        // }
     }
 }

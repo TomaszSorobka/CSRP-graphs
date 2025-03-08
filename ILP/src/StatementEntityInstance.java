@@ -83,12 +83,10 @@ public class StatementEntityInstance {
             numberOfStatements = statementArray.length();
             statements = new HashMap<>();
 
-            System.out.println("Statements array has size: " + statementArray.length());
             for (int i = 0; i < statementArray.length(); i++) {
                 JSONObject statementObj = statementArray.getJSONObject(i);
                 int id = statementObj.getInt("id");  // Get statement ID
                 String text = statementObj.getString("text");
-                System.out.println("Statement " + id + ": " + text + "\n successfully added to the map");
                 statements.put(id, text);  // Store using the actual ID
             }
 
@@ -97,12 +95,10 @@ public class StatementEntityInstance {
             numberOfEntities = entityArray.length();
             entities = new HashMap<>();
 
-            System.out.println("Entity array has size: " + entityArray.length());
             for (int i = 0; i < entityArray.length(); i++) {
                 JSONObject entityObj = entityArray.getJSONObject(i);
                 int id = entityObj.getInt("id");  // Get entity ID
                 String name = entityObj.getString("name");
-                System.out.println("Entity " + id + ": " + name + "\n successfully added to the map");
                 entities.put(id, name);  // Store using the actual ID
             }
 

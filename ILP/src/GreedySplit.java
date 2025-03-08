@@ -202,6 +202,7 @@ public class GreedySplit {
 
         // Assign nodes to new components
         for (int i = 0; i < affectedComponent.size(); i++) {
+            // TODO: this sometimes produces a negative index. figure out why and fix it
             int currNodeCompIndex = affectedComponent.get(i).comp - (maxComponent - nrNewComponents + 1);
             newComponents.get(currNodeCompIndex).add(affectedComponent.get(i));
         }
@@ -278,6 +279,8 @@ public class GreedySplit {
     }
 
     public ArrayList<StatementEntityInstance> findSplit() {
+        createGraph();
+
         ArrayList<StatementEntityInstance> result = new ArrayList<>();
 
         // Delete nodes until the graph is disconnected
@@ -385,11 +388,11 @@ public class GreedySplit {
     }
 
     public static void main(String[] args) {
-        String jsonFilePath = "ILP\\data\\structured_dataset_not_so_small.json";
+        String jsonFilePath = "ILP\\data\\structured_dataset.json";
         StatementEntityInstance instance = new StatementEntityInstance(jsonFilePath);
         GreedySplit splitInstance = new GreedySplit(instance);
 
-        splitInstance.createGraph();
+        // splitInstance.createGraph();
         // splitInstance.printGraph();
 
         ArrayList<StatementEntityInstance> split = splitInstance.findSplit();
