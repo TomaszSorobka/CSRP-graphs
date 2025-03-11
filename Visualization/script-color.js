@@ -164,9 +164,17 @@ function assignCategoryColors() {
 }
 
 // New getEntityColor function that simply returns the base color for the category.
-function getEntityColor(category) {
-    return categoryColors[category] || [200, 200, 200];
+function getEntityColor(category, entityIndex, totalCount) {
+    let baseRGB = categoryColors[category] || [200, 200, 200];
+    let [h, s, l] = rgbToHsl(baseRGB);
+    // Define a variation range for lightness (e.g. ±5% each way, so a total range of 10)
+    let variationRange = 20;
+    // Calculate the offset based on the entity's position in the category
+    let offset = totalCount > 1 ? (entityIndex / (totalCount - 1)) * variationRange - (variationRange / 2) : 0;
+    let newL = Math.max(0, Math.min(100, l + offset));
+    return hslToRgb([h, s, newL]);
 }
+
 
 function generateDistinctDarkColors(n) {
     let colors = [];
@@ -226,7 +234,9 @@ function initializeElements() {
         let y2 = entities[i].y2;
         let stmts = entities[i].statements;
         let cat = entities[i].category;
-        let adjustedColor = getEntityColor(cat);
+        let indexInCategory = categoryEntityMap[cat].indexOf(i);
+        let totalInCategory = categoryEntityMap[cat].length;
+        let adjustedColor = getEntityColor(cat, indexInCategory, totalInCategory);
         entityRects[i] = new Entity(id, name, x1, y1, x2, y2, adjustedColor, stmts);
     }
 
