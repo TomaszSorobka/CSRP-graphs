@@ -149,7 +149,7 @@ function generateFarApartDarkColors(n) {
     for (let i = 0; i < n; i++) {
         let hue = (i * 360 / n) % 360;
         // Using saturation 80 and lightness 40 for a dark appearance.
-        colors.push(hslToRgb([hue, 80, 40]));
+        colors.push(hslToRgb([hue, 80, 30]));
     }
     return colors;
 }
@@ -163,17 +163,23 @@ function assignCategoryColors() {
     });
 }
 
-// New getEntityColor function that simply returns the base color for the category.
-function getEntityColor(category, entityIndex, totalCount) {
+// Modified getEntityColor function:
+function getEntityColor(category, entityIndex, totalCount, statementCount) {
     let baseRGB = categoryColors[category] || [200, 200, 200];
     let [h, s, l] = rgbToHsl(baseRGB);
-    // Define a variation range for lightness (e.g. ±5% each way, so a total range of 10)
-    let variationRange = 20;
-    // Calculate the offset based on the entity's position in the category
+    // Vary lightness within a range of ±10 (total 20% variation) based on the entity's position in its category
+    const variationRange = 20;
     let offset = totalCount > 1 ? (entityIndex / (totalCount - 1)) * variationRange - (variationRange / 2) : 0;
-    let newL = Math.max(0, Math.min(100, l + offset));
-    return hslToRgb([h, s, newL]);
+    // Increase brightness and saturation based on extra statements: 3% per extra statement, with caps
+    let brightnessIncrease = (statementCount - 1) * 3;
+    let saturationIncrease = (statementCount - 1) * 3;
+    let newL = Math.min(l + offset + brightnessIncrease, 85); // cap brightness at 85%
+    newL = Math.max(0, newL);
+    let newS = Math.min(s + saturationIncrease, 100); // cap saturation at 100%
+    return hslToRgb([h, newS, newL]);
 }
+
+
 
 
 function generateDistinctDarkColors(n) {
@@ -225,6 +231,7 @@ function initializeElements() {
         categoryEntityMap[e.category].push(idx);
     });
 
+    // Updated part of initializeElements():
     for (var i = 0; i < entities.length; i++) {
         let id = entities[i].id;
         let name = entities[i].name;
@@ -236,7 +243,7 @@ function initializeElements() {
         let cat = entities[i].category;
         let indexInCategory = categoryEntityMap[cat].indexOf(i);
         let totalInCategory = categoryEntityMap[cat].length;
-        let adjustedColor = getEntityColor(cat, indexInCategory, totalInCategory);
+        let adjustedColor = getEntityColor(cat, indexInCategory, totalInCategory, stmts.length);
         entityRects[i] = new Entity(id, name, x1, y1, x2, y2, adjustedColor, stmts);
     }
 
