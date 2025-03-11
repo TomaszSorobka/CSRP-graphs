@@ -154,8 +154,7 @@ public class GreedySplit {
         int largest = 0;
 
         for (int i = 1; i < intersectionGraph.length; i++) {
-            if (!intersectionGraph[i].deleted
-                    && intersectionGraph[i].adj.size() > intersectionGraph[largest].adj.size()) {
+            if (!intersectionGraph[i].deleted && intersectionGraph[i].adj.size() > intersectionGraph[largest].adj.size()) {
                 largest = i;
             }
         }
@@ -184,14 +183,11 @@ public class GreedySplit {
         // Reassign components
         for (Node node : affectedComponent) {
             if (!node.visited && !node.deleted) {
-                dfs(node.id, maxComponent + 1);
+                dfs(getGraphIndexFromId(node.id), maxComponent + 1);
                 maxComponent++;
                 nrNewComponents++;
             }
         }
-
-        // Remove old component from main component list
-        components.remove(affectedComponent);
 
         // Create new component lists
         ArrayList<ArrayList<Node>> newComponents = new ArrayList<>();
@@ -202,10 +198,12 @@ public class GreedySplit {
 
         // Assign nodes to new components
         for (int i = 0; i < affectedComponent.size(); i++) {
-            // TODO: this sometimes produces a negative index. figure out why and fix it
             int currNodeCompIndex = affectedComponent.get(i).comp - (maxComponent - nrNewComponents + 1);
             newComponents.get(currNodeCompIndex).add(affectedComponent.get(i));
         }
+
+        // Remove old component from main component list
+        components.remove(affectedComponent);
 
         // Add new components to main component list
         for (ArrayList<Node> component : newComponents) {
@@ -340,6 +338,7 @@ public class GreedySplit {
                     ArrayList<Integer> shared = findSharedStatements(ent);
                     int[] arr =  shared.stream().mapToInt(k -> k).toArray();
 
+                    statements.addAll(shared);
                     entToSt.put(ent.id, arr);
                 }
             }
@@ -387,6 +386,17 @@ public class GreedySplit {
         }
     }
 
+    public static void recurse(GreedySplit inst, int depth) {
+        System.out.println(depth);
+        ArrayList<StatementEntityInstance> split = inst.findSplit();
+        System.out.println("number of instances " + split.size());
+
+        for (int j = 0; j < split.size(); j++) {
+            GreedySplit splitInst = new GreedySplit(split.get(j));
+            recurse(splitInst, depth + 1);
+        }
+    }
+
     public static void main(String[] args) {
         String jsonFilePath = "ILP\\data\\structured_dataset.json";
         StatementEntityInstance instance = new StatementEntityInstance(jsonFilePath);
@@ -395,19 +405,19 @@ public class GreedySplit {
         // splitInstance.createGraph();
         // splitInstance.printGraph();
 
-        ArrayList<StatementEntityInstance> split = splitInstance.findSplit();
+        recurse(splitInstance, 0);
 
-        for (int i = 0; i < splitInstance.deletedNodes.size(); i++) {
-            System.out.println("DELETED: " + splitInstance.instance.entities.get(splitInstance.deletedNodes.get(i).id));
-        }
+        // for (int i = 0; i < splitInstance.deletedNodes.size(); i++) {
+        //     System.out.println("DELETED: " + splitInstance.instance.entities.get(splitInstance.deletedNodes.get(i).id));
+        // }
 
-        for (StatementEntityInstance statementEntityInstance : split) {
-            GreedySplit newSplit = new GreedySplit(statementEntityInstance);
-            newSplit.createGraph();
+        // for (StatementEntityInstance statementEntityInstance : split) {
+        //     GreedySplit newSplit = new GreedySplit(statementEntityInstance);
+        //     newSplit.createGraph();
 
-            System.out.println("NEW GRAPH");
-            newSplit.printGraph();
-            System.out.println("END OF GRAPH");
-        }
+        //     System.out.println("NEW GRAPH");
+        //     newSplit.printGraph();
+        //     System.out.println("END OF GRAPH");
+        // }
     }
 }

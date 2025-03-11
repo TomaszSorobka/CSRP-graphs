@@ -8,20 +8,6 @@ import com.gurobi.gurobi.GRBException;
 import com.gurobi.gurobi.GRBLinExpr;
 import com.gurobi.gurobi.GRBModel;
 import com.gurobi.gurobi.GRBVar;
-
-class Solution {
-    int w;
-    int h;
-    int[][] entityCoordinates;
-    int[][] statementCoordinates;
-
-    public Solution(int w, int h, int[][] eCoords, int[][] sCoords) {
-        this.w = w;
-        this.h = h;
-        this.entityCoordinates = eCoords;
-        this.statementCoordinates = sCoords;
-    }
-}
 public class StatementEntitySolution {
 
     // StatementEntityInstance instance;
@@ -90,23 +76,31 @@ public class StatementEntitySolution {
     // Method to compute the best solution with ILP
     public void computeILPCoord(StatementEntityInstance instance, ArrayList<Solution> sols) {
         // Setup
-        int nEntities = instance.numberOfEntities;
-        int nStatements = instance.numberOfStatements;
+        final int nEntities = instance.numberOfEntities;
+        final int nStatements = instance.numberOfStatements;
         ArrayList<Integer> entityIds = new ArrayList<>(instance.entities.keySet());
         ArrayList<Integer> statementIds = new ArrayList<>(instance.statements.keySet());
 
+        System.out.println("nStatements " + nStatements);
+        System.out.println("statementIds " + statementIds.size());
+
+        System.out.println("statement ids");
+        for (Integer integer : statementIds) {
+            System.out.println(integer);
+        }
+
         int w;
         int h;
-        int[][] entityCoordinates = new int[nEntities][4];
-        int[][] statementCoordinates = new int[nStatements][2];
+        int[][] entityCoordinates = new int[entityIds.size()][4];
+        int[][] statementCoordinates = new int[statementIds.size()][2];
 
         try {
             GRBEnv env = new GRBEnv();
             GRBModel model = new GRBModel(env);
 
             // Create variables
-            GRBVar[][] grbStatementCoord = new GRBVar[nStatements][2];
-            GRBVar[][] grbEntityCoord = new GRBVar[nEntities][4];
+            GRBVar[][] grbStatementCoord = new GRBVar[statementIds.size()][2];
+            GRBVar[][] grbEntityCoord = new GRBVar[entityIds.size()][4];
 
             for (int i = 0; i < nStatements; i++) {
                 grbStatementCoord[i][0] = model.addVar(0, 20, 0.0, GRB.INTEGER, "s" + i + "_" +  "x");
