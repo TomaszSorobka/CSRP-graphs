@@ -1,423 +1,93 @@
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.stream.Collectors;
-
-class Node {
-    ArrayList<Edge> adj = new ArrayList<>();
-    int id;
-    int comp = -1;
-    boolean deleted = false;
-    boolean visited = false;
-    HashSet<Integer> uniqueStatements = new HashSet<>();
-
-    Node(int id) {
-        this.id = id;
-    }
-
-    public Node copy() {
-        Node copy = new Node(id);
-        copy.comp = this.comp;
-        copy.deleted = this.deleted;
-        copy.visited = this.visited;
-        copy.uniqueStatements = this.uniqueStatements; // same for all copies
-
-        return copy;
-    }
-}
-
-class Edge {
-    // int from;
-    int target;
-    ArrayList<Integer> statements;
-
-    Edge(int target) {
-        this.statements = new ArrayList<>();
-        this.target = target;
-    }
-}
-
 public class GreedySplit {
     StatementEntityInstance instance;
     int nEntities;
     int nStatements;
 
-    Node[] intersectionGraph;
-    ArrayList<ArrayList<Node>> components = new ArrayList<>();
-    int maxComponent = 0;
-    ArrayList<Node> deletedNodes = new ArrayList<>();
-
     public GreedySplit(StatementEntityInstance instance) {
         this.instance = instance;
         nEntities = instance.numberOfEntities;
         nStatements = instance.numberOfStatements;
-
-        intersectionGraph = new Node[nEntities];
     }
 
-    private void initEdge(int entity1, int entity2) {
-        boolean edgeExists = false;
-        for (Edge e : intersectionGraph[getGraphIndexFromId(entity1)].adj) {
-            if (e.target == entity2) {
-                edgeExists = true;
+    public ArrayList<StatementEntityInstance> findSplit(int s, double alpha) {
+        IntersectionGraph graph = new IntersectionGraph(instance);
+        int n = graph.intersectionGraph.length;
+
+        double bestCost = Double.MAX_VALUE;
+        IntersectionGraph bestSplit = graph;
+
+        ArrayList<ArrayList<Integer>> combinations = generateCombinations(n, s);
+
+        for (ArrayList<Integer> combination : combinations) {
+            IntersectionGraph split = new IntersectionGraph(instance);
+
+            split.split(combination);
+            split.merge(alpha);
+            split.addDeletedNodes();
+
+            double cost = cost(split, alpha);
+            if (cost < bestCost) {
+                bestCost = cost;
+                bestSplit = split;
             }
         }
 
-        if (!edgeExists) {
-            intersectionGraph[getGraphIndexFromId(entity1)].adj.add(new Edge(entity2));
-            intersectionGraph[getGraphIndexFromId(entity2)].adj.add(new Edge(entity1));
+        // System.out.println("#components " + bestSplit.components.size());
+        // for (ArrayList<Node> component : bestSplit.components) {
+        //     System.out.println(component.size());
+        // }
+
+        // System.out.println();
+
+        StatementEntityInstance inst = new SplitIntanceFactory(instance, bestSplit).createInstances().get(0);
+        for (int ent : inst.entityIndToStatements.keySet()) {
+            int[] arr = inst.entityIndToStatements.get(ent);
+            System.out.println(inst.entities.get(ent));
+            for (int i = 0; i < arr.length; i++) {
+                System.out.print(" " + arr[i]);
+            }
+            System.out.println();
         }
+
+        return new SplitIntanceFactory(instance, bestSplit).createInstances(); 
     }
 
-    private void addStatement(int entity1, int entity2, int stInd) {
-        for (Edge e : intersectionGraph[getGraphIndexFromId(entity1)].adj) {
-            if (e.target == entity2) {
-                e.statements.add(instance.entityIndToStatements.get(entity1)[stInd]);
-            }
+    public static ArrayList<ArrayList<Integer>> generateCombinations(int n, int s) {
+        ArrayList<ArrayList<Integer>> result = new ArrayList<>();
+        for (int size = 1; size <= s; size++) {
+            backtrack(n, size, 0, new ArrayList<>(), result);
         }
-
-        for (Edge e : intersectionGraph[getGraphIndexFromId(entity2)].adj) {
-            if (e.target == entity1) {
-                e.statements.add(instance.entityIndToStatements.get(entity1)[stInd]);
-            }
-        }
-    }
-
-    public void createEdge(int entity1, int entity2) {
-        // Go through both statement lists
-        for (int k = 0; k < instance.entityIndToStatements.get(entity1).length; k++) {
-            for (int l = 0; l < instance.entityIndToStatements.get(entity2).length; l++) {
-                // They share some statement
-                if (instance.entityIndToStatements.get(entity1)[k] == instance.entityIndToStatements.get(entity2)[l]) {
-                    initEdge(entity1, entity2);
-                    addStatement(entity1, entity2, k);
-                }
-            }
-        }
-    }
-
-    private void createGraph() {
-        int ind = 0;
-        for (Integer entityId : instance.entities.keySet()) {
-            intersectionGraph[ind] = new Node(entityId);
-            ind++;
-        }
-
-        // Create edges
-        List<Integer> keys = new ArrayList<>(instance.entities.keySet()); // Get all keys as a list
-
-        for (int i = 0; i < keys.size(); i++) {
-            for (int j = i + 1; j < keys.size(); j++) {
-                int entity1 = keys.get(i);
-                int entity2 = keys.get(j);
-
-                createEdge(entity1, entity2);
-            }
-        }
-
-        // Initialize components
-        ArrayList<Node> component = new ArrayList<>();
-
-        for (int i = 0; i < nEntities; i++) {
-            component.add(intersectionGraph[i]);
-        }
-
-        components.add(component);
-    }
-
-    private int deleteLargestNode() {
-        int largest = findLargestNode();
-
-        // Delete node
-        deletedNodes.add(intersectionGraph[largest]);
-        intersectionGraph[largest].deleted = true;
-
-        // Remove node from all non deleted adjacency lists
-        for (int i = 0; i < intersectionGraph.length; i++) {
-            if (!intersectionGraph[i].deleted) {
-                for (Edge e : intersectionGraph[i].adj) {
-                    if (e.target == intersectionGraph[largest].id) {
-                        intersectionGraph[i].adj.remove(e);
-                        break;
-                    }
-                }
-            }
-        }
-
-        return largest;
-    }
-
-    private int findLargestNode() {
-        int largest = 0;
-
-        for (int i = 1; i < intersectionGraph.length; i++) {
-            if (!intersectionGraph[i].deleted && intersectionGraph[i].adj.size() > intersectionGraph[largest].adj.size()) {
-                largest = i;
-            }
-        }
-
-        return largest;
-    }
-
-    private void recomputeComponents(int deletedIndex) {
-        ArrayList<Node> affectedComponent = new ArrayList<>();
-
-        // Find component of deleted node
-        for (ArrayList<Node> comp : components) {
-            if (comp.contains(intersectionGraph[deletedIndex])) {
-                comp.remove(intersectionGraph[deletedIndex]);
-                affectedComponent = comp;
-            }
-        }
-
-        // Restart dfs
-        for (Node node : affectedComponent) {
-            node.visited = false;
-        }
-
-        int nrNewComponents = 0;
-
-        // Reassign components
-        for (Node node : affectedComponent) {
-            if (!node.visited && !node.deleted) {
-                dfs(getGraphIndexFromId(node.id), maxComponent + 1);
-                maxComponent++;
-                nrNewComponents++;
-            }
-        }
-
-        // Create new component lists
-        ArrayList<ArrayList<Node>> newComponents = new ArrayList<>();
-
-        for (int i = 0; i < nrNewComponents; i++) {
-            newComponents.add(new ArrayList<>());
-        }
-
-        // Assign nodes to new components
-        for (int i = 0; i < affectedComponent.size(); i++) {
-            int currNodeCompIndex = affectedComponent.get(i).comp - (maxComponent - nrNewComponents + 1);
-            newComponents.get(currNodeCompIndex).add(affectedComponent.get(i));
-        }
-
-        // Remove old component from main component list
-        components.remove(affectedComponent);
-
-        // Add new components to main component list
-        for (ArrayList<Node> component : newComponents) {
-            components.add(component);
-        }
-    }
-
-    private void dfs(int node, int component) {
-        if (intersectionGraph[node].visited)
-            return;
-        if (intersectionGraph[node].deleted)
-            return;
-
-        intersectionGraph[node].visited = true;
-        intersectionGraph[node].comp = component;
-
-        for (Edge e : intersectionGraph[node].adj) {
-            dfs(getGraphIndexFromId(e.target), component);
-        }
-    }
-
-    private ArrayList<Integer> findSharedStatements(Node node) {
-        // Get only statements shared with another entity
-        ArrayList<Integer> sharedStatements = new ArrayList<>();
-
-        // Fill the shared statements list
-        for (Edge e : node.adj) {
-            sharedStatements.addAll(e.statements);
-        }
-
-        return sharedStatements;
-    }
-
-    private void findUniqueStatements(Node node) {
-        // Get all statements of this node
-        int[] allStatements = instance.entityIndToStatements.get(node.id);
-        // Get only statements shared with another entity
-        ArrayList<Integer> sharedStatements = findSharedStatements(node);
-
-        // Get all statement which are only in this entity
-        for (int i = 0; i < allStatements.length; i++) {
-            if (!sharedStatements.contains(allStatements[i])) {
-                node.uniqueStatements.add(allStatements[i]);
-            }
-        }
-    }
-
-    private StatementEntityInstance findSmallestInstance(ArrayList<StatementEntityInstance> instances) {
-        int minStatements = Integer.MAX_VALUE;
-        StatementEntityInstance smallestInstance = null;
-
-        for (StatementEntityInstance inst : instances) {
-            if (inst.statements.size() < minStatements) {
-                minStatements = inst.statements.size();
-                smallestInstance = inst;
-            }
-        }
-
-        return smallestInstance;
-    }
-
-    private int getGraphIndexFromId(int id) {
-        for (int i = 0; i < intersectionGraph.length; i++) {
-            if (intersectionGraph[i].id == id) {
-                return i;
-            }
-        }
-
-        System.out.println("you fucked up");
-        return -1;
-    }
-
-    public ArrayList<StatementEntityInstance> findSplit() {
-        createGraph();
-
-        ArrayList<StatementEntityInstance> result = new ArrayList<>();
-
-        // Delete nodes until the graph is disconnected
-        while (components.size() == 1) {
-            int deletedNode = deleteLargestNode();
-            recomputeComponents(deletedNode);
-        }
-
-        // Add a copy of each deleted node to each component
-        for (Node node : deletedNodes) {
-            findUniqueStatements(node);
-
-            for (ArrayList<Node> component : components) {
-                component.add(node.copy());
-
-                // Remove edges outside of the component
-                for (Edge e : component.get(component.size() - 1).adj) {
-                    if (!component.contains(intersectionGraph[getGraphIndexFromId(e.target)])) {
-                        component.get(component.size() - 1).adj.remove(e);
-                    }
-                }
-            }
-        }
-
-        for (ArrayList<Node> component : components) {
-            // Store all entities in this component
-            int[] entities = new int[component.size()];
-
-            // Store all statements in this component
-            HashSet<Integer> statements = new HashSet<>();
-
-            // Store the entity-statement map for this component
-            HashMap<Integer, int[]> entToSt = new HashMap<>();
-
-            for (int i = 0; i < component.size(); i++) {
-                // Add each entity
-                Node ent = component.get(i);
-                entities[i] = ent.id;
-
-                // For non deleted nodes get their statements from the instance
-                if (!ent.deleted) {
-                    // Add the statements of this entity to the map of this component
-                    int[] arr = instance.entityIndToStatements.get(ent.id);
-                    entToSt.put(ent.id, arr);
-
-                    // Convert the statement array to an ArrayList (to be added to the hashset)
-                    ArrayList<Integer> entStatements = new ArrayList<>();
-                    for (int j = 0; j < arr.length; j++) {
-                        entStatements.add(arr[j]);
-                    }
-
-                    // Add to global statement list for this component
-                    statements.addAll(entStatements);
-                }
-                // For deleted nodes add only their shared statements to the instance
-                else {
-                    ArrayList<Integer> shared = findSharedStatements(ent);
-                    int[] arr =  shared.stream().mapToInt(k -> k).toArray();
-
-                    statements.addAll(shared);
-                    entToSt.put(ent.id, arr);
-                }
-            }
-
-            int[] stArr = statements.stream().mapToInt(Integer::intValue).toArray();
-
-            StatementEntityInstance inst = new StatementEntityInstance(entities, stArr, entToSt, instance);
-            result.add(inst);
-
-        }
-
-        // Sort deleted nodes in decreasing order based on number of unique statements
-        Collections.sort(deletedNodes, (o1, o2) -> (Integer.compare(o2.uniqueStatements.size(), o1.uniqueStatements.size())));
-
-        // Add statements contained only in deleted nodes to the smallest new instance
-        for (Node node : deletedNodes) {
-            // Find the current smallest instance
-            StatementEntityInstance smallestInstance = findSmallestInstance(result);
-            
-            // Create a map of the statements unique to this deleted node
-            HashMap<Integer, String> uniqueStatementMap = new HashMap<>();
-
-            // Fill the map
-            for (Integer statementId : node.uniqueStatements) {
-                String text = instance.statements.get(statementId);
-                uniqueStatementMap.put(statementId, text);
-            }
-
-            // Add the statements from the map to the smallest instance
-            smallestInstance.statements.putAll(uniqueStatementMap);
-        }
-
         return result;
     }
 
-    public void printGraph() {
-        for (int i = 0; i < intersectionGraph.length; i++) {
-            System.out.println(instance.entities.get(intersectionGraph[i].id) + " connects to ");
-
-            for (int j = 0; j < intersectionGraph[i].adj.size(); j++) {
-                System.out.print(instance.entities.get(intersectionGraph[i].adj.get(j).target) + " ");
-            }
-
-            System.out.println("end of this entity \n");
+    private static void backtrack(int n, int size, int start, ArrayList<Integer> current, ArrayList<ArrayList<Integer>> result) {
+        if (current.size() == size) {
+            result.add(new ArrayList<>(current));
+            return;
+        }
+        
+        for (int i = start; i < n; i++) {
+            current.add(i);
+            backtrack(n, size, i + 1, current, result);
+            current.remove(current.size() - 1);
         }
     }
 
-    public static void recurse(GreedySplit inst, int depth) {
-        System.out.println(depth);
-        ArrayList<StatementEntityInstance> split = inst.findSplit();
-        System.out.println("number of instances " + split.size());
+    private double cost(IntersectionGraph graph, double alpha) {
+        if (graph.components.size() == 1) return Double.MAX_VALUE;
 
-        for (int j = 0; j < split.size(); j++) {
-            GreedySplit splitInst = new GreedySplit(split.get(j));
-            recurse(splitInst, depth + 1);
+        double cost = 0;
+        cost += 2 * graph.components.size();
+        cost += graph.deletedNodes.size();
+
+        int w = 3;
+        int maxAllowed = (int) Math.floor((1 - alpha) * graph.intersectionGraph.length);
+
+        for (ArrayList<Node> component : graph.components) {
+            if (component.size() > maxAllowed) cost += w;
         }
-    }
 
-    public static void main(String[] args) {
-        String jsonFilePath = "ILP\\data\\structured_dataset.json";
-        StatementEntityInstance instance = new StatementEntityInstance(jsonFilePath);
-        GreedySplit splitInstance = new GreedySplit(instance);
-
-        // splitInstance.createGraph();
-        // splitInstance.printGraph();
-
-        recurse(splitInstance, 0);
-
-        // for (int i = 0; i < splitInstance.deletedNodes.size(); i++) {
-        //     System.out.println("DELETED: " + splitInstance.instance.entities.get(splitInstance.deletedNodes.get(i).id));
-        // }
-
-        // for (StatementEntityInstance statementEntityInstance : split) {
-        //     GreedySplit newSplit = new GreedySplit(statementEntityInstance);
-        //     newSplit.createGraph();
-
-        //     System.out.println("NEW GRAPH");
-        //     newSplit.printGraph();
-        //     System.out.println("END OF GRAPH");
-        // }
+        return cost;
     }
 }

@@ -1,0 +1,8 @@
+w: 1
+h: 1
+Entity Mr. Kelley: (0, 0) - (1, 0)
+Entity Park: (0, 0) - (0, 0)
+Entity 1:30 a.m.: (1, 0) - (1, 0)
+Statement It was obvious from the condition of Mr. Kelley's body that it has been dragged a long distance.: (0, 1)
+Statement Mr. Kelley's body was found in the park.: (0, 0)
+Statement Mr. Kelley's body was found at 1:30 a.m.: (1, 0)
