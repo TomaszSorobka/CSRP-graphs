@@ -267,7 +267,6 @@ public class IntersectionGraph {
 
         // Track current component size interval
         int minCompSize = components.get(0).size();
-        int maxCompSize = components.get(components.size() - 1).size();
 
         // Merge until all components are within the allowed range (except components that are too large even initially)
         while (minCompSize < minAllowed && components.size() > 2) {

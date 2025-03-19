@@ -3,7 +3,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import com.gurobi.gurobi.GRB;
 import com.gurobi.gurobi.GRBEnv;
@@ -122,7 +121,7 @@ public class StatementEntitySolution {
             }
 
             /*********************************************************************************************************
-             * CONSTRAINTS *
+             *                                             CONSTRAINTS                                               *
              *********************************************************************************************************/
 
             // All coordinates are non-negative (H0)
@@ -135,20 +134,6 @@ public class StatementEntitySolution {
                     model.addConstr(grbEntityCoord[i][j], GRB.GREATER_EQUAL, 0, "H0_e_" + i + "_" + j);
                 }
             }
-
-            // // coordinates make sense (H00.5)
-            // for (int i = 0; i < nEntities; i++) {
-            //     GRBLinExpr expr = new GRBLinExpr();
-            //     expr.addTerm(1.0, grbEntityCoord[i][2]);
-            //     expr.addTerm(-1.0, grbEntityCoord[i][0]);
-            //     model.addConstr(expr, GRB.GREATER_EQUAL, 0, "H00.5_" + i + "_x");
-
-                
-            //     expr = new GRBLinExpr();
-            //     expr.addTerm(1.0, grbEntityCoord[i][3]);
-            //     expr.addTerm(-1.0, grbEntityCoord[i][1]);
-            //     model.addConstr(expr, GRB.GREATER_EQUAL, 0, "H00.5_" + i + "_y");
-            // }
 
             // All coordinates are at most 4 / Restrict solution size (H00)
             for (int i = 0; i < nStatements; i++) {
@@ -424,7 +409,7 @@ public class StatementEntitySolution {
 
             // Check if the optimization was interrupted or completed
             if (status == GRB.Status.OPTIMAL) {
-                
+
                 // Extract solution
                 w = (int) maxWidth.get(GRB.DoubleAttr.X);
                 h = (int) maxHeight.get(GRB.DoubleAttr.X);

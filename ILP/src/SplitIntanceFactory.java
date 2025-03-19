@@ -70,6 +70,7 @@ public class SplitIntanceFactory {
     }
 
     private ArrayList<StatementEntityInstance> handleDeletedNodeStatements(ArrayList<StatementEntityInstance> result) {
+        // Find the unique statements of all deleted nodes
         for (Node node : graph.deletedNodes) {
             findUniqueStatements(node);
         }
@@ -94,6 +95,26 @@ public class SplitIntanceFactory {
             // Add the statements from the map to the smallest instance
             smallestInstance.statements.putAll(uniqueStatementMap);
             smallestInstance.numberOfStatements = smallestInstance.statements.keySet().size();
+
+            // Get arrays for the unique and shared statements of this node
+            int[] uniqueArr = node.uniqueStatements.stream().mapToInt(Integer::intValue).toArray();
+            int[] sharedArr = smallestInstance.entityIndToStatements.get(node.id);
+
+            // Make a combined array
+            int[] combinedArr = new int[uniqueArr.length + sharedArr.length];
+
+            // Add all shared statements to combined array
+            for (int i = 0; i < sharedArr.length; i++) {
+                combinedArr[i] = sharedArr[i];
+            }
+
+            // Add all unique statements to combined array
+            for (int i = sharedArr.length; i < combinedArr.length; i++) {
+                combinedArr[i] = uniqueArr[i - sharedArr.length];
+            }
+
+            // Replace the old (shared) array in the instance's statement-entity map with the combined array
+            smallestInstance.entityIndToStatements.put(node.id, combinedArr);
         }
 
         return result;
