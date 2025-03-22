@@ -402,37 +402,7 @@ public class StatementEntitySolution {
             // Set the time limit for the optimization (in seconds)
             // model.set(GRB.DoubleParam.TimeLimit, 30.0);
 
-            model.optimize();
-
-            // Check if the optimization was interrupted or completed successfully
-            int status = model.get(GRB.IntAttr.Status);
-
-            // Check if the optimization was interrupted or completed
-            if (status == GRB.Status.OPTIMAL) {
-
-                // Extract solution
-                w = (int) maxWidth.get(GRB.DoubleAttr.X);
-                h = (int) maxHeight.get(GRB.DoubleAttr.X);
-
-                for (int i = 0; i < nEntities; i++) {
-                    entityCoordinates[i][0] = (int) grbEntityCoord[i][0].get(GRB.DoubleAttr.X);
-                    entityCoordinates[i][1] = (int) grbEntityCoord[i][1].get(GRB.DoubleAttr.X);
-                    entityCoordinates[i][2] = (int) grbEntityCoord[i][2].get(GRB.DoubleAttr.X);
-                    entityCoordinates[i][3] = (int) grbEntityCoord[i][3].get(GRB.DoubleAttr.X);
-                }
-
-                for (int i = 0; i < nStatements; i++) {
-                    statementCoordinates[i][0] = (int) grbStatementCoord[i][0].get(GRB.DoubleAttr.X);
-                    statementCoordinates[i][1] = (int) grbStatementCoord[i][1].get(GRB.DoubleAttr.X);
-                }
-
-                Solution newSolution = new Solution(w, h, entityCoordinates, statementCoordinates);
-                sols.add(newSolution);
-
-                saveSolutionToFile(newSolution, instance, "Visualization/Solutions/component_" + sols.size() + ".txt");
-            } else {
-                System.out.println("No optimal solution found.");
-
+            if (nStatements > 25) {
                 GreedySplit splitInst = new GreedySplit(instance);
                 ArrayList<StatementEntityInstance> split = splitInst.findSplit(5, 1.0 / 3);
 
@@ -440,10 +410,50 @@ public class StatementEntitySolution {
                     computeILPCoord(inst, sols);
                 }
             }
+            else {
+                model.optimize();
 
-            // Clean up
-            model.dispose();
-            env.dispose();
+                // Check if the optimization was interrupted or completed successfully
+                int status = model.get(GRB.IntAttr.Status);
+
+                // Check if the optimization was interrupted or completed
+                if (status == GRB.Status.OPTIMAL) {
+
+                    // Extract solution
+                    w = (int) maxWidth.get(GRB.DoubleAttr.X);
+                    h = (int) maxHeight.get(GRB.DoubleAttr.X);
+
+                    for (int i = 0; i < nEntities; i++) {
+                        entityCoordinates[i][0] = (int) grbEntityCoord[i][0].get(GRB.DoubleAttr.X);
+                        entityCoordinates[i][1] = (int) grbEntityCoord[i][1].get(GRB.DoubleAttr.X);
+                        entityCoordinates[i][2] = (int) grbEntityCoord[i][2].get(GRB.DoubleAttr.X);
+                        entityCoordinates[i][3] = (int) grbEntityCoord[i][3].get(GRB.DoubleAttr.X);
+                    }
+
+                    for (int i = 0; i < nStatements; i++) {
+                        statementCoordinates[i][0] = (int) grbStatementCoord[i][0].get(GRB.DoubleAttr.X);
+                        statementCoordinates[i][1] = (int) grbStatementCoord[i][1].get(GRB.DoubleAttr.X);
+                    }
+
+                    Solution newSolution = new Solution(w, h, entityCoordinates, statementCoordinates);
+                    sols.add(newSolution);
+
+                    saveSolutionToFile(newSolution, instance, "Visualization/Solutions/component_" + sols.size() + ".txt");
+                } else {
+                    System.out.println("No optimal solution found.");
+
+                    GreedySplit splitInst = new GreedySplit(instance);
+                    ArrayList<StatementEntityInstance> split = splitInst.findSplit(5, 1.0 / 3);
+
+                    for (StatementEntityInstance inst : split) {
+                        computeILPCoord(inst, sols);
+                    }
+                }
+
+                // Clean up
+                model.dispose();
+                env.dispose();
+            }
 
         } catch (GRBException e) {
             System.out.println("Error code: " + e.getErrorCode() + ". " + e.getMessage());

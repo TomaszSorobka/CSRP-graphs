@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
@@ -71,19 +72,19 @@ public class Test {
         // test.add(node3);
 
         // test.remove(node2);
-        System.out.println("-- SET --");
-        for (Integer string : set) {
-            System.out.println(string);
-        }
-        System.out.println("set size: " + set.size());
+        // System.out.println("-- SET --");
+        // for (Integer string : set) {
+        //     System.out.println(string);
+        // }
+        // System.out.println("set size: " + set.size());
 
-        int[] stArr = set.stream().mapToInt(Integer::intValue).toArray();
+        // int[] stArr = set.stream().mapToInt(Integer::intValue).toArray();
         
-        System.out.println("-- Array --");
-        for (int i = 0; i < stArr.length; i++) {
-            System.out.println(stArr[i]);
-        }
-        System.out.println("array size: " + stArr.length);
+        // System.out.println("-- Array --");
+        // for (int i = 0; i < stArr.length; i++) {
+        //     System.out.println(stArr[i]);
+        // }
+        // System.out.println("array size: " + stArr.length);
 
         int[] dup = {1, 1, 2};
         int[] unique = removeDuplicates(dup);
@@ -95,14 +96,36 @@ public class Test {
         //     System.out.println(arrayList);
         // }
 
-        ArrayList<Node> nodeList = new ArrayList<>();
-        nodeList.add(new Node(0));
-        nodeList.add(new Node(1));
-        nodeList.add(new Node(5));
-        nodeList.add(new Node(4));
-        nodeList.add(new Node(7));
+        // ArrayList<Node> nodeList = new ArrayList<>();
+        // nodeList.add(new Node(0));
+        // nodeList.add(new Node(1));
+        // nodeList.add(new Node(5));
+        // nodeList.add(new Node(4));
+        // nodeList.add(new Node(7));
 
-        System.out.println(containsId(90, nodeList));
+        // System.out.println(containsId(90, nodeList));
+
+        // int[] oldArray = {1, 2, 3};
+
+        // // Create a new array with one more slot
+        // int[] newArray = Arrays.copyOf(oldArray, oldArray.length + 1);
+
+        // // Add the new element at the end
+        // newArray[oldArray.length] = 4;
+
+        // // Output: [a, b, c, d]
+        // System.out.println(Arrays.toString(newArray));
+
+        // Get arrays for the unique and shared statements of this node
+        int[] uniqueArr = {1, 2, 3};
+        int[] sharedArr = {100, 200, 300};
+
+        // Make a combined array
+        int[] combinedArr = Arrays.copyOf(sharedArr, sharedArr.length + uniqueArr.length);
+
+        System.arraycopy(uniqueArr, 0, combinedArr, sharedArr.length, uniqueArr.length);
+
+        System.out.println(Arrays.toString(combinedArr));
 
         // System.out.println(result.size());
         // Solution sol = new Solution(0, 0, null, null);

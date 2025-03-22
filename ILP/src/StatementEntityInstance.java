@@ -122,9 +122,9 @@ public class StatementEntityInstance {
         }
     }
 
-    public StatementEntityInstance(int[] entities, int[] _statements, HashMap<Integer, int[]> entityStatements, StatementEntityInstance inst) {
+    public StatementEntityInstance(int[] entities, int[] statements, HashMap<Integer, int[]> entityStatements, StatementEntityInstance inst) {
         numberOfEntities = entities.length;
-        numberOfStatements = _statements.length;
+        numberOfStatements = statements.length;
 
         // Add entities
         this.entities = new HashMap<>();
@@ -138,8 +138,8 @@ public class StatementEntityInstance {
         this.statements = new HashMap<>();
 
         for (int i = 0; i < numberOfStatements; i++) {
-            String text = inst.statements.get(_statements[i]);
-            this.statements.put(_statements[i], text);
+            String text = inst.statements.get(statements[i]);
+            this.statements.put(statements[i], text);
         }
 
         // Add entity to statement map

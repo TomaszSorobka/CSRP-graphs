@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -7,10 +8,12 @@ import java.util.LinkedHashSet;
 public class SplitIntanceFactory {
     StatementEntityInstance parentInstance;
     IntersectionGraph graph;
+    ArrayList<Integer> addedStatements;
 
     SplitIntanceFactory(StatementEntityInstance instance, IntersectionGraph graph) {
         this.parentInstance = instance;
         this.graph = graph;
+        this.addedStatements = new ArrayList<>();
     }
 
     public ArrayList<StatementEntityInstance> createInstances() {
@@ -44,13 +47,14 @@ public class SplitIntanceFactory {
                         entStatements.add(uniqueArr[j]);
                     }
 
-                    // Add to global statement list for this component
+                    // Add to statement list for this component
                     statements.addAll(entStatements);
                 }
+                // TODO i don't think this else is necessary because it adds shared statements between a deleted and a non deleted node but all those statements are in a non deleted node so they should have been added already
                 // For deleted nodes add only their shared statements to the instance
                 else {
-                    ArrayList<Integer> shared = findSharedStatements(ent, component);
-                    int[] arr =  shared.stream().mapToInt(k -> k).toArray();
+                    ArrayList<Integer> shared = findSharedStatements(ent, component, false);
+                    int[] arr = shared.stream().mapToInt(k -> k).toArray();
                     int[] uniqueArr = removeDuplicates(arr);
 
                     statements.addAll(shared);
@@ -58,21 +62,64 @@ public class SplitIntanceFactory {
                 }
             }
 
-            int[] stArr = statements.stream().mapToInt(Integer::intValue).toArray();
+            // Add to global statement list for this class
+            addedStatements.addAll(statements);
 
+            // Create statement array
+            int[] stArr = statements.stream().mapToInt(Integer::intValue).toArray();
+            // Create instance
             StatementEntityInstance inst = new StatementEntityInstance(entities, stArr, entToSt, parentInstance);
             result.add(inst);
         }
 
-        result = handleDeletedNodeStatements(result);
+        return handleDeletedNodeStatements(result);
+    }
+
+    private ArrayList<StatementEntityInstance> handleDeletedNodeStatements(ArrayList<StatementEntityInstance> result) {
+        // Add shared statements between deleted nodes
+        addSharedStatementsBetweenDeletedNodes(result);
+
+        // Add the unique statements
+        addUniqueDeletedNodeStatements(result);
 
         return result;
     }
 
-    private ArrayList<StatementEntityInstance> handleDeletedNodeStatements(ArrayList<StatementEntityInstance> result) {
+    private void addSharedStatementsBetweenDeletedNodes(ArrayList<StatementEntityInstance> result) {
+        for (DeletedNodeGroup group : graph.helper.groups) {
+            for (Integer statementId : group.statements) {
+                if (!addedStatements.contains(statementId)) {
+                    
+                    addedStatements.add(statementId);
+
+                    StatementEntityInstance smallestInstance = findSmallestSharedInstance(result, group.entities);
+
+                    String text = parentInstance.statements.get(statementId);
+                    smallestInstance.statements.put(statementId, text);
+                    smallestInstance.numberOfStatements = smallestInstance.statements.keySet().size();
+
+                    for (Integer entity : group.entities) {
+                        int[] currentStatements = smallestInstance.entityIndToStatements.get(entity);
+
+                        int[] updatedStatements = Arrays.copyOf(currentStatements, currentStatements.length + 1);
+                        updatedStatements[currentStatements.length] = statementId;
+
+                        // Replace the old (shared) array in the instance's statement-entity map with the combined array
+                        smallestInstance.entityIndToStatements.put(entity, updatedStatements);
+                    }
+                }
+            }
+        }
+    }
+
+    // Add the statements unique to some deleted node to the smallest instance
+    private void addUniqueDeletedNodeStatements(ArrayList<StatementEntityInstance> result) {
         // Find the unique statements of all deleted nodes
         for (Node node : graph.deletedNodes) {
             findUniqueStatements(node);
+
+            // Add to global statement list for this class
+            addedStatements.addAll(node.uniqueStatements);
         }
 
         // Sort deleted nodes in decreasing order based on number of unique statements
@@ -82,7 +129,7 @@ public class SplitIntanceFactory {
         for (Node node : graph.deletedNodes) {
             // Find the current smallest instance
             StatementEntityInstance smallestInstance = findSmallestInstance(result);
-            
+
             // Create a map of the statements unique to this deleted node
             HashMap<Integer, String> uniqueStatementMap = new HashMap<>();
 
@@ -101,51 +148,45 @@ public class SplitIntanceFactory {
             int[] sharedArr = smallestInstance.entityIndToStatements.get(node.id);
 
             // Make a combined array
-            int[] combinedArr = new int[uniqueArr.length + sharedArr.length];
+            int[] combinedArr = Arrays.copyOf(sharedArr, sharedArr.length + uniqueArr.length);
 
-            // Add all shared statements to combined array
-            for (int i = 0; i < sharedArr.length; i++) {
-                combinedArr[i] = sharedArr[i];
-            }
-
-            // Add all unique statements to combined array
-            for (int i = sharedArr.length; i < combinedArr.length; i++) {
-                combinedArr[i] = uniqueArr[i - sharedArr.length];
-            }
+            System.arraycopy(uniqueArr, 0, combinedArr, sharedArr.length, uniqueArr.length);
 
             // Replace the old (shared) array in the instance's statement-entity map with the combined array
             smallestInstance.entityIndToStatements.put(node.id, combinedArr);
         }
-
-        return result;
     }
 
     private static int[] removeDuplicates(int[] arr) {
         LinkedHashSet<Integer> set = new LinkedHashSet<>();
-        
+
         // Add elements to LinkedHashSet to remove duplicates
         for (int num : arr) {
             set.add(num);
         }
-        
+
         // Convert the set back to an int array
         int[] uniqueArray = new int[set.size()];
         int i = 0;
         for (int num : set) {
             uniqueArray[i++] = num;
         }
-        
+
         return uniqueArray;
     }
 
-    private ArrayList<Integer> findSharedStatements(Node node, ArrayList<Node> component) {
+    private ArrayList<Integer> findSharedStatements(Node node, ArrayList<Node> component, boolean includeDeleted) {
         // Get only statements shared with another entity
         ArrayList<Integer> sharedStatements = new ArrayList<>();
 
         // Fill the shared statements list
         for (Edge e : node.adj) {
             // Check if the copy in this component should have this edge
-            if (IntersectionGraph.containsId(e.target, component)) {
+            if (includeDeleted && IntersectionGraph.containsId(e.target, component)) {
+                sharedStatements.addAll(e.statements);
+            }
+            else if (!includeDeleted && IntersectionGraph.containsId(e.target, component) 
+                                    && !graph.intersectionGraph[graph.getGraphIndexFromId(e.target)].deleted) {
                 sharedStatements.addAll(e.statements);
             }
         }
@@ -159,7 +200,7 @@ public class SplitIntanceFactory {
         // Get only statements shared with another entity
         ArrayList<Integer> sharedStatements = new ArrayList<>();
         for (ArrayList<Node> component : graph.components) {
-            sharedStatements.addAll(findSharedStatements(node, component));
+            sharedStatements.addAll(findSharedStatements(node, component, true));
         }
 
         // Get all statement which are only in this entity
@@ -182,5 +223,18 @@ public class SplitIntanceFactory {
         }
 
         return smallestInstance;
+    }
+
+    private StatementEntityInstance findSmallestSharedInstance(ArrayList<StatementEntityInstance> instances, ArrayList<Integer> nodes) {
+        ArrayList<StatementEntityInstance> sharedInstances = new ArrayList<>();
+        for (StatementEntityInstance inst : instances) {
+            if (inst.entities.keySet().containsAll(nodes)) {
+                sharedInstances.add(inst);
+            }
+        }   
+
+        if (sharedInstances.isEmpty()) return null;
+
+        return findSmallestInstance(sharedInstances);
     }
 }

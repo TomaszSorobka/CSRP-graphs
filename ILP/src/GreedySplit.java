@@ -43,23 +43,6 @@ public class GreedySplit {
             }
         }
 
-        // System.out.println("#components " + bestSplit.components.size());
-        // for (ArrayList<Node> component : bestSplit.components) {
-        //     System.out.println(component.size());
-        // }
-
-        // System.out.println();
-
-        StatementEntityInstance inst = new SplitIntanceFactory(instance, bestSplit).createInstances().get(0);
-        for (int ent : inst.entityIndToStatements.keySet()) {
-            int[] arr = inst.entityIndToStatements.get(ent);
-            System.out.println(inst.entities.get(ent));
-            for (int i = 0; i < arr.length; i++) {
-                System.out.print(" " + arr[i]);
-            }
-            System.out.println();
-        }
-
         // Return a set of instances for the components of the best split
         return new SplitIntanceFactory(instance, bestSplit).createInstances(); 
     }
@@ -91,7 +74,7 @@ public class GreedySplit {
         if (graph.components.size() == 1) return Double.MAX_VALUE;
 
         double cost = 0;
-        cost += (3 * graph.components.size());
+        cost += graph.components.size();
         cost += graph.deletedNodes.size();
 
         int w = 5;
