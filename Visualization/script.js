@@ -535,6 +535,14 @@ function setCanvasDimensions() {
 
     canvas.width = w * cellWidth * backgroundCellSize + rowGapSum * backgroundCellSize;
     canvas.height = sumHeights * backgroundCellSize + columnGapSum * backgroundCellSize;
+
+    const rect = canvas.getBoundingClientRect();
+
+    if (rect.left < 10 || rect.top < 30) {
+        canvas.style.top = '0px';
+        canvas.style.left = '0px';
+        canvas.style.transform = 'none';
+    }
 }
 
 function drawBackgroundGrid() {
