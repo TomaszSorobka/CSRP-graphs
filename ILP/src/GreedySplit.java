@@ -1,16 +1,20 @@
 import java.util.ArrayList;
+
 public class GreedySplit {
     StatementEntityInstance instance;
     int nEntities;
     int nStatements;
+    ArrayList<Integer> deletedEntities;
 
     public GreedySplit(StatementEntityInstance instance) {
         this.instance = instance;
-        nEntities = instance.numberOfEntities;
-        nStatements = instance.numberOfStatements;
+        this.nEntities = instance.numberOfEntities;
+        this.nStatements = instance.numberOfStatements;
+        this.deletedEntities = new ArrayList<>();
     }
 
-    // Try all possible splits by deleting up to s nodes and return a set of instances for the one with minimal cost
+    // Try all possible splits by deleting up to s nodes and return a set of
+    // instances for the one with minimal cost
     public ArrayList<StatementEntityInstance> findSplit(int s, double alpha) {
         // Make an intersection graph for the parent instance
         IntersectionGraph graph = new IntersectionGraph(instance);
@@ -21,20 +25,24 @@ public class GreedySplit {
         IntersectionGraph bestSplit = graph;
 
         // Get all possible combinations of deleted nodes
-        ArrayList<ArrayList<Integer>> combinations = generateCombinations(n, s);
+        ArrayList<ArrayList<Integer>> combinations = generateCombinations(n,
+                Math.min(s, instance.numberOfEntities - 1));
 
         // For each combination make the split and evaluate its cost
         for (ArrayList<Integer> combination : combinations) {
             // Make a new graph
             IntersectionGraph split = new IntersectionGraph(instance);
+            int initSize = split.components.size();
 
             // Make the split
             split.split(combination);
+
             split.merge(alpha);
+
             split.addDeletedNodes();
 
             // Evaluate the cost of the split
-            double cost = cost(split, alpha);
+            double cost = cost(split, alpha, initSize);
 
             // Store the split with minimal cost
             if (cost < bestCost) {
@@ -43,8 +51,17 @@ public class GreedySplit {
             }
         }
 
+        getDeletedEntities(bestSplit);
         // Return a set of instances for the components of the best split
-        return new SplitIntanceFactory(instance, bestSplit).createInstances(); 
+        return new SplitIntanceFactory(instance, bestSplit).createInstances();
+    }
+
+    // Create an array list containing the indices of the deleted nodes from this
+    // split
+    private void getDeletedEntities(IntersectionGraph graph) {
+        for (Node deletedNode : graph.deletedNodes) {
+            deletedEntities.add(deletedNode.id);
+        }
     }
 
     public static ArrayList<ArrayList<Integer>> generateCombinations(int n, int s) {
@@ -55,12 +72,13 @@ public class GreedySplit {
         return result;
     }
 
-    private static void backtrack(int n, int size, int start, ArrayList<Integer> current, ArrayList<ArrayList<Integer>> result) {
+    private static void backtrack(int n, int size, int start, ArrayList<Integer> current,
+            ArrayList<ArrayList<Integer>> result) {
         if (current.size() == size) {
             result.add(new ArrayList<>(current));
             return;
         }
-        
+
         for (int i = start; i < n; i++) {
             current.add(i);
             backtrack(n, size, i + 1, current, result);
@@ -68,10 +86,12 @@ public class GreedySplit {
         }
     }
 
-    private double cost(IntersectionGraph graph, double alpha) {
+    private double cost(IntersectionGraph graph, double alpha, int initSize) {
         // Do not consider "splits" that do not actually split the graph
-        // TODO should it instead be compared to the number of components in the parent instance graph in case that one is already disconnected?
-        if (graph.components.size() == 1) return Double.MAX_VALUE;
+        // TODO should it instead be compared to the number of components in the parent
+        // instance graph in case that one is already disconnected?
+        if (graph.components.size() == 1)
+            return Double.MAX_VALUE;
 
         double cost = 0;
         cost += graph.components.size();
@@ -81,7 +101,8 @@ public class GreedySplit {
         int maxAllowed = (int) Math.floor((1 - alpha) * graph.intersectionGraph.length);
 
         for (ArrayList<Node> component : graph.components) {
-            if (component.size() > maxAllowed) cost += w;
+            if (component.size() > maxAllowed)
+                cost += w;
         }
 
         return cost;

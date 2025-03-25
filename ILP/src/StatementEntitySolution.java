@@ -3,6 +3,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import com.gurobi.gurobi.GRB;
 import com.gurobi.gurobi.GRBEnv;
@@ -55,6 +57,8 @@ public class StatementEntitySolution {
     // }
 
     ArrayList<Solution> solutions = new ArrayList<>();
+    HashSet<Integer> deletedNodes = new HashSet<>();
+    HashMap<Integer, int[]> deletedPositions = new HashMap<>();
 
     // Method to make a copy of the solution
     // public StatementEntitySolution copy() {
@@ -121,8 +125,58 @@ public class StatementEntitySolution {
             }
 
             /*********************************************************************************************************
-             *                                             CONSTRAINTS                                               *
+             * CONSTRAINTS *
              *********************************************************************************************************/
+
+            // System.out.println("Entity is in component: " + entityIds.contains(0) +
+            // "\nEntity position is in hashmap: "
+            // + deletedYPositions.containsKey(0));
+            // System.out.println();
+            // for (Integer id : deletedYPositions.keySet()) {
+            // System.out.println("Entity, yPos: " + id + ", " + deletedYPositions.get(id));
+            // }
+            GRBVar b = model.addVar(0, 1, 0.0, GRB.BINARY, "useYAlignment");
+
+            // TEST CONSTRAINT FOR Y COORDINATE OR X COORDINATE OF DELETED NODES
+            for (Integer entityId : deletedNodes) {
+                if (entityIds.contains(entityId) && deletedPositions.containsKey(entityId)) {
+                    int entIndex = entityIds.indexOf(entityId);
+
+                    int xTarget = deletedPositions.get(entityId)[0];
+                    int yTarget = deletedPositions.get(entityId)[1];
+                    int M = 1000;
+
+                    // Constraint for y
+                    // model.addConstr(grbEntityCoord[entIndex][1] - yTarget <= M * (1 - b1), ...);
+                    // model.addConstr(yTarget - grbEntityCoord[entIndex][1] <= M * (1 - b1), ...);
+
+                    // ---- y == yTarget if b == 1 ----
+                    // y - yTarget <= M * (1 - b) ----> y + M*b <= yTarget + M
+                    GRBLinExpr yExpr1 = new GRBLinExpr();
+                    yExpr1.addTerm(1.0, grbEntityCoord[entIndex][1]); // y
+                    yExpr1.addTerm(M, b);
+                    model.addConstr(yExpr1, GRB.LESS_EQUAL, yTarget + M, "y_upper_" + entityId);
+
+                    // yTarget - y <= M * (1 - b) ----> y - M*b >= yTarget - M
+                    GRBLinExpr yExpr2 = new GRBLinExpr();
+                    yExpr2.addTerm(1.0, grbEntityCoord[entIndex][1]); // y
+                    yExpr2.addTerm(-M, b);
+                    model.addConstr(yExpr2, GRB.GREATER_EQUAL, yTarget - M, "y_lower_" + entityId);
+
+                    // ---- x == xTarget if b == 0 ----
+                    // x - xTarget <= M * b ----> x - M*b <= xTarget 
+                    GRBLinExpr xExpr1 = new GRBLinExpr();
+                    xExpr1.addTerm(1.0, grbEntityCoord[entIndex][0]); // y
+                    xExpr1.addTerm(-M, b);
+                    model.addConstr(xExpr1, GRB.LESS_EQUAL, xTarget, "x_upper_" + entityId);
+
+                    // xTarget - x <= M * b ----> x + M*b >= xTarget 
+                    GRBLinExpr xExpr2 = new GRBLinExpr();
+                    xExpr2.addTerm(1.0, grbEntityCoord[entIndex][1]); // y
+                    xExpr2.addTerm(M, b);
+                    model.addConstr(xExpr2, GRB.GREATER_EQUAL, xTarget, "x_lower_" + entityId);
+                }
+            }
 
             // All coordinates are non-negative (H0)
             for (int i = 0; i < nStatements; i++) {
@@ -403,14 +457,17 @@ public class StatementEntitySolution {
             // model.set(GRB.DoubleParam.TimeLimit, 30.0);
 
             if (nStatements > 25) {
+                System.out.println("No optimal solution found.");
+
                 GreedySplit splitInst = new GreedySplit(instance);
                 ArrayList<StatementEntityInstance> split = splitInst.findSplit(5, 1.0 / 3);
+                deletedNodes.addAll(splitInst.deletedEntities);
+                updateDeletedNodesMap(sols);
 
                 for (StatementEntityInstance inst : split) {
                     computeILPCoord(inst, sols);
                 }
-            }
-            else {
+            } else {
                 model.optimize();
 
                 // Check if the optimization was interrupted or completed successfully
@@ -435,15 +492,30 @@ public class StatementEntitySolution {
                         statementCoordinates[i][1] = (int) grbStatementCoord[i][1].get(GRB.DoubleAttr.X);
                     }
 
-                    Solution newSolution = new Solution(w, h, entityCoordinates, statementCoordinates);
+                    // Add deleted node positions to the hashmap
+                    for (Integer entityId : deletedNodes) {
+                        if (entityIds.contains(entityId) && !deletedPositions.keySet().contains(entityId)) {
+                            deletedPositions.put(entityId,
+                                    new int[] {
+                                            (int) grbEntityCoord[entityIds.indexOf(entityId)][0].get(GRB.DoubleAttr.X),
+                                            (int) grbEntityCoord[entityIds.indexOf(entityId)][1].get(GRB.DoubleAttr.X)
+                                    });
+                        }
+                    }
+
+                    // Add solution to global list of solutions
+                    Solution newSolution = new Solution(w, h, entityIds, entityCoordinates, statementCoordinates);
                     sols.add(newSolution);
 
-                    saveSolutionToFile(newSolution, instance, "Visualization/Solutions/component_" + sols.size() + ".txt");
+                    saveSolutionToFile(newSolution, instance,
+                            "Visualization/Solutions/component_" + sols.size() + ".txt");
                 } else {
                     System.out.println("No optimal solution found.");
 
                     GreedySplit splitInst = new GreedySplit(instance);
                     ArrayList<StatementEntityInstance> split = splitInst.findSplit(5, 1.0 / 3);
+                    deletedNodes.addAll(splitInst.deletedEntities);
+                    updateDeletedNodesMap(sols);
 
                     for (StatementEntityInstance inst : split) {
                         computeILPCoord(inst, sols);
@@ -457,6 +529,36 @@ public class StatementEntitySolution {
 
         } catch (GRBException e) {
             System.out.println("Error code: " + e.getErrorCode() + ". " + e.getMessage());
+        }
+    }
+
+    // If new entities were deleted we need to update the hashmap with coordinates
+    // by adding the coordinates of the new deleted entities in a previous solution
+    private void updateDeletedNodesMap(ArrayList<Solution> sols) {
+        // if there are previous solutions
+        if(!sols.isEmpty()) {
+            for (Integer entId : deletedNodes) {
+                if (!deletedPositions.keySet().contains(entId)) {
+                    // Find a solution that contains that entity
+                    int solIndex = -1;
+                    for (int i = 0; i < sols.size(); i++) {
+                        if (sols.get(i).entityIds.contains(entId)) {
+                            solIndex = i;
+                            break;
+                        }
+                    }
+
+                    // Get the coordinates of the deleted entity from that solution
+                    // and put them in the hashmap 
+                    if (solIndex != -1) {
+                        int entIndex = sols.get(solIndex).entityIds.indexOf(entId);
+                        deletedPositions.put(entId, new int[] {
+                            sols.get(solIndex).entityCoordinates[entIndex][0],
+                            sols.get(solIndex).entityCoordinates[entIndex][1],
+                        });
+                    }
+                }
+            }
         }
     }
 

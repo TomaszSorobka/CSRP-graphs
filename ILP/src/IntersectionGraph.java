@@ -249,6 +249,10 @@ public class IntersectionGraph {
 
     // Merge small components until they fit the specified size bound
     public void merge(Double alpha) {
+        if (components.isEmpty()) {
+            components.add(new ArrayList<Node>());    
+            return;
+        }
         final int minAllowed = (int) Math.ceil(alpha * intersectionGraph.length);
         final int maxAllowed = (int) Math.floor((1 - alpha) * intersectionGraph.length);
 
@@ -483,15 +487,27 @@ public class IntersectionGraph {
         }
     }
 
-    // public void printGraph() {
-    //     for (int i = 0; i < intersectionGraph.length; i++) {
-    //         System.out.println(instance.entities.get(intersectionGraph[i].id) + " connects to ");
-
-    //         for (int j = 0; j < intersectionGraph[i].adj.size(); j++) {
-    //             System.out.print(instance.entities.get(intersectionGraph[i].adj.get(j).target) + " ");
-    //         }
-
-    //         System.out.println("end of this entity \n");
-    //     }
-    // }
+    public void printGraph() {
+        System.out.println("___________________ PRINTING GRAGH ______________________");
+        System.out.println("Number of entities: " + this.intersectionGraph.length);
+        System.out.println("Number of components: " + this.components.size());
+        System.out.println("_______ Components ______");
+        for (ArrayList<Node> comp : components) {
+            System.out.println();
+            for (Node node : comp) {
+                System.out.print(node.id + " ");
+            }
+            System.out.println();
+            for (Node node: comp) {
+                System.out.print("Node " + node.id + " connects to: ");
+                for (Edge e : node.adj) {
+                    System.out.print(e.target + " ");
+                }
+            }
+        }
+        System.out.println("_____ Deleted nodes _____");
+        for (Node node : deletedNodes) {
+            System.out.print(node.id + " ");
+        }
+    }
 }
