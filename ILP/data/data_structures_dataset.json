@@ -1,0 +1,411 @@
+{
+    "statements": [
+        {
+            "id": 0,
+            "text": "A binary search tree allows for efficient search, insert, and delete operations in O(log n) time on average."
+        },
+        {
+            "id": 1,
+            "text": "In a hash table, insert and search operations can be performed in constant time on average."
+        },
+        {
+            "id": 2,
+            "text": "Linked lists support constant-time insert and delete at the head, but linear time for search."
+        },
+        {
+            "id": 3,
+            "text": "A min-heap always maintains the smallest element at the root and supports O(log n) insertion."
+        },
+        {
+            "id": 4,
+            "text": "Depth-first search (DFS) is often implemented using a stack, either explicitly or via recursion."
+        },
+        {
+            "id": 5,
+            "text": "Breadth-first search (BFS) uses a queue to explore nodes level by level."
+        },
+        {
+            "id": 6,
+            "text": "Hash tables are efficient for lookup but do not maintain order of elements like binary search trees."
+        },
+        {
+            "id": 7,
+            "text": "Stacks are used in many algorithms such as depth-first search and for evaluating expressions."
+        },
+        {
+            "id": 8,
+            "text": "Queues are useful in scheduling algorithms and breadth-first traversal of graphs."
+        },
+        {
+            "id": 9,
+            "text": "A balanced binary search tree ensures that the height remains O(log n), improving performance."
+        },
+        {
+            "id": 10,
+            "text": "The insert operation in a heap involves bubbling up the new element to maintain heap properties."
+        },
+        {
+            "id": 11,
+            "text": "The delete operation in a heap removes the root and re-heapifies the tree structure."
+        },
+        {
+            "id": 12,
+            "text": "In-order traversal of a binary search tree yields a sorted list of values."
+        },
+        {
+            "id": 13,
+            "text": "A doubly linked list allows constant-time insertion and deletion at both ends."
+        },
+        {
+            "id": 14,
+            "text": "Graphs can be represented using adjacency lists or adjacency matrices, each with trade-offs."
+        },
+        {
+            "id": 15,
+            "text": "Adjacency lists are space efficient for sparse graphs compared to adjacency matrices."
+        },
+        {
+            "id": 16,
+            "text": "The time complexity of binary search is O(log n), assuming the list is sorted."
+        },
+        {
+            "id": 17,
+            "text": "Linear search is simple but inefficient, with a worst-case time of O(n)."
+        },
+        {
+            "id": 18,
+            "text": "Hash collisions are resolved using chaining or open addressing in hash tables."
+        },
+        {
+            "id": 19,
+            "text": "Stacks follow a Last-In-First-Out (LIFO) order, which is ideal for backtracking problems."
+        },
+        {
+            "id": 20,
+            "text": "In recursion, each function call is placed on a stack until it returns."
+        },
+        {
+            "id": 21,
+            "text": "Priority queues are often implemented using heaps to ensure efficient insert and delete-min operations."
+        },
+        {
+            "id": 22,
+            "text": "Dynamic arrays allow for amortized constant-time access and append, but resizing is costly."
+        },
+        {
+            "id": 23,
+            "text": "Array access is constant time, but insertions are costly unless done at the end."
+        },
+        {
+            "id": 24,
+            "text": "Binary search trees degrade to linked lists in worst-case scenarios without balancing."
+        },
+        {
+            "id": 25,
+            "text": "Graphs are fundamental in representing networks and solving shortest path problems."
+        },
+        {
+            "id": 26,
+            "text": "Floyd-Warshall and Dijkstra's are common shortest path algorithms on weighted graphs."
+        },
+        {
+            "id": 27,
+            "text": "Merge sort is a divide-and-conquer algorithm with a guaranteed time complexity of O(n log n)."
+        },
+        {
+            "id": 28,
+            "text": "Quick sort has an average time complexity of O(n log n), but degrades to O(n^2) in the worst case."
+        },
+        {
+            "id": 29,
+            "text": "Bubble sort is easy to implement but has a time complexity of O(n^2), making it inefficient for large datasets."
+        }
+    ],
+    "entities": [
+        {
+            "id": 0,
+            "name": "binary search tree"
+        },
+        {
+            "id": 1,
+            "name": "hash table"
+        },
+        {
+            "id": 2,
+            "name": "linked list"
+        },
+        {
+            "id": 3,
+            "name": "min-heap"
+        },
+        {
+            "id": 4,
+            "name": "stack"
+        },
+        {
+            "id": 5,
+            "name": "queue"
+        },
+        {
+            "id": 6,
+            "name": "depth-first search"
+        },
+        {
+            "id": 7,
+            "name": "breadth-first search"
+        },
+        {
+            "id": 10,
+            "name": "insert"
+        },
+        {
+            "id": 11,
+            "name": "delete"
+        },
+        {
+            "id": 12,
+            "name": "search"
+        },
+        {
+            "id": 13,
+            "name": "O(log n)"
+        },
+        {
+            "id": 14,
+            "name": "constant time"
+        },
+        {
+            "id": 15,
+            "name": "linear time"
+        },
+        {
+            "id": 16,
+            "name": "balanced binary search tree"
+        },
+        {
+            "id": 17,
+            "name": "doubly linked list"
+        },
+        {
+            "id": 18,
+            "name": "adjacency list"
+        },
+        {
+            "id": 21,
+            "name": "linear search"
+        },
+        {
+            "id": 22,
+            "name": "hash collisions"
+        },
+        {
+            "id": 24,
+            "name": "recursion"
+        },
+        {
+            "id": 25,
+            "name": "priority queue"
+        },
+        {
+            "id": 26,
+            "name": "heap"
+        },
+        {
+            "id": 27,
+            "name": "dynamic array"
+        },
+        {
+            "id": 28,
+            "name": "array"
+        },
+        {
+            "id": 29,
+            "name": "graph"
+        },
+        {
+            "id": 30,
+            "name": "Floyd-Warshall"
+        },
+        {
+            "id": 31,
+            "name": "Dijkstra"
+        },
+        {
+            "id": 32,
+            "name": "merge sort"
+        },
+        {
+            "id": 33,
+            "name": "quick sort"
+        },
+        {
+            "id": 34,
+            "name": "bubble sort"
+        },
+        {
+            "id": 35,
+            "name": "O(n log n)"
+        },
+        {
+            "id": 36,
+            "name": "O(n^2)"
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            0,
+            6,
+            9,
+            12,
+            24
+        ],
+        "13": [
+           0,
+           3,
+           9,
+           16
+        ],
+        "10": [
+            0,
+            1,
+            2,
+            3,
+            10,
+            13,
+            21,
+            23
+        ],
+        "11": [
+            0,
+            2,
+            11,
+            21
+        ],
+        "12": [
+            0,
+            1,
+            2,
+            4,
+            5,
+            6,
+            7,
+            9,
+            12,
+            16,
+            17,
+            24
+        ],
+        "20": [
+            0,
+            6,
+            9,
+            12,
+            16,
+            24
+        ],
+        "1": [
+            1,
+            6,
+            18
+        ],
+        "14": [
+            1,
+            23
+        ],
+        "2": [
+            2,
+            13,
+            24
+        ],
+        "15": [
+            2
+        ],
+        "3": [
+            3
+        ],
+        "30": [
+            26
+        ],
+        "31": [
+            26
+        ],
+        "26": [
+            3,
+            10,
+            11,
+            21
+        ],
+        "4": [
+            4,
+            7,
+            19,
+            20
+        ],
+        "6": [
+            4,
+            7
+        ],
+        "24": [
+            4,
+            20
+        ],
+        "5": [
+            5,
+            8,
+            21
+        ],
+        "7": [
+            5
+        ],
+        "29": [
+            8,
+            14,
+            15,
+            25,
+            26
+        ],
+        "16": [
+            9
+        ],
+        "17": [
+            13
+        ],
+        "18": [
+            14,
+            15
+        ],
+        "21": [
+            17
+        ],
+        "22": [
+            18
+        ],
+        "25": [
+            21
+        ],
+        "27": [
+            22
+        ],
+        "28": [
+            22,
+            23
+        ],
+        "32": [
+            27
+        ],
+        "33": [
+            28
+        ],
+        "34": [
+            29
+        ],
+        "35": [
+            27,
+            28
+        ], 
+        "36": [
+            28,
+            29
+        ]
+    }
+}
