@@ -538,12 +538,21 @@ function setCanvasDimensions() {
     canvas.width = w * cellWidth * backgroundCellSize + rowGapSum * backgroundCellSize;
     canvas.height = sumHeights * backgroundCellSize + columnGapSum * backgroundCellSize;
 
+    // Cancel centering if solution is too big to fit on the screen
     const rect = canvas.getBoundingClientRect();
 
-    if (rect.left < 10 || rect.top < 30) {
-        canvas.style.top = '0px';
+    if (rect.left < 10 && rect.top < 30) {
         canvas.style.left = '0px';
+        canvas.style.top = '0px';
         canvas.style.transform = 'none';
+    }
+    else if (rect.left < 10) {
+        canvas.style.left = '0px';
+        canvas.style.transform = 'translateY(-50%)';
+    }
+    else if (rect.top < 30) {
+        canvas.style.top = '0px';
+        canvas.style.transform = 'translateX(-50%)';
     }
 }
 

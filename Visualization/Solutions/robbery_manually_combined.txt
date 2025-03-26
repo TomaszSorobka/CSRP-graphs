@@ -1,5 +1,5 @@
-w 5
-h 6
+w: 5
+h: 6
 Entity The Bank: (2, 3) - (5, 3)
 Entity F.B.I.: (2, 6) - (2, 6)
 Entity Authorities: (4, 3) - (4, 3)
