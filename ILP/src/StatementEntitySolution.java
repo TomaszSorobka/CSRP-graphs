@@ -434,23 +434,23 @@ public class StatementEntitySolution {
             negativeDiff.addTerm(-1.0, maxHeight);
             model.addConstr(negativeDiff, GRB.GREATER_EQUAL, 0, "H10_-diff");
 
-            // Balance alignments (we do not want only x or only y alignments)
-            int countY = Collections.frequency(pastAlignments, 1);
-            int countX = pastAlignments.size() - countY;
-            double lambda = 10.0; // tuning parameter
+            // // Balance alignments (we do not want only x or only y alignments)
+            // int countY = Collections.frequency(pastAlignments, 1);
+            // int countX = pastAlignments.size() - countY;
+            // double lambda = 10.0; // tuning parameter
 
-            // penalty = lambda * (countY * b + countX * (1 - b))
-            GRBLinExpr balancePenalty = new GRBLinExpr();
-            balancePenalty.addTerm(lambda * countY, b);
-            balancePenalty.addConstant(lambda * countX); // because: lambda * countX * (1 - b)
-            balancePenalty.addTerm(-lambda * countX, b);
+            // // penalty = lambda * (countY * b + countX * (1 - b))
+            // GRBLinExpr balancePenalty = new GRBLinExpr();
+            // balancePenalty.addTerm(lambda * countY, b);
+            // balancePenalty.addConstant(lambda * countX); // because: lambda * countX * (1 - b)
+            // balancePenalty.addTerm(-lambda * countX, b);
 
             // Objective function
             GRBLinExpr MINIMIZE_ME = new GRBLinExpr();
             MINIMIZE_ME.addTerm(1.0, diff);
             MINIMIZE_ME.addTerm(1.0, maxHeight);
             MINIMIZE_ME.addTerm(1.0, maxWidth);
-            MINIMIZE_ME.add(balancePenalty);
+            // MINIMIZE_ME.add(balancePenalty);
 
             for (int i = 0; i < nEntities; i++) {
                 MINIMIZE_ME.addTerm(1.0, grbEntityCoord[i][2]);
@@ -525,7 +525,7 @@ public class StatementEntitySolution {
                     sols.add(newSolution);
 
                     saveSolutionToFile(newSolution, instance,
-                            "Visualization/Solutions/robbery_component_" + sols.size() + ".txt");
+                            "solutions/robbery_component_" + sols.size() + ".txt");
                 } else {
                     System.out.println("No optimal solution found.");
 
@@ -609,7 +609,7 @@ public class StatementEntitySolution {
     }
 
     public static void main(String[] args) {
-        String jsonFilePath = "ILP\\data\\robbery.json";
+        String jsonFilePath = "data\\robbery.json";
         StatementEntityInstance instance = new StatementEntityInstance(jsonFilePath);
         StatementEntitySolution solution = new StatementEntitySolution();
         solution.computeILPCoord(instance, new ArrayList<>());
