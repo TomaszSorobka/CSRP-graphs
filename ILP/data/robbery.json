@@ -120,209 +120,145 @@
     "entities": [
         {
             "id": 0,
-            "name": "The Bank"
+            "name": "Miss Margaret Ellington (Miss Ellington)"
         },
         {
             "id": 1,
-            "name": "Acme Construction Company"
+            "name": "Mr. Albert Greenbags (President of the Bank)"
         },
         {
             "id": 2,
-            "name": "Police"
+            "name": "Elwood Smith (Janitor of the Bank, Mr. Smith)"
         },
         {
             "id": 3,
-            "name": "F.B.I."
+            "name": "Howard Ellington (Brother of Miss Ellington, Acme Employee)"
         },
         {
             "id": 4,
-            "name": "Authorities"
+            "name": "Dirsey Flowers (Hippie-type Person)"
         },
         {
             "id": 5,
-            "name": "Mexico City Airport"
-        },
-        {
-            "id": 6,
-            "name": "East Birdwatch, Wisconsin"
-        },
-        {
-            "id": 7,
-            "name": "Dogwalk, Georgia"
-        },
-        {
-            "id": 8,
-            "name": "O'Hare Field in Chicago"
-        },
-        {
-            "id": 9,
-            "name": "Taylor's Diner"
-        },
-        {
-            "id": 10,
-            "name": "Minnetonka"
-        },
-        {
-            "id": 11,
-            "name": "Southwest Arkansas State Teachers College"
-        },
-        {
-            "id": 12,
-            "name": "The Robbery"
-        },
-        {
-            "id": 13,
-            "name": "The Vault"
-        },
-        {
-            "id": 14,
-            "name": "Dynamite"
-        },
-        {
-            "id": 15,
-            "name": "Front Door of the Bank"
-        },
-        {
-            "id": 16,
-            "name": "Key(s) to the Bank/Vault"
-        },
-        {
-            "id": 17,
-            "name": "Southern Airlines Flight"
-        },
-        {
-            "id": 18,
-            "name": "Arthur Nodough"
-        },
-        {
-            "id": 19,
-            "name": "Howard Ellington"
-        },
-        {
-            "id": 20,
             "name": "Anastasia Wallflower"
         },
         {
-            "id": 21,
+            "id": 6,
+            "name": "Arthur Nodough (Mr. Greenbags's Half-brother)"
+        },
+        {
+            "id": 7,
             "name": "Camelia Smith"
         },
         {
+            "id": 8,
+            "name": "Mr. Greenbags's Wife"
+        },
+        {
+            "id": 9,
+            "name": "Mr. Smith's Father"
+        },
+        {
+            "id": 10,
+            "name": "The Bank"
+        },
+        {
+            "id": 11,
+            "name": "Acme Construction Company"
+        },
+        {
+            "id": 12,
+            "name": "Police"
+        },
+        {
+            "id": 13,
+            "name": "F.B.I."
+        },
+        {
+            "id": 14,
+            "name": "Authorities"
+        },
+        {
+            "id": 15,
+            "name": "Mexico City Airport"
+        },
+        {
+            "id": 16,
+            "name": "East Birdwatch, Wisconsin"
+        },
+        {
+            "id": 17,
+            "name": "Dogwalk, Georgia"
+        },
+        {
+            "id": 18,
+            "name": "O'Hare Field in Chicago"
+        },
+        {
+            "id": 19,
+            "name": "Taylor's Diner"
+        },
+        {
+            "id": 20,
+            "name": "Minnetonka"
+        },
+        {
+            "id": 21,
+            "name": "Southwest Arkansas State Teachers College"
+        },
+        {
             "id": 22,
-            "name": "Mr. Smith"
+            "name": "The Robbery"
         },
         {
             "id": 23,
-            "name": "Chicago"
+            "name": "The Vault"
         },
         {
             "id": 24,
-            "name": "Alaska"
+            "name": "Dynamite"
+        },
+        {
+            "id": 25,
+            "name": "Front Door of the Bank"
+        },
+        {
+            "id": 26,
+            "name": "Key(s) to the Bank/Vault"
+        },
+        {
+            "id": 27,
+            "name": "Southern Airlines Flight"
         }
     ],
     "entity_statements": {
-        "0": [
-            0,
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            15,
-            16
-        ],
-        "1": [
-            9,
-            21
-        ],
-        "2": [
-            11,
-            12,
-            15
-        ],
-        "3": [
-            17
-        ],
-        "4": [
-            3
-        ],
-        "5": [
-            3
-        ],
-        "6": [
-            11,
-            13
-        ],
-        "7": [
-            17,
-            20
-        ],
-        "8": [
-            28
-        ],
-        "9": [
-            16
-        ],
-        "10": [
-            11
-        ],
-        "11": [
-            11
-        ],
-        "12": [
-            0,
-            1,
-            3
-        ],
-        "13": [
-            2,
-            19
-        ],
-        "14": [
-            2,
-            9,
-            21
-        ],
-        "15": [
-            5
-        ],
-        "16": [
-            5,
-            6,
-            7,
-            19
-        ],
-        "17": [
-            17
-        ],
-        "18": [
-            22,
-            24
-        ],
-        "19": [
-            10
-        ],
-        "20": [
-            13,
-            14
-        ],
-        "21": [
-            25
-        ],
-        "22": [
-            16,
-            17,
-            18,
-            27
-        ],
-        "23": [
-            24,
-            28
-        ],
-        "24": [
-            27
-        ]
+        "0": [1, 7, 16, 26], 
+        "1": [3, 4, 6, 7, 19, 22, 28],
+        "2": [6, 15, 16, 17, 18, 26, 27],
+        "3": [10, 16, 21],
+        "4": [8, 10, 11, 12, 13, 14],
+        "5": [13, 14],
+        "6": [22, 23, 24, 25],
+        "7": [25],
+        "8": [4],
+        "9": [27],
+        "10": [0, 1, 2, 5, 6, 7, 8, 15, 16],
+        "11": [9, 10, 21],
+        "12": [11, 12, 15],
+        "13": [17],
+        "14": [3],
+        "15": [3],
+        "16": [11, 13, 14],
+        "17": [17],
+        "18": [28],
+        "19": [16],
+        "20": [11],
+        "21": [11],
+        "22": [0, 1, 3],
+        "23": [2, 19],
+        "24": [2, 9, 21],
+        "25": [5],
+        "26": [5, 6, 7, 19],
+        "27": [17]
     }
 }
