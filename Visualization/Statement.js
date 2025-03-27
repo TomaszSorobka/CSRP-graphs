@@ -131,13 +131,8 @@ class Statement {
     }
 
     draw() {
-        c.fillStyle = "rgba(255, 255, 255, 0.7)";
+        c.fillStyle = "rgba(245, 245, 245, 1)";
         c.fillRect(this.xStart, this.yStart, backgroundCellSize * cellWidth, backgroundCellSize * cellHeights[this.y]);
-
-        // c.fillStyle = "#000";
-        // for (let i = 0; i < this.textLines.length; i++) {
-        //     c.fillText(this.textLines[i], this.xStart + backgroundCellSize, this.yStart + (2 + i) * backgroundCellSize);
-        // }
 
         // Get entity names, their colors and find their indices in the text
         let namesAndColors = this.getEntityNamesAndColors();
