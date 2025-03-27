@@ -16,6 +16,7 @@ class Entity {
 
         this.statements = statements;
         this.headers = [this.name];
+        this.deleted = [];
 
         // Pixel coordinates
         this.xStart;
@@ -109,9 +110,25 @@ class Entity {
                 let r = this.colors[i][0];
                 let g = this.colors[i][1];
                 let b = this.colors[i][2];
-    
-                c.fillStyle = `rgb(${r}, ${g}, ${b})`;
-                c.fillRect(this.xStart + 1, this.yStart + 2 * i * backgroundCellSize + 1, this.xEnd - this.xStart - 2, 2 * backgroundCellSize);
+                let backgroundColor = `rgb(${r}, ${g}, ${b})`;
+
+                if (this.deleted[i]) {
+                    // Fill space behind entity name
+                    c.fillStyle = backgroundColor;
+                    c.fillRect(this.xStart + 1, this.yStart + 2 * i * backgroundCellSize + 1, c.measureText(this.headers[i]).width + 2 * backgroundCellSize, 2 * backgroundCellSize);
+
+                    // Draw crosshatching pattern for the rest of the header
+                    c.fillStyle = createCrosshatchPattern(backgroundColor);
+                    c.fillRect(this.xStart + 1, this.yStart + 2 * i * backgroundCellSize + 1, this.xEnd - this.xStart - 2, 2 * backgroundCellSize);
+
+                    // Draw bottom line of header
+                    c.fillStyle = backgroundColor;
+                    c.fillRect(this.xStart + 1, this.yStart + 2 * i * backgroundCellSize + 1 + 2*backgroundCellSize, this.xEnd - this.xStart - 2, 1);
+                }
+                else {
+                    c.fillStyle = backgroundColor;
+                    c.fillRect(this.xStart + 1, this.yStart + 2 * i * backgroundCellSize + 1, this.xEnd - this.xStart - 2, 2 * backgroundCellSize);
+                }
     
                 c.fillStyle = "#fff";
                 c.fillText(this.headers[i], this.xStart + backgroundCellSize + 1, this.yStart + 2 * i * backgroundCellSize + 1.25 * backgroundCellSize + 1);
