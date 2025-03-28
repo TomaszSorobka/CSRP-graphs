@@ -27,6 +27,9 @@ let columnEntities = [];
 let entityRects = [];
 let statementCells = [];
 
+// Colors for copied entities
+let deletedColors = generateDistinctDarkColors(10); // Assumes at most 10 copied entities (TODO: set proper colors)
+
 // Read solution from input
 document.getElementById('fileInput').addEventListener('change', function (event) {
     const file = event.target.files[0];
@@ -146,6 +149,27 @@ function generateDistinctDarkColors(n) {
     return colors;
 }
 
+function createCrosshatchPattern(color) {
+    const patternCanvas = document.createElement('canvas');
+    const size = backgroundCellSize; // size of one tile
+    patternCanvas.width = size;
+    patternCanvas.height = size;
+  
+    const pc = patternCanvas.getContext('2d');
+    pc.strokeStyle = color; // hatch line color
+    pc.lineWidth = 1;
+  
+    // draw crosshatch (two diagonal lines)
+    pc.beginPath();
+    pc.moveTo(0, 0);
+    pc.lineTo(size, size);
+    pc.moveTo(size, 0);
+    pc.lineTo(0, size);
+    pc.stroke();
+  
+    return c.createPattern(patternCanvas, 'repeat');
+  }
+
 function initializeElements() {
     let nonSingletonEntities = [];
     entities.forEach(e => {
@@ -204,6 +228,34 @@ function mergeEntitiesWithSameStatements() {
             }
         } 
     }
+}
+
+function markCopiedEntities() {
+    // Collect names of copied entities
+    let repeated = [];
+    for (let i = 0; i < entities.length; i++) {
+        for (let j = i + 1; j < entities.length; j++) {
+            if (entities[i].name == entities[j].name) {
+                repeated.push(entities[i].name);
+            }
+        }
+    }
+
+    // Mark headers as copied or not
+    entityRects.forEach(e => {
+        e.headers.forEach(h => {
+            e.deleted.push(repeated.includes(h));
+        });
+    });
+
+    // Set copied header colors
+    entityRects.forEach(e => {
+        for (let i = 0; i < e.headers.length; i++) {
+            if (repeated.includes(e.headers[i])) {
+                e.colors[i] = deletedColors[repeated.indexOf(e.headers[i])];
+            }
+        }
+    });     
 }
 
 function calculateGapsAndMargins() {
@@ -610,6 +662,7 @@ function visualize() {
     // Prepare and process data
     initializeElements();
     mergeEntitiesWithSameStatements();
+    markCopiedEntities();
     calculateGapsAndMargins();
     calculateCellHeights();
     setCanvasDimensions();
