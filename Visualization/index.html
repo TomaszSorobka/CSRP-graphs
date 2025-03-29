@@ -7,12 +7,17 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <input type="file" id="fileInput">
+    <span>
+        <input type="file" id="fileInput">
+        <label for="colorPicker">Select color:</label>
+        <input type="color" id="colorPicker" value="rgb(255, 0, 0)"/>
+    </span>
 
     <div><canvas id="canvas"></canvas></div>
 
     <script src="Entity.js"></script>
     <script src="Statement.js"></script>
+    <script src="interaction.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

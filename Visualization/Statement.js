@@ -38,7 +38,26 @@ class Statement {
         }
 
         return lines;
-    }     
+    }   
+    
+    extractNames(input) {
+        const result = [];
+      
+        // Match: everything before the parentheses
+        const mainMatch = input.match(/^(.+?)\s*\(/);
+        if (mainMatch) {
+          result.push(mainMatch[1].trim());
+        }
+      
+        // Match: everything inside the parentheses
+        const parenMatch = input.match(/\(([^)]+)\)/);
+        if (parenMatch) {
+          const innerNames = parenMatch[1].split(',').map(name => name.trim());
+          result.push(...innerNames);
+        }
+      
+        return result;
+    }
 
     getEntityNamesAndColors() {
         let names = [];
@@ -52,12 +71,19 @@ class Statement {
                     names.push(variations[0]);
                     names.push(variations[1]);
 
-                    colors.push(`rgb(${e.colors[i][0]}, ${e.colors[i][1]}, ${e.colors[i][2]})`);
-                    colors.push(`rgb(${e.colors[i][0]}, ${e.colors[i][1]}, ${e.colors[i][2]})`);
+                    colors.push(e.colors[i]);
+                    colors.push(e.colors[i]);
+                }
+                else if (e.headers[i].indexOf("(") > -1) {
+                    let variations = this.extractNames(e.headers[i]);
+                    variations.forEach(n => {
+                        names.push(n);
+                        colors.push(e.colors[i]);
+                    });
                 }
                 else {
                     names.push(e.headers[i]);
-                    colors.push(`rgb(${e.colors[i][0]}, ${e.colors[i][1]}, ${e.colors[i][2]})`);
+                    colors.push(e.colors[i]);
                 }
             }
         });

@@ -5,7 +5,7 @@ let entities = [];
 let statements = [];
 
 // Canvas
-const canvas = document.querySelector('canvas');
+const canvas = document.getElementById('canvas');
 const c = canvas.getContext('2d');
 c.font = "normal 10px sans-serif";
 c.globalCompositeOperation = "source-over";
@@ -41,6 +41,7 @@ document.getElementById('fileInput').addEventListener('change', function (event)
         parseData(fileContent); // Ensure data is processed first
 
         visualize(); // Visualize solution
+        setInterval(loop, 0.1);
     };
     reader.readAsText(file);
 });
@@ -111,43 +112,76 @@ function parseData(fileContent) {
 
 function generateDistinctDarkColors(n) {
     let colors = [];
-    let maxAttempts = 1000; // Prevent infinite loops
-    let minDist = 50; // Start with a reasonable perceptual distance
+    // let maxAttempts = 1000; // Prevent infinite loops
+    // let minDist = 50; // Start with a reasonable perceptual distance
 
-    function colorDistance(c1, c2) {
-        return Math.sqrt(
-            Math.pow(c1[0] - c2[0], 2) +
-            Math.pow(c1[1] - c2[1], 2) +
-            Math.pow(c1[2] - c2[2], 2)
-        );
-    }
+    // function colorDistance(c1, c2) {
+    //     return Math.sqrt(
+    //         Math.pow(c1[0] - c2[0], 2) +
+    //         Math.pow(c1[1] - c2[1], 2) +
+    //         Math.pow(c1[2] - c2[2], 2)
+    //     );
+    // }
 
-    function isDistinct(newColor) {
-        return colors.every(existing => colorDistance(existing, newColor) > minDist);
-    }
+    // function isDistinct(newColor) {
+    //     return colors.every(existing => colorDistance(existing, newColor) > minDist);
+    // }
 
-    let attempts = 0;
+    // let attempts = 0;
 
-    while (colors.length < n && attempts < maxAttempts) {
-        let r = Math.floor(Math.random() * 160) + 30;
-        let g = Math.floor(Math.random() * 160) + 30;
-        let b = Math.floor(Math.random() * 160) + 30;
+    // while (colors.length < n && attempts < maxAttempts) {
+    //     let r = Math.floor(Math.random() * 160) + 30;
+    //     let g = Math.floor(Math.random() * 160) + 30;
+    //     let b = Math.floor(Math.random() * 160) + 30;
 
-        let newColor = [r, g, b];
+    //     let newColor = [r, g, b];
 
-        if (isDistinct(newColor)) {
-            colors.push(newColor);
-            attempts = 0; // Reset attempts after success
-        } else {
-            attempts++;
-            if (attempts % 50 === 0) {
-                minDist -= 5; // Gradually lower minDist if struggling
-            }
-        }
+    //     if (isDistinct(newColor)) {
+    //         colors.push(`rgb(${r}, ${g}, ${b})`);
+    //         attempts = 0; // Reset attempts after success
+    //     } else {
+    //         attempts++;
+    //         if (attempts % 50 === 0) {
+    //             minDist -= 5; // Gradually lower minDist if struggling
+    //         }
+    //     }
+    // }
+
+    for (let i = 0; i < n; i++) {
+        colors.push(`rgb(${Math.floor(Math.random()* 200)}, ${Math.floor(Math.random()* 200)}, ${Math.floor(Math.random()* 200)})`);
     }
 
     return colors;
 }
+
+function rgbToRgba(rgb, alpha) {
+    const match = rgb.match(/^rgb\s*\(\s*(\d+),\s*(\d+),\s*(\d+)\s*\)$/i);
+    if (match) {
+      const [_, r, g, b] = match;
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+    return rgb; // fallback if input isn't valid
+}
+
+function hexToRgb(hex) {
+    hex = hex.replace(/^#/, '');
+
+    // Handle shorthand like "#f0a"
+    if (hex.length === 3) {
+        hex = hex.split('').map(c => c + c).join('');
+    }
+
+    if (hex.length !== 6) {
+        throw new Error("Invalid hex color");
+    }
+
+    const bigint = parseInt(hex, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+
+    return `rgb(${r}, ${g}, ${b})`; 
+}  
 
 function createCrosshatchPattern(color) {
     const patternCanvas = document.createElement('canvas');
@@ -168,7 +202,7 @@ function createCrosshatchPattern(color) {
     pc.stroke();
   
     return c.createPattern(patternCanvas, 'repeat');
-  }
+}
 
 function initializeElements() {
     let nonSingletonEntities = [];
@@ -194,7 +228,7 @@ function initializeElements() {
             nextColor++;
         }
         else {
-            entityRects[i] = new Entity(id, name, x1, y1, x2, y2, [255, 255, 255], statements);
+            entityRects[i] = new Entity(id, name, x1, y1, x2, y2, 'rgb(255, 255, 255)', statements);
         }
     }
 
@@ -669,5 +703,11 @@ function visualize() {
 
     // Draw solution
     // drawBackgroundGrid();
+    drawElements();
+}
+
+function loop() {
+    c.clearRect(0, 0, canvas.width, canvas.height);
+
     drawElements();
 }

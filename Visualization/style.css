@@ -1,6 +1,7 @@
 *{
     margin: 0;
     padding: 0;
+    font-family: sans-serif;
 }
 
 body{
@@ -32,8 +33,21 @@ div {
     }
 }
 
-input {
+span {
     position: absolute;
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+input, label {
+    margin-left: 10px;
+}
+
+#colorPicker {
+    width: 20px;
+    height: 20px;
 }
 
 canvas{
