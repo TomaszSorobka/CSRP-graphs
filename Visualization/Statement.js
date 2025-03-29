@@ -74,12 +74,16 @@ class Statement {
                     colors.push(e.colors[i]);
                     colors.push(e.colors[i]);
                 }
-                else {
+                else if (e.headers[i].indexOf("(") > -1) {
                     let variations = this.extractNames(e.headers[i]);
                     variations.forEach(n => {
                         names.push(n);
                         colors.push(e.colors[i]);
                     });
+                }
+                else {
+                    names.push(e.headers[i]);
+                    colors.push(e.colors[i]);
                 }
             }
         });

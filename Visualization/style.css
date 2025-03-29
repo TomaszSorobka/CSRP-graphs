@@ -41,8 +41,8 @@ span {
     justify-content: flex-start;
 }
 
-input {
-    margin-left: 5px;
+input, label {
+    margin-left: 10px;
 }
 
 #colorPicker {
