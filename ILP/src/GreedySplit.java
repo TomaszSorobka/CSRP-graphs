@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class GreedySplit {
     StatementEntityInstance instance;
@@ -41,8 +42,11 @@ public class GreedySplit {
 
             split.addDeletedNodes();
 
+            ArrayList<StatementEntityInstance> instances = new SplitIntanceFactory(instance, bestSplit)
+                    .createInstances();
+
             // Evaluate the cost of the split
-            double cost = cost(split, alpha, initSize);
+            double cost = cost(instances, split, alpha, initSize);
 
             // Store the split with minimal cost
             if (cost < bestCost) {
@@ -86,7 +90,7 @@ public class GreedySplit {
         }
     }
 
-    private double cost(IntersectionGraph graph, double alpha, int initSize) {
+    private double cost(ArrayList<StatementEntityInstance> insts, IntersectionGraph graph, double alpha, int initSize) {
         // Do not consider "splits" that do not actually split the graph
         // TODO should it instead be compared to the number of components in the parent
         // instance graph in case that one is already disconnected?
@@ -103,6 +107,22 @@ public class GreedySplit {
         for (ArrayList<Node> component : graph.components) {
             if (component.size() > maxAllowed)
                 cost += w;
+        }
+
+        // Add the statements that repeat in an instance to the cost? 
+        for (StatementEntityInstance inst : insts) {
+            HashSet<Integer> statements = new HashSet<>();
+            int nrRepetitions = 0;
+            for (Integer ent : inst.entityIndToStatements.keySet()) {
+                for (int i = 0; i < inst.entityIndToStatements.get(ent).length; i++) {
+                    if (statements.contains(inst.entityIndToStatements.get(ent)[i]))
+                        nrRepetitions++;
+                    statements.add(inst.entityIndToStatements.get(ent)[i]);
+                }
+                statements.clear();
+            }
+
+            cost += 3*(nrRepetitions/inst.numberOfStatements);
         }
 
         return cost;

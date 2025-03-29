@@ -61,6 +61,7 @@ public class StatementEntitySolution {
     HashSet<Integer> deletedNodes = new HashSet<>();
     HashMap<Integer, int[]> deletedPositions = new HashMap<>();
     ArrayList<Integer> pastAlignments = new ArrayList<>();
+    final int dimensions = 6;
 
     // Method to make a copy of the solution
     // public StatementEntitySolution copy() {
@@ -193,12 +194,12 @@ public class StatementEntitySolution {
 
             // All coordinates are at most 4 / Restrict solution size (H00)
             for (int i = 0; i < nStatements; i++) {
-                model.addConstr(grbStatementCoord[i][0], GRB.LESS_EQUAL, 4, "H00_" + i + "_x");
-                model.addConstr(grbStatementCoord[i][1], GRB.LESS_EQUAL, 4, "H00_" + i + "_y");
+                model.addConstr(grbStatementCoord[i][0], GRB.LESS_EQUAL, dimensions, "H00_" + i + "_x");
+                model.addConstr(grbStatementCoord[i][1], GRB.LESS_EQUAL, dimensions, "H00_" + i + "_y");
             }
             for (int i = 0; i < nEntities; i++) {
                 for (int j = 0; j < 4; j++) {
-                    model.addConstr(grbEntityCoord[i][j], GRB.LESS_EQUAL, 4, "H00_e_" + i + "_" + j);
+                    model.addConstr(grbEntityCoord[i][j], GRB.LESS_EQUAL, dimensions, "H00_e_" + i + "_" + j);
                 }
             }
 
@@ -417,7 +418,14 @@ public class StatementEntitySolution {
                 expr.addTerm(1.0, maxHeight);
                 expr.addTerm(-1.0, grbEntityCoord[i][3]);
                 model.addConstr(expr, GRB.GREATER_EQUAL, 0, "H9_" + i + "_h");
+
             }
+
+            // Sum of width height constraint
+            GRBLinExpr totalSize = new GRBLinExpr();
+            totalSize.addTerm(1.0, maxHeight);
+            totalSize.addTerm(1.0, maxWidth);
+            model.addConstr(totalSize, GRB.LESS_EQUAL, 10.0, "total_layout_size");
 
             // Ensure squareness, difference between max width and max height is minimized
             // (H10)
@@ -442,14 +450,15 @@ public class StatementEntitySolution {
             // // penalty = lambda * (countY * b + countX * (1 - b))
             // GRBLinExpr balancePenalty = new GRBLinExpr();
             // balancePenalty.addTerm(lambda * countY, b);
-            // balancePenalty.addConstant(lambda * countX); // because: lambda * countX * (1 - b)
+            // balancePenalty.addConstant(lambda * countX); // because: lambda * countX * (1
+            // - b)
             // balancePenalty.addTerm(-lambda * countX, b);
 
             // Objective function
             GRBLinExpr MINIMIZE_ME = new GRBLinExpr();
             MINIMIZE_ME.addTerm(1.0, diff);
-            MINIMIZE_ME.addTerm(1.0, maxHeight);
-            MINIMIZE_ME.addTerm(1.0, maxWidth);
+            MINIMIZE_ME.addTerm(2.0, maxHeight);
+            MINIMIZE_ME.addTerm(2.0, maxWidth);
             // MINIMIZE_ME.add(balancePenalty);
 
             for (int i = 0; i < nEntities; i++) {
@@ -461,8 +470,8 @@ public class StatementEntitySolution {
 
             // Favor top left
             for (int i = 0; i < nStatements; i++) {
-                MINIMIZE_ME.addTerm(1.0, grbStatementCoord[i][0]);
-                MINIMIZE_ME.addTerm(1.0, grbStatementCoord[i][1]);
+                MINIMIZE_ME.addTerm(0.5, grbStatementCoord[i][0]);
+                MINIMIZE_ME.addTerm(0.5, grbStatementCoord[i][1]);
             }
 
             model.setObjective(MINIMIZE_ME, GRB.MINIMIZE);
@@ -476,7 +485,7 @@ public class StatementEntitySolution {
                 GreedySplit splitInst = new GreedySplit(instance);
                 ArrayList<StatementEntityInstance> split = splitInst.findSplit(5, 1.0 / 3);
                 deletedNodes.addAll(splitInst.deletedEntities);
-                //updateDeletedNodesMap(sols);
+                // updateDeletedNodesMap(sols);
 
                 for (StatementEntityInstance inst : split) {
                     computeILPCoord(inst, sols);
@@ -532,7 +541,7 @@ public class StatementEntitySolution {
                     GreedySplit splitInst = new GreedySplit(instance);
                     ArrayList<StatementEntityInstance> split = splitInst.findSplit(5, 1.0 / 3);
                     deletedNodes.addAll(splitInst.deletedEntities);
-                    //updateDeletedNodesMap(sols);
+                    // updateDeletedNodesMap(sols);
 
                     for (StatementEntityInstance inst : split) {
                         computeILPCoord(inst, sols);
