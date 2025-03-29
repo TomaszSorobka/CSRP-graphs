@@ -425,7 +425,7 @@ public class StatementEntitySolution {
             GRBLinExpr totalSize = new GRBLinExpr();
             totalSize.addTerm(1.0, maxHeight);
             totalSize.addTerm(1.0, maxWidth);
-            model.addConstr(totalSize, GRB.LESS_EQUAL, 10.0, "total_layout_size");
+            model.addConstr(totalSize, GRB.LESS_EQUAL, 8.0, "total_layout_size");
 
             // Ensure squareness, difference between max width and max height is minimized
             // (H10)
@@ -464,8 +464,8 @@ public class StatementEntitySolution {
             for (int i = 0; i < nEntities; i++) {
                 MINIMIZE_ME.addTerm(1.0, grbEntityCoord[i][2]);
                 MINIMIZE_ME.addTerm(-1.0, grbEntityCoord[i][0]);
-                MINIMIZE_ME.addTerm(-1.0, grbEntityCoord[i][1]);
                 MINIMIZE_ME.addTerm(1.0, grbEntityCoord[i][3]);
+                MINIMIZE_ME.addTerm(-1.0, grbEntityCoord[i][1]);
             }
 
             // Favor top left
@@ -534,7 +534,7 @@ public class StatementEntitySolution {
                     sols.add(newSolution);
 
                     saveSolutionToFile(newSolution, instance,
-                            "solutions/robbery_component_" + sols.size() + ".txt");
+                            "Visualization/Solutions/murder_component_" + sols.size() + ".txt");
                 } else {
                     System.out.println("No optimal solution found.");
 
@@ -618,7 +618,7 @@ public class StatementEntitySolution {
     }
 
     public static void main(String[] args) {
-        String jsonFilePath = "data\\robbery.json";
+        String jsonFilePath = "ILP\\data\\structured_dataset.json";
         StatementEntityInstance instance = new StatementEntityInstance(jsonFilePath);
         StatementEntitySolution solution = new StatementEntitySolution();
         solution.computeILPCoord(instance, new ArrayList<>());

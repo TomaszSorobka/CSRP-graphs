@@ -100,8 +100,9 @@ public class GreedySplit {
         double cost = 0;
         cost += graph.components.size();
         cost += graph.deletedNodes.size();
+        cost += graph.deletedNodeCopies.size();
 
-        int w = 5;
+        int w = 10;
         int maxAllowed = (int) Math.floor((1 - alpha) * graph.intersectionGraph.length);
 
         for (ArrayList<Node> component : graph.components) {
@@ -122,7 +123,7 @@ public class GreedySplit {
                 statements.clear();
             }
 
-            cost += 3*(nrRepetitions/inst.numberOfStatements);
+            cost += 20*(nrRepetitions/inst.numberOfStatements);
         }
 
         return cost;

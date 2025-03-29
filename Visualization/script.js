@@ -12,7 +12,7 @@ c.globalCompositeOperation = "source-over";
 
 // Grid sizes
 const backgroundCellSize = 10;
-let cellWidth = 15; // in background cells
+let cellWidth = 20; // in background cells
 let cellHeights = []; // in background cells
 
 // The gaps for each row and column
@@ -107,7 +107,7 @@ function parseData(fileContent) {
     entities.forEach(e => {
         if (c.measureText(e.name).width > maxNameLength) maxNameLength = c.measureText(e.name).width;
     });
-    cellWidth = Math.max(cellWidth, Math.ceil(maxNameLength / backgroundCellSize));
+    // cellWidth = Math.max(cellWidth, Math.ceil(maxNameLength / backgroundCellSize));
 }
 
 function generateDistinctDarkColors(n) {
@@ -709,5 +709,6 @@ function visualize() {
 function loop() {
     c.clearRect(0, 0, canvas.width, canvas.height);
 
+    // drawBackgroundGrid();
     drawElements();
 }
