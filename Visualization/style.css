@@ -45,6 +45,17 @@ input, label {
     margin-left: 10px;
 }
 
+#exportLabel, #fileLabel {
+    border: 2px solid #666;
+    border-radius: 5px;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+#export, #fileInput {
+    display: none;
+}
+
 #colorPicker {
     width: 20px;
     height: 20px;

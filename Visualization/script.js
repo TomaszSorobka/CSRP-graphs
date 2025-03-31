@@ -712,3 +712,256 @@ function loop() {
     // drawBackgroundGrid();
     drawElements();
 }
+
+
+function exportToSVG() {
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+
+    svg.setAttribute("xmlns", svgNS);
+    svg.setAttribute("width", canvas.width);
+    svg.setAttribute("height", canvas.height);
+
+    // Optional: add white background
+    const background = document.createElementNS(svgNS, "rect");
+    background.setAttribute("x", 0);
+    background.setAttribute("y", 0);
+    background.setAttribute("width", canvas.width);
+    background.setAttribute("height", canvas.height);
+    background.setAttribute("fill", "white");
+    svg.appendChild(background);
+
+    // For each entity
+    entityRects.forEach(entity => {
+        if (entity.statements.length > 1) {
+            const width = entity.xEnd - entity.xStart;
+            const height = entity.yEnd - entity.yStart;
+
+            // Translucent background fill
+            const fillRect = document.createElementNS(svgNS, "rect");
+            fillRect.setAttribute("x", entity.xStart);
+            fillRect.setAttribute("y", entity.yStart);
+            fillRect.setAttribute("width", width);
+            fillRect.setAttribute("height", height);
+            fillRect.setAttribute("fill", rgbToRgba(entity.colors[0], 0.15));
+            svg.appendChild(fillRect);
+
+            // Border
+            const border = document.createElementNS(svgNS, "rect");
+            border.setAttribute("x", entity.xStart);
+            border.setAttribute("y", entity.yStart);
+            border.setAttribute("width", width);
+            border.setAttribute("height", height);
+            border.setAttribute("fill", "none");
+            border.setAttribute("stroke", entity.colors[0]);
+            svg.appendChild(border);
+        }
+    });
+
+    entityRects.forEach(entity => {
+        if (entity.statements.length > 1) {
+            const width = entity.xEnd - entity.xStart;
+            const height = entity.yEnd - entity.yStart;
+
+            // Headers
+            for (let i = 0; i < entity.headers.length; i++) {
+                const headerY = entity.yStart + 2 * i * backgroundCellSize;
+                const headerHeight = 2 * backgroundCellSize;
+
+                // Background rect
+                const headerBg = document.createElementNS(svgNS, "rect");
+                headerBg.setAttribute("x", entity.xStart);
+                headerBg.setAttribute("y", headerY);
+                headerBg.setAttribute("width", width);
+                headerBg.setAttribute("height", headerHeight);
+                headerBg.setAttribute("fill", entity.colors[i]);
+                svg.appendChild(headerBg);
+
+                // Optional: Crosshatch if marked deleted
+                if (entity.deleted[i]) {
+                    const clipId = `clip-${entity.id}-${i}`;
+
+                    // Define a clipping path to restrict hatching to header area
+                    const clipPath = document.createElementNS(svgNS, "clipPath");
+                    clipPath.setAttribute("id", clipId);
+
+                    const clipRect = document.createElementNS(svgNS, "rect");
+                    clipRect.setAttribute("x", entity.xStart);
+                    clipRect.setAttribute("y", headerY);
+                    clipRect.setAttribute("width", width);
+                    clipRect.setAttribute("height", headerHeight);
+                    clipPath.appendChild(clipRect);
+                    svg.appendChild(clipPath);
+
+                    // Create the group for hatch lines
+                    const hatchGroup = document.createElementNS(svgNS, "g");
+                    hatchGroup.setAttribute("clip-path", `url(#${clipId})`);
+                    hatchGroup.setAttribute("stroke", "white");
+                    hatchGroup.setAttribute("stroke-width", "0.75");
+
+                    const spacing = 5;
+
+                    // Forward-slash lines (/)
+                    for (let x = -headerHeight; x < width + headerHeight; x += spacing) {
+                        const line = document.createElementNS(svgNS, "line");
+                        line.setAttribute("x1", entity.xStart + x);
+                        line.setAttribute("y1", headerY);
+                        line.setAttribute("x2", entity.xStart + x + headerHeight);
+                        line.setAttribute("y2", headerY + headerHeight);
+                        hatchGroup.appendChild(line);
+                    }
+
+                    // Backslash lines (\)
+                    for (let x = -headerHeight; x < width + headerHeight; x += spacing) {
+                        const line = document.createElementNS(svgNS, "line");
+                        line.setAttribute("x1", entity.xStart + x + headerHeight);
+                        line.setAttribute("y1", headerY);
+                        line.setAttribute("x2", entity.xStart + x);
+                        line.setAttribute("y2", headerY + headerHeight);
+                        hatchGroup.appendChild(line);
+                    }
+
+                    svg.appendChild(hatchGroup);
+
+                    // Redraw borders on top of crosshatching
+                    const border = document.createElementNS(svgNS, "rect");
+                    border.setAttribute("x", entity.xStart);
+                    border.setAttribute("y", entity.yStart);
+                    border.setAttribute("width", width);
+                    border.setAttribute("height", height);
+                    border.setAttribute("fill", "none");
+                    border.setAttribute("stroke", entity.colors[0]);
+                    svg.appendChild(border);
+
+                    // Bottom line
+                    const bottomLine = document.createElementNS(svgNS, "rect");
+                    bottomLine.setAttribute("x", entity.xStart);
+                    bottomLine.setAttribute("y", headerY + 2*backgroundCellSize);
+                    bottomLine.setAttribute("width", width);
+                    bottomLine.setAttribute("height", 1);
+                    bottomLine.setAttribute("fill", entity.colors[i]);
+                    svg.appendChild(bottomLine);
+
+                    // Solid rect behind entity name
+                    const textWidth = c.measureText(entity.headers[i]).width;
+                    const solidBg = document.createElementNS(svgNS, "rect");
+                    solidBg.setAttribute("x", entity.xStart);
+                    solidBg.setAttribute("y", headerY);
+                    solidBg.setAttribute("width", textWidth + 2*backgroundCellSize);
+                    solidBg.setAttribute("height", headerHeight);
+                    solidBg.setAttribute("fill", entity.colors[i]);
+                    svg.appendChild(solidBg);
+                }
+
+                // Header text
+                const text = document.createElementNS(svgNS, "text");
+                text.setAttribute("x", entity.xStart + backgroundCellSize + 1);
+                text.setAttribute("y", headerY + 1.25 * backgroundCellSize + 1);
+                text.setAttribute("fill", "white");
+                text.setAttribute("font-size", "10px");
+                text.setAttribute("font-family", "sans-serif");
+                text.textContent = entity.headers[i];
+                svg.appendChild(text);
+            }
+        }
+    });
+
+
+    statementCells.forEach(statement => {
+        const x = statement.xStart;
+        const y = statement.yStart;
+        const width = backgroundCellSize * cellWidth;
+        const height = backgroundCellSize * cellHeights[statement.y];
+    
+        // 1. Background box
+        const rect = document.createElementNS(svgNS, "rect");
+        rect.setAttribute("x", x);
+        rect.setAttribute("y", y);
+        rect.setAttribute("width", width);
+        rect.setAttribute("height", height);
+        rect.setAttribute("fill", "#ffffff");
+        svg.appendChild(rect);
+    
+        // 2. Flatten rendered text (add \n to match what’s drawn)
+        const flattenedText = statement.textLines.join("\n");
+    
+        // 3. Get entity names and their highlight positions
+        const nameColorPairs = statement.getEntityNamesAndColors(); // [[name, color], ...]
+        const nameIndices = nameColorPairs.map(([name, color]) => ({
+            name,
+            color,
+            indices: statement.getIndicesOf(name, flattenedText, false)
+        }));
+    
+        const baseX = x + backgroundCellSize;
+        let currentY = y + 2 * backgroundCellSize;
+        let globalCharIndex = 0; // tracks position in flattenedText
+    
+        // 4. Render each character
+        for (const line of statement.textLines) {
+            let cursorX = baseX;
+    
+            for (let j = 0; j < line.length; j++) {
+                const char = line[j];
+                let color = "#000";
+                let underline = false;
+    
+                // Check if current character index falls inside a name
+                for (const { name, color: rawColor, indices } of nameIndices) {
+                    for (const startIdx of indices) {
+                        if (globalCharIndex >= startIdx && globalCharIndex < startIdx + name.length) {
+                            if (rawColor.trim() === "rgb(255, 255, 255)") {
+                                color = "#000";
+                                underline = true;
+                            } else {
+                                color = rawColor;
+                            }
+                        }
+                    }
+                }
+    
+                // Draw character
+                const textElem = document.createElementNS(svgNS, "text");
+                textElem.setAttribute("x", cursorX);
+                textElem.setAttribute("y", currentY);
+                textElem.setAttribute("font-size", "10px");
+                textElem.setAttribute("font-family", "sans-serif");
+                textElem.setAttribute("fill", color);
+                if (color != "#000") textElem.setAttribute("font-weight", "bold");
+                textElem.textContent = char;
+                svg.appendChild(textElem);
+    
+                // Draw underline (if white entity)
+                if (underline && char !== " ") {
+                    const underlineElem = document.createElementNS(svgNS, "line");
+                    underlineElem.setAttribute("x1", cursorX);
+                    underlineElem.setAttribute("x2", cursorX + c.measureText(char).width + 0.3);
+                    underlineElem.setAttribute("y1", currentY + 1);
+                    underlineElem.setAttribute("y2", currentY + 1);
+                    underlineElem.setAttribute("stroke", "#000");
+                    underlineElem.setAttribute("stroke-width", "1");
+                    svg.appendChild(underlineElem);
+                }
+    
+                // Move cursor and global index
+                cursorX += c.measureText(char).width;
+                globalCharIndex++;
+            }
+    
+            // Newline: increase y and track in index
+            currentY += 10;
+            globalCharIndex++;
+        }
+    });    
+    
+
+    // Serialize and download
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "solution.svg";
+    link.click();
+}

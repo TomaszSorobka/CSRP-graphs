@@ -8,7 +8,10 @@
 </head>
 <body>
     <span>
+        <label for="fileInput" id="fileLabel">Select file</label>
         <input type="file" id="fileInput">
+        <label for="export" id="exportLabel">Export</label>
+        <input type="button" id="export" onclick="exportToSVG()">
         <label for="colorPicker">Select color:</label>
         <input type="color" id="colorPicker" value="rgb(255, 0, 0)"/>
     </span>

@@ -157,7 +157,7 @@ class Statement {
     }
 
     draw() {
-        c.fillStyle = "rgb(214, 232, 242)";
+        c.fillStyle = "rgb(255, 255, 255)";
         c.fillRect(this.xStart, this.yStart, backgroundCellSize * cellWidth, backgroundCellSize * cellHeights[this.y]);
 
         // Get entity names, their colors and find their indices in the text
