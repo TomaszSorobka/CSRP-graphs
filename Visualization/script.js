@@ -289,7 +289,22 @@ function markCopiedEntities() {
                 e.colors[i] = deletedColors[repeated.indexOf(e.headers[i])];
             }
         }
-    });     
+    });   
+    
+    // Set number of visible headers
+    entityRects.forEach(e => {
+        if (e.statements.length > 1) {
+            e.visibleHeaders = e.headers.length;
+        }
+        else {
+            e.visibleHeaders = e.deleted.filter(d => d == true).length;
+        }
+    });
+
+    // Update top margins based on how many of the entity's headers are visible
+    entityRects.forEach(e => {
+        e.marginTop = e.visibleHeaders * 2 + 1;
+    });
 }
 
 function calculateGapsAndMargins() {
@@ -325,7 +340,7 @@ function calculateGapsAndMargins() {
 
     // Remove default margins from singleton sets
     for (let i = 0; i < entityRects.length; i++) {
-        if (entityRects[i].statements.length == 1) {
+        if (entityRects[i].statements.length == 1  && !entityRects[i].deleted.includes(true)) {
             entityRects[i].marginBottom = 0;
             entityRects[i].marginTop = 0;
             entityRects[i].marginRight = 0;
@@ -398,14 +413,14 @@ function calculateGapsAndMargins() {
                 if ((firstX1 >= secondX1 && firstX1 <= secondX2) || (secondX1 >= firstX1 && secondX1 <= firstX2)) {
 
                     // Increase the bigger entity's margin
-                    if (columnEntities[i][j][1] == "y1" && columnEntities[i][k][1] == "y1" && Math.abs(entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][j][0]].marginTop) <= entityRects[columnEntities[i][k][0]].headers.length * 2 + 1) {
+                    if (columnEntities[i][j][1] == "y1" && columnEntities[i][k][1] == "y1" && Math.abs(entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][j][0]].marginTop) <= entityRects[columnEntities[i][k][0]].visibleHeaders * 2 + 1) {
                         // If their headers overlap, increase (preferably) the bigger entity's top margin such that there is enough space for all its headers
-                        if (entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][k][0]].headers.length * 2 >= entityRects[columnEntities[i][j][0]].marginTop - entityRects[columnEntities[i][j][0]].headers.length * 2) {
-                            if (entityRects[columnEntities[i][k][0]].statements.length > 1) entityRects[columnEntities[i][k][0]].marginTop = entityRects[columnEntities[i][j][0]].marginTop + entityRects[columnEntities[i][k][0]].headers.length * 2 + 1;
+                        if (entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][k][0]].visibleHeaders * 2 >= entityRects[columnEntities[i][j][0]].marginTop - entityRects[columnEntities[i][j][0]].visibleHeaders * 2) {
+                            if (entityRects[columnEntities[i][k][0]].statements.length > 1) entityRects[columnEntities[i][k][0]].marginTop = entityRects[columnEntities[i][j][0]].marginTop + entityRects[columnEntities[i][k][0]].visibleHeaders * 2 + 1;
                         }
                         else {
                             // If the smaller entity's header is above the bigger entity's header just increase the smaller entity's header as that's a smaller increase
-                            if (entityRects[columnEntities[i][j][0]].statements.length > 1) entityRects[columnEntities[i][j][0]].marginTop = entityRects[columnEntities[i][k][0]].marginTop + entityRects[columnEntities[i][j][0]].headers.length * 2 + 1;
+                            if (entityRects[columnEntities[i][j][0]].statements.length > 1) entityRects[columnEntities[i][j][0]].marginTop = entityRects[columnEntities[i][k][0]].marginTop + entityRects[columnEntities[i][j][0]].visibleHeaders * 2 + 1;
                         }
                     }
                     else if (columnEntities[i][j][1] == "y2" && columnEntities[i][k][1] == "y2" && entityRects[columnEntities[i][k][0]].marginBottom == entityRects[columnEntities[i][j][0]].marginBottom) {
@@ -428,19 +443,19 @@ function calculateGapsAndMargins() {
                 // Entities overlap
                 if ((firstX1 >= secondX1 && firstX1 <= secondX2) || (secondX1 >= firstX1 && secondX1 <= firstX2)) {
                     // Increase the bigger entity's margin
-                    if (columnEntities[i][j][1] == "y1" && columnEntities[i][k][1] == "y1" && Math.abs(entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][j][0]].marginTop) <= entityRects[columnEntities[i][k][0]].headers.length * 2 + 1) {
+                    if (columnEntities[i][j][1] == "y1" && columnEntities[i][k][1] == "y1" && Math.abs(entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][j][0]].marginTop) <= entityRects[columnEntities[i][k][0]].visibleHeaders * 2 + 1) {
 
                         // If their headers overlap, increase (preferably) the bigger entity's top margin such that there is enough space for all its headers
-                        if (entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][k][0]].headers.length * 2 >= entityRects[columnEntities[i][j][0]].marginTop - entityRects[columnEntities[i][j][0]].headers.length * 2) {
+                        if (entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][k][0]].visibleHeaders * 2 >= entityRects[columnEntities[i][j][0]].marginTop - entityRects[columnEntities[i][j][0]].visibleHeaders * 2) {
                             
                             if (entityRects[columnEntities[i][k][0]].statements.length > 1) {
-                                entityRects[columnEntities[i][k][0]].marginTop = entityRects[columnEntities[i][j][0]].marginTop + entityRects[columnEntities[i][k][0]].headers.length * 2 + 1;
+                                entityRects[columnEntities[i][k][0]].marginTop = entityRects[columnEntities[i][j][0]].marginTop + entityRects[columnEntities[i][k][0]].visibleHeaders * 2 + 1;
                             }
                         }
                         else {
                             // If the smaller entity's header is above the bigger entity's header just increase the smaller entity's header as that's a smaller increase
                             if (entityRects[columnEntities[i][j][0]].statements.length > 1) {
-                                entityRects[columnEntities[i][j][0]].marginTop = entityRects[columnEntities[i][k][0]].marginTop + entityRects[columnEntities[i][j][0]].headers.length * 2 + 1;
+                                entityRects[columnEntities[i][j][0]].marginTop = entityRects[columnEntities[i][k][0]].marginTop + entityRects[columnEntities[i][j][0]].visibleHeaders * 2 + 1;
                             }
                         }
                     }
@@ -733,7 +748,7 @@ function exportToSVG() {
 
     // For each entity
     entityRects.forEach(entity => {
-        if (entity.statements.length > 1) {
+        if (entity.statements.length > 1 || entity.deleted.includes(true)) {
             const width = entity.xEnd - entity.xStart;
             const height = entity.yEnd - entity.yStart;
 
@@ -743,7 +758,7 @@ function exportToSVG() {
             fillRect.setAttribute("y", entity.yStart);
             fillRect.setAttribute("width", width);
             fillRect.setAttribute("height", height);
-            fillRect.setAttribute("fill", rgbToRgba(entity.colors[0], 0.15));
+            fillRect.setAttribute("fill", rgbToRgba(entity.colors[entity.statements.length > 1 ? 0 : (entity.deleted.includes(true) ? entity.deleted.indexOf(true) : 0)], 0.15));
             svg.appendChild(fillRect);
 
             // Border
@@ -753,115 +768,120 @@ function exportToSVG() {
             border.setAttribute("width", width);
             border.setAttribute("height", height);
             border.setAttribute("fill", "none");
-            border.setAttribute("stroke", entity.colors[0]);
+            border.setAttribute("stroke", entity.colors[entity.statements.length > 1 ? 0 : (entity.deleted.includes(true) ? entity.deleted.indexOf(true) : 0)]);
             svg.appendChild(border);
         }
     });
 
     entityRects.forEach(entity => {
-        if (entity.statements.length > 1) {
+        if (entity.statements.length > 1 || entity.deleted.includes(true)) {
             const width = entity.xEnd - entity.xStart;
             const height = entity.yEnd - entity.yStart;
 
             // Headers
+            let headerIndex = 0;
             for (let i = 0; i < entity.headers.length; i++) {
-                const headerY = entity.yStart + 2 * i * backgroundCellSize;
-                const headerHeight = 2 * backgroundCellSize;
+                if (entity.statements.length > 1 || entity.deleted[i]) {
+                    const headerY = entity.yStart + 2 * headerIndex * backgroundCellSize;
+                    const headerHeight = 2 * backgroundCellSize;
 
-                // Background rect
-                const headerBg = document.createElementNS(svgNS, "rect");
-                headerBg.setAttribute("x", entity.xStart);
-                headerBg.setAttribute("y", headerY);
-                headerBg.setAttribute("width", width);
-                headerBg.setAttribute("height", headerHeight);
-                headerBg.setAttribute("fill", entity.colors[i]);
-                svg.appendChild(headerBg);
+                    // Background rect
+                    const headerBg = document.createElementNS(svgNS, "rect");
+                    headerBg.setAttribute("x", entity.xStart);
+                    headerBg.setAttribute("y", headerY);
+                    headerBg.setAttribute("width", width);
+                    headerBg.setAttribute("height", headerHeight);
+                    headerBg.setAttribute("fill", entity.colors[i]);
+                    svg.appendChild(headerBg);
 
-                // Optional: Crosshatch if marked deleted
-                if (entity.deleted[i]) {
-                    const clipId = `clip-${entity.id}-${i}`;
+                    // Optional: Crosshatch if marked deleted
+                    if (entity.deleted[i]) {
+                        const clipId = `clip-${entity.id}-${i}`;
 
-                    // Define a clipping path to restrict hatching to header area
-                    const clipPath = document.createElementNS(svgNS, "clipPath");
-                    clipPath.setAttribute("id", clipId);
+                        // Define a clipping path to restrict hatching to header area
+                        const clipPath = document.createElementNS(svgNS, "clipPath");
+                        clipPath.setAttribute("id", clipId);
 
-                    const clipRect = document.createElementNS(svgNS, "rect");
-                    clipRect.setAttribute("x", entity.xStart);
-                    clipRect.setAttribute("y", headerY);
-                    clipRect.setAttribute("width", width);
-                    clipRect.setAttribute("height", headerHeight);
-                    clipPath.appendChild(clipRect);
-                    svg.appendChild(clipPath);
+                        const clipRect = document.createElementNS(svgNS, "rect");
+                        clipRect.setAttribute("x", entity.xStart);
+                        clipRect.setAttribute("y", headerY);
+                        clipRect.setAttribute("width", width);
+                        clipRect.setAttribute("height", headerHeight);
+                        clipPath.appendChild(clipRect);
+                        svg.appendChild(clipPath);
 
-                    // Create the group for hatch lines
-                    const hatchGroup = document.createElementNS(svgNS, "g");
-                    hatchGroup.setAttribute("clip-path", `url(#${clipId})`);
-                    hatchGroup.setAttribute("stroke", "white");
-                    hatchGroup.setAttribute("stroke-width", "0.75");
+                        // Create the group for hatch lines
+                        const hatchGroup = document.createElementNS(svgNS, "g");
+                        hatchGroup.setAttribute("clip-path", `url(#${clipId})`);
+                        hatchGroup.setAttribute("stroke", "white");
+                        hatchGroup.setAttribute("stroke-width", "0.75");
 
-                    const spacing = 5;
+                        const spacing = 5;
 
-                    // Forward-slash lines (/)
-                    for (let x = -headerHeight; x < width + headerHeight; x += spacing) {
-                        const line = document.createElementNS(svgNS, "line");
-                        line.setAttribute("x1", entity.xStart + x);
-                        line.setAttribute("y1", headerY);
-                        line.setAttribute("x2", entity.xStart + x + headerHeight);
-                        line.setAttribute("y2", headerY + headerHeight);
-                        hatchGroup.appendChild(line);
+                        // Forward-slash lines (/)
+                        for (let x = -headerHeight; x < width + headerHeight; x += spacing) {
+                            const line = document.createElementNS(svgNS, "line");
+                            line.setAttribute("x1", entity.xStart + x);
+                            line.setAttribute("y1", headerY);
+                            line.setAttribute("x2", entity.xStart + x + headerHeight);
+                            line.setAttribute("y2", headerY + headerHeight);
+                            hatchGroup.appendChild(line);
+                        }
+
+                        // Backslash lines (\)
+                        for (let x = -headerHeight; x < width + headerHeight; x += spacing) {
+                            const line = document.createElementNS(svgNS, "line");
+                            line.setAttribute("x1", entity.xStart + x + headerHeight);
+                            line.setAttribute("y1", headerY);
+                            line.setAttribute("x2", entity.xStart + x);
+                            line.setAttribute("y2", headerY + headerHeight);
+                            hatchGroup.appendChild(line);
+                        }
+
+                        svg.appendChild(hatchGroup);
+
+                        // Redraw borders on top of crosshatching
+                        const border = document.createElementNS(svgNS, "rect");
+                        border.setAttribute("x", entity.xStart);
+                        border.setAttribute("y", entity.yStart);
+                        border.setAttribute("width", width);
+                        border.setAttribute("height", height);
+                        border.setAttribute("fill", "none");
+                        border.setAttribute("stroke", entity.colors[entity.statements.length > 1 ? 0 : (entity.deleted.includes(true) ? entity.deleted.indexOf(true) : 0)]);
+                        svg.appendChild(border);
+
+                        // Bottom line
+                        const bottomLine = document.createElementNS(svgNS, "rect");
+                        bottomLine.setAttribute("x", entity.xStart);
+                        bottomLine.setAttribute("y", headerY + 2*backgroundCellSize);
+                        bottomLine.setAttribute("width", width);
+                        bottomLine.setAttribute("height", 1);
+                        bottomLine.setAttribute("fill", entity.colors[i]);
+                        svg.appendChild(bottomLine);
+
+                        // Solid rect behind entity name
+                        const textWidth = c.measureText(entity.headers[i]).width;
+                        const solidBg = document.createElementNS(svgNS, "rect");
+                        solidBg.setAttribute("x", entity.xStart);
+                        solidBg.setAttribute("y", headerY);
+                        solidBg.setAttribute("width", textWidth + 2*backgroundCellSize);
+                        solidBg.setAttribute("height", headerHeight);
+                        solidBg.setAttribute("fill", entity.colors[i]);
+                        svg.appendChild(solidBg);
                     }
 
-                    // Backslash lines (\)
-                    for (let x = -headerHeight; x < width + headerHeight; x += spacing) {
-                        const line = document.createElementNS(svgNS, "line");
-                        line.setAttribute("x1", entity.xStart + x + headerHeight);
-                        line.setAttribute("y1", headerY);
-                        line.setAttribute("x2", entity.xStart + x);
-                        line.setAttribute("y2", headerY + headerHeight);
-                        hatchGroup.appendChild(line);
-                    }
+                    // Header text
+                    const text = document.createElementNS(svgNS, "text");
+                    text.setAttribute("x", entity.xStart + backgroundCellSize + 1);
+                    text.setAttribute("y", headerY + 1.25 * backgroundCellSize + 1);
+                    text.setAttribute("fill", "white");
+                    text.setAttribute("font-size", "10px");
+                    text.setAttribute("font-family", "sans-serif");
+                    text.textContent = entity.headers[i];
+                    svg.appendChild(text);
 
-                    svg.appendChild(hatchGroup);
-
-                    // Redraw borders on top of crosshatching
-                    const border = document.createElementNS(svgNS, "rect");
-                    border.setAttribute("x", entity.xStart);
-                    border.setAttribute("y", entity.yStart);
-                    border.setAttribute("width", width);
-                    border.setAttribute("height", height);
-                    border.setAttribute("fill", "none");
-                    border.setAttribute("stroke", entity.colors[0]);
-                    svg.appendChild(border);
-
-                    // Bottom line
-                    const bottomLine = document.createElementNS(svgNS, "rect");
-                    bottomLine.setAttribute("x", entity.xStart);
-                    bottomLine.setAttribute("y", headerY + 2*backgroundCellSize);
-                    bottomLine.setAttribute("width", width);
-                    bottomLine.setAttribute("height", 1);
-                    bottomLine.setAttribute("fill", entity.colors[i]);
-                    svg.appendChild(bottomLine);
-
-                    // Solid rect behind entity name
-                    const textWidth = c.measureText(entity.headers[i]).width;
-                    const solidBg = document.createElementNS(svgNS, "rect");
-                    solidBg.setAttribute("x", entity.xStart);
-                    solidBg.setAttribute("y", headerY);
-                    solidBg.setAttribute("width", textWidth + 2*backgroundCellSize);
-                    solidBg.setAttribute("height", headerHeight);
-                    solidBg.setAttribute("fill", entity.colors[i]);
-                    svg.appendChild(solidBg);
+                    headerIndex++;
                 }
-
-                // Header text
-                const text = document.createElementNS(svgNS, "text");
-                text.setAttribute("x", entity.xStart + backgroundCellSize + 1);
-                text.setAttribute("y", headerY + 1.25 * backgroundCellSize + 1);
-                text.setAttribute("fill", "white");
-                text.setAttribute("font-size", "10px");
-                text.setAttribute("font-family", "sans-serif");
-                text.textContent = entity.headers[i];
-                svg.appendChild(text);
             }
         }
     });

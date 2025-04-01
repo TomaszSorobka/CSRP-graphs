@@ -17,6 +17,7 @@ class Entity {
         this.statements = statements;
         this.headers = [this.name];
         this.deleted = [];
+        this.visibleHeaders;
 
         // Pixel coordinates
         this.xStart;
@@ -79,13 +80,13 @@ class Entity {
     }
 
     draw() {
-        if (this.statements.length > 1) {
+        if (this.statements.length > 1 || this.deleted.includes(true)) {
             for (let i = 0; i < this.colors.length; i++) {
                 c.fillStyle = rgbToRgba(this.colors[i], '0.15');
                 c.fillRect(this.xStart, this.yStart, this.xEnd - this.xStart, this.yEnd - this.yStart);
             }
     
-            c.strokeStyle = this.colors[0];
+            c.strokeStyle = this.colors[this.statements.length > 1 ? 0 : (this.deleted.includes(true) ? this.deleted.indexOf(true) : 0)];
             c.beginPath();
             c.moveTo(this.xStart, this.yStart);
             c.lineTo(this.xEnd, this.yStart);
@@ -97,39 +98,54 @@ class Entity {
     }
 
     label() {
-        if (this.statements.length > 1) {
+        if (this.statements.length > 1 || this.deleted.includes(true)) {
+            let headerIndex = 0;
             for (let i = 0; i < this.headers.length; i++) {
-                let backgroundColor = this.colors[i];
+                if (this.statements.length > 1 || this.deleted[i]) {
+                    let backgroundColor = this.colors[i];
 
-                if (this.deleted[i]) {
-                    // Fill space behind entity name
-                    c.fillStyle = backgroundColor;
-                    c.fillRect(this.xStart + 1, this.yStart + 2 * i * backgroundCellSize + 1, c.measureText(this.headers[i]).width + 2 * backgroundCellSize, 2 * backgroundCellSize);
+                    if (this.deleted[i]) {
+                        // Fill space behind entity name
+                        c.fillStyle = backgroundColor;
+                        c.fillRect(this.xStart + 1, this.yStart + 2 * headerIndex * backgroundCellSize + 1, c.measureText(this.headers[i]).width + 2 * backgroundCellSize, 2 * backgroundCellSize);
 
-                    // Draw crosshatching pattern for the rest of the header
-                    c.fillStyle = createCrosshatchPattern(backgroundColor);
-                    c.fillRect(this.xStart + 1, this.yStart + 2 * i * backgroundCellSize + 1, this.xEnd - this.xStart - 2, 2 * backgroundCellSize);
+                        // Draw crosshatching pattern for the rest of the header
+                        c.fillStyle = createCrosshatchPattern(backgroundColor);
+                        c.fillRect(this.xStart + 1, this.yStart + 2 * headerIndex * backgroundCellSize + 1, this.xEnd - this.xStart - 2, 2 * backgroundCellSize);
 
-                    // Draw bottom line of header
-                    c.fillStyle = backgroundColor;
-                    c.fillRect(this.xStart + 1, this.yStart + 2 * i * backgroundCellSize + 1 + 2 * backgroundCellSize, this.xEnd - this.xStart - 2, 1);
+                        // Draw bottom line of header
+                        c.fillStyle = backgroundColor;
+                        c.fillRect(this.xStart + 1, this.yStart + 2 * headerIndex * backgroundCellSize + 1 + 2 * backgroundCellSize, this.xEnd - this.xStart - 2, 1);
+                    }
+                    else {
+                        c.fillStyle = backgroundColor;
+                        c.fillRect(this.xStart + 1, this.yStart + 2 * headerIndex * backgroundCellSize + 1, this.xEnd - this.xStart - 2, 2 * backgroundCellSize);
+                    }
+        
+                    c.fillStyle = "#fff";
+                    c.fillText(this.headers[i], this.xStart + backgroundCellSize + 1, this.yStart + 2 * headerIndex * backgroundCellSize + 1.25 * backgroundCellSize + 1);
+
+                    headerIndex++;
                 }
-                else {
-                    c.fillStyle = backgroundColor;
-                    c.fillRect(this.xStart + 1, this.yStart + 2 * i * backgroundCellSize + 1, this.xEnd - this.xStart - 2, 2 * backgroundCellSize);
-                }
-    
-                c.fillStyle = "#fff";
-                c.fillText(this.headers[i], this.xStart + backgroundCellSize + 1, this.yStart + 2 * i * backgroundCellSize + 1.25 * backgroundCellSize + 1);
             }
         }
     }
 
     changeColor() {
         if (mouse.x > this.xStart && mouse.x < this.xEnd) {
-            for (let i = 0; i < this.headers.length; i++) {
-                if (mouse.y > this.yStart + 2 * i * backgroundCellSize + 1 && mouse.y < this.yStart + 2 * i * backgroundCellSize + 1 + 2 * backgroundCellSize) {
-                    this.colors[i] = hexToRgb(currentColor);
+            if (this.statements.length > 1) {
+                for (let i = 0; i < this.headers.length; i++) {
+                    if (mouse.y > this.yStart + 2 * i * backgroundCellSize + 1 && mouse.y < this.yStart + 2 * i * backgroundCellSize + 1 + 2 * backgroundCellSize) {
+                        this.colors[i] = hexToRgb(currentColor);
+                    }
+                }
+            }
+            else {
+                let visHeaders = this.headers.filter(h => this.deleted[this.headers.indexOf(h)]);
+                for (let i = 0; i < visHeaders.length; i++) {
+                    if (mouse.y > this.yStart + 2 * i * backgroundCellSize + 1 && mouse.y < this.yStart + 2 * i * backgroundCellSize + 1 + 2 * backgroundCellSize) {
+                        this.colors[this.headers.indexOf(visHeaders[i])] = hexToRgb(currentColor);
+                    }
                 }
             }
         }
