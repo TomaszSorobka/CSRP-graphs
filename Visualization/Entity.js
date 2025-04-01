@@ -2,6 +2,7 @@ class Entity {
     constructor(id, name, x1, y1, x2, y2, color, statements) {
         this.id = id;
         this.name = name;
+        this.displayName = this.removeSquareBracketsAndContent(name);
 
         // Cell coordinates
         this.x1 = x1;
@@ -16,6 +17,7 @@ class Entity {
 
         this.statements = statements;
         this.headers = [this.name];
+        this.displayHeaders = [this.displayName];
         this.deleted = [];
         this.visibleHeaders;
 
@@ -29,6 +31,10 @@ class Entity {
         this.marginTop = 3;
         this.marginRight = 1;
         this.marginBottom = 1;
+    }
+
+    removeSquareBracketsAndContent(input) {
+        return input.replace(/\s*\[[^\]]*\]/g, '');
     }
 
     position() {
@@ -123,7 +129,7 @@ class Entity {
                     }
         
                     c.fillStyle = "#fff";
-                    c.fillText(this.headers[i], this.xStart + backgroundCellSize + 1, this.yStart + 2 * headerIndex * backgroundCellSize + 1.25 * backgroundCellSize + 1);
+                    c.fillText(this.displayHeaders[i], this.xStart + backgroundCellSize + 1, this.yStart + 2 * headerIndex * backgroundCellSize + 1.25 * backgroundCellSize + 1);
 
                     headerIndex++;
                 }

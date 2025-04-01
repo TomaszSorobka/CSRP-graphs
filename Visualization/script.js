@@ -148,7 +148,7 @@ function generateDistinctDarkColors(n) {
     // }
 
     for (let i = 0; i < n; i++) {
-        colors.push(`rgb(${Math.floor(Math.random()* 200)}, ${Math.floor(Math.random()* 200)}, ${Math.floor(Math.random()* 200)})`);
+        colors.push(`rgb(${Math.floor(Math.random() * 200)}, ${Math.floor(Math.random() * 200)}, ${Math.floor(Math.random() * 200)})`);
     }
 
     return colors;
@@ -157,8 +157,8 @@ function generateDistinctDarkColors(n) {
 function rgbToRgba(rgb, alpha) {
     const match = rgb.match(/^rgb\s*\(\s*(\d+),\s*(\d+),\s*(\d+)\s*\)$/i);
     if (match) {
-      const [_, r, g, b] = match;
-      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        const [_, r, g, b] = match;
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
     return rgb; // fallback if input isn't valid
 }
@@ -180,19 +180,19 @@ function hexToRgb(hex) {
     const g = (bigint >> 8) & 255;
     const b = bigint & 255;
 
-    return `rgb(${r}, ${g}, ${b})`; 
-}  
+    return `rgb(${r}, ${g}, ${b})`;
+}
 
 function createCrosshatchPattern(color) {
     const patternCanvas = document.createElement('canvas');
     const size = backgroundCellSize; // size of one tile
     patternCanvas.width = size;
     patternCanvas.height = size;
-  
+
     const pc = patternCanvas.getContext('2d');
     pc.strokeStyle = color; // hatch line color
     pc.lineWidth = 1;
-  
+
     // draw crosshatch (two diagonal lines)
     pc.beginPath();
     pc.moveTo(0, 0);
@@ -200,7 +200,7 @@ function createCrosshatchPattern(color) {
     pc.moveTo(size, 0);
     pc.lineTo(0, size);
     pc.stroke();
-  
+
     return c.createPattern(patternCanvas, 'repeat');
 }
 
@@ -214,7 +214,7 @@ function initializeElements() {
 
     let randomColors = generateDistinctDarkColors(nonSingletonEntities.length);
     let nextColor = 0;
-    
+
     for (var i = 0; i < entities.length; i++) {
         let id = entities[i].id;
         let name = entities[i].name;
@@ -247,6 +247,7 @@ function mergeEntitiesWithSameStatements() {
         for (let j = i + 1; j < entityRects.length; j++) {
             if (entityRects[i].statements.sort().join(',') === entityRects[j].statements.sort().join(',')) {
                 entityRects[i].headers.push(entityRects[j].name);
+                entityRects[i].displayHeaders.push(entityRects[j].displayName);
                 entityRects[i].colors.push(entityRects[j].color);
                 entityRects[i].marginTop += 2;
                 entityRects.splice(j, 1);
@@ -260,7 +261,7 @@ function mergeEntitiesWithSameStatements() {
             if (entityRects[i].statements.includes(statements[j].id)) {
                 statements[j].entities.push(entityRects[i]);
             }
-        } 
+        }
     }
 }
 
@@ -289,8 +290,8 @@ function markCopiedEntities() {
                 e.colors[i] = deletedColors[repeated.indexOf(e.headers[i])];
             }
         }
-    });   
-    
+    });
+
     // Set number of visible headers
     entityRects.forEach(e => {
         if (e.statements.length > 1) {
@@ -340,7 +341,7 @@ function calculateGapsAndMargins() {
 
     // Remove default margins from singleton sets
     for (let i = 0; i < entityRects.length; i++) {
-        if (entityRects[i].statements.length == 1  && !entityRects[i].deleted.includes(true)) {
+        if (entityRects[i].statements.length == 1 && !entityRects[i].deleted.includes(true)) {
             entityRects[i].marginBottom = 0;
             entityRects[i].marginTop = 0;
             entityRects[i].marginRight = 0;
@@ -368,11 +369,11 @@ function calculateGapsAndMargins() {
                     }
                     else if (rowEntities[i][j][1] == "x2" && rowEntities[i][k][1] == "x2" && entityRects[rowEntities[i][k][0]].marginRight == entityRects[rowEntities[i][j][0]].marginRight) {
                         if (entityRects[rowEntities[i][k][0]].statements.length > 1) entityRects[rowEntities[i][k][0]].marginRight = entityRects[rowEntities[i][j][0]].marginRight + 1;
-                    }       
+                    }
                 }
             }
-        }     
-        
+        }
+
         // Check and fix any equal margins that resulted from wrong comparison order
         for (let j = 0; j < rowEntities[i].length; j++) {
             for (let k = j + 1; k < rowEntities[i].length; k++) {
@@ -392,10 +393,10 @@ function calculateGapsAndMargins() {
                     }
                     else if (rowEntities[i][j][1] == "x2" && rowEntities[i][k][1] == "x2" && entityRects[rowEntities[i][k][0]].marginRight == entityRects[rowEntities[i][j][0]].marginRight) {
                         if (entityRects[rowEntities[i][k][0]].statements.length > 1) entityRects[rowEntities[i][k][0]].marginRight = entityRects[rowEntities[i][j][0]].marginRight + 1;
-                    }       
+                    }
                 }
             }
-        }  
+        }
     }
 
     // Set vertical entity margins
@@ -425,11 +426,11 @@ function calculateGapsAndMargins() {
                     }
                     else if (columnEntities[i][j][1] == "y2" && columnEntities[i][k][1] == "y2" && entityRects[columnEntities[i][k][0]].marginBottom == entityRects[columnEntities[i][j][0]].marginBottom) {
                         if (entityRects[columnEntities[i][k][0]].statements.length > 1) entityRects[columnEntities[i][k][0]].marginBottom = entityRects[columnEntities[i][j][0]].marginBottom + 1;
-                    }        
+                    }
                 }
             }
-        }  
-        
+        }
+
         // Check and fix any equal margins that resulted from wrong comparison order
         for (let j = 0; j < columnEntities[i].length; j++) {
             for (let k = j + 1; k < columnEntities[i].length; k++) {
@@ -447,7 +448,7 @@ function calculateGapsAndMargins() {
 
                         // If their headers overlap, increase (preferably) the bigger entity's top margin such that there is enough space for all its headers
                         if (entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][k][0]].visibleHeaders * 2 >= entityRects[columnEntities[i][j][0]].marginTop - entityRects[columnEntities[i][j][0]].visibleHeaders * 2) {
-                            
+
                             if (entityRects[columnEntities[i][k][0]].statements.length > 1) {
                                 entityRects[columnEntities[i][k][0]].marginTop = entityRects[columnEntities[i][j][0]].marginTop + entityRects[columnEntities[i][k][0]].visibleHeaders * 2 + 1;
                             }
@@ -461,10 +462,10 @@ function calculateGapsAndMargins() {
                     }
                     else if (columnEntities[i][j][1] == "y2" && columnEntities[i][k][1] == "y2" && entityRects[columnEntities[i][k][0]].marginBottom == entityRects[columnEntities[i][j][0]].marginBottom) {
                         if (entityRects[columnEntities[i][k][0]].statements.length > 1) entityRects[columnEntities[i][k][0]].marginBottom = entityRects[columnEntities[i][j][0]].marginBottom + 1;
-                    }        
+                    }
                 }
             }
-        }       
+        }
     }
 
     // Increase row gaps to fit the highest number of nested entities
@@ -502,8 +503,8 @@ function calculateGapsAndMargins() {
                     }
                 }
             }
-        }  
-        
+        }
+
         rowGaps[i] += maxMargin;
     }
 
@@ -542,8 +543,8 @@ function calculateGapsAndMargins() {
                     }
                 }
             }
-        }  
-        
+        }
+
         columnGaps[i] += maxMargin;
     }
 
@@ -569,7 +570,7 @@ function calculateGapsAndMargins() {
                     else if (rowEntities[i][j][1] == "x1" && rowEntities[i][k][1] == "x2" && entityRects[rowEntities[i][k][0]].marginRight + entityRects[rowEntities[i][j][0]].marginLeft >= rowGaps[i]) {
                         // Increase gap to fit the difference
                         rowGaps[i] += entityRects[rowEntities[i][k][0]].marginRight + entityRects[rowEntities[i][j][0]].marginLeft - rowGaps[i] + 1;
-                    }       
+                    }
                 }
             }
         }
@@ -597,7 +598,7 @@ function calculateGapsAndMargins() {
                     else if (columnEntities[i][j][1] == "y1" && columnEntities[i][k][1] == "y2" && entityRects[columnEntities[i][k][0]].marginBottom + entityRects[columnEntities[i][j][0]].marginTop >= columnGaps[i]) {
                         // Increase gap to fit the difference
                         columnGaps[i] += entityRects[columnEntities[i][k][0]].marginBottom + entityRects[columnEntities[i][j][0]].marginTop - columnGaps[i] + 1;
-                    }       
+                    }
                 }
             }
         }
@@ -853,7 +854,7 @@ function exportToSVG() {
                         // Bottom line
                         const bottomLine = document.createElementNS(svgNS, "rect");
                         bottomLine.setAttribute("x", entity.xStart);
-                        bottomLine.setAttribute("y", headerY + 2*backgroundCellSize);
+                        bottomLine.setAttribute("y", headerY + 2 * backgroundCellSize);
                         bottomLine.setAttribute("width", width);
                         bottomLine.setAttribute("height", 1);
                         bottomLine.setAttribute("fill", entity.colors[i]);
@@ -864,7 +865,7 @@ function exportToSVG() {
                         const solidBg = document.createElementNS(svgNS, "rect");
                         solidBg.setAttribute("x", entity.xStart);
                         solidBg.setAttribute("y", headerY);
-                        solidBg.setAttribute("width", textWidth + 2*backgroundCellSize);
+                        solidBg.setAttribute("width", textWidth + 2 * backgroundCellSize);
                         solidBg.setAttribute("height", headerHeight);
                         solidBg.setAttribute("fill", entity.colors[i]);
                         svg.appendChild(solidBg);
@@ -877,7 +878,7 @@ function exportToSVG() {
                     text.setAttribute("fill", "white");
                     text.setAttribute("font-size", "10px");
                     text.setAttribute("font-family", "sans-serif");
-                    text.textContent = entity.headers[i];
+                    text.textContent = entity.displayHeaders[i];
                     svg.appendChild(text);
 
                     headerIndex++;
@@ -886,94 +887,106 @@ function exportToSVG() {
         }
     });
 
-
     statementCells.forEach(statement => {
-        const x = statement.xStart;
-        const y = statement.yStart;
-        const width = backgroundCellSize * cellWidth;
-        const height = backgroundCellSize * cellHeights[statement.y];
-    
-        // 1. Background box
-        const rect = document.createElementNS(svgNS, "rect");
-        rect.setAttribute("x", x);
-        rect.setAttribute("y", y);
-        rect.setAttribute("width", width);
-        rect.setAttribute("height", height);
-        rect.setAttribute("fill", "#ffffff");
-        svg.appendChild(rect);
-    
-        // 2. Flatten rendered text (add \n to match what’s drawn)
-        const flattenedText = statement.textLines.join("\n");
-    
-        // 3. Get entity names and their highlight positions
-        const nameColorPairs = statement.getEntityNamesAndColors(); // [[name, color], ...]
-        const nameIndices = nameColorPairs.map(([name, color]) => ({
-            name,
-            color,
-            indices: statement.getIndicesOf(name, flattenedText, false)
-        }));
-    
-        const baseX = x + backgroundCellSize;
-        let currentY = y + 2 * backgroundCellSize;
-        let globalCharIndex = 0; // tracks position in flattenedText
-    
-        // 4. Render each character
-        for (const line of statement.textLines) {
-            let cursorX = baseX;
-    
-            for (let j = 0; j < line.length; j++) {
-                const char = line[j];
-                let color = "#000";
-                let underline = false;
-    
-                // Check if current character index falls inside a name
-                for (const { name, color: rawColor, indices } of nameIndices) {
-                    for (const startIdx of indices) {
-                        if (globalCharIndex >= startIdx && globalCharIndex < startIdx + name.length) {
-                            if (rawColor.trim() === "rgb(255, 255, 255)") {
-                                color = "#000";
-                                underline = true;
-                            } else {
-                                color = rawColor;
-                            }
+        const xStart = statement.xStart;
+        const yStart = statement.yStart;
+
+        // 1. Draw background rectangle
+        const bgRect = document.createElementNS(svgNS, "rect");
+        bgRect.setAttribute("x", xStart);
+        bgRect.setAttribute("y", yStart);
+        bgRect.setAttribute("width", backgroundCellSize * cellWidth);
+        bgRect.setAttribute("height", backgroundCellSize * cellHeights[statement.y]);
+        bgRect.setAttribute("fill", "rgb(255, 255, 255)");
+        svg.appendChild(bgRect);
+
+        // 2. Get entity names and their positions
+        let namesAndColors = statement.getEntityNamesAndColors();
+        let nameIndices = [];
+
+        for (let i = 0; i < namesAndColors.length; i++) {
+            nameIndices.push(statement.getIndicesOf(namesAndColors[i][0], statement.text, false));
+        }
+
+        let currentIndex = 0;
+        let currentNameLength = 0;
+        let drawingName = false;
+        let lengthSoFar = 0;
+
+        for (let i = 0; i < statement.textLines.length; i++) {
+            for (let j = 0; j < statement.textLines[i].length; j++) {
+
+                // Check if we are at the start of an entity name
+                for (let k = 0; k < nameIndices.length; k++) {
+                    for (let l = 0; l < nameIndices[k].length; l++) {
+                        if (currentIndex == nameIndices[k][l]) {
+                            fillColor = namesAndColors[k][1];
+                            currentNameLength = namesAndColors[k][0].length;
+                            drawingName = true;
+                            break;
                         }
                     }
                 }
-    
-                // Draw character
+
+                // If we are not drawing a name, use black
+                if (!drawingName) fillColor = "#000";
+
+                // If singleton (white), override to black and bold
+                let drawingBold = false;
+                let fontWeight = "normal";
+                if (fillColor == "rgb(255, 255, 255)") {
+                    fillColor = "#000";
+                    fontWeight = "bolder";
+                    drawingBold = true;
+                } else if (fillColor !== "#000") {
+                    fontWeight = "bold";
+                }
+
+                // Draw character as <text>
                 const textElem = document.createElementNS(svgNS, "text");
-                textElem.setAttribute("x", cursorX);
-                textElem.setAttribute("y", currentY);
+                textElem.setAttribute("x", xStart + backgroundCellSize + lengthSoFar);
+                textElem.setAttribute("y", yStart + (2 + i) * backgroundCellSize);
                 textElem.setAttribute("font-size", "10px");
                 textElem.setAttribute("font-family", "sans-serif");
-                textElem.setAttribute("fill", color);
-                if (color != "#000") textElem.setAttribute("font-weight", "bold");
-                textElem.textContent = char;
+                textElem.setAttribute("font-weight", fontWeight);
+                textElem.setAttribute("fill", fillColor);
+                textElem.textContent = statement.textLines[i][j];
                 svg.appendChild(textElem);
-    
-                // Draw underline (if white entity)
-                if (underline && char !== " ") {
-                    const underlineElem = document.createElementNS(svgNS, "line");
-                    underlineElem.setAttribute("x1", cursorX);
-                    underlineElem.setAttribute("x2", cursorX + c.measureText(char).width + 0.3);
-                    underlineElem.setAttribute("y1", currentY + 1);
-                    underlineElem.setAttribute("y2", currentY + 1);
-                    underlineElem.setAttribute("stroke", "#000");
-                    underlineElem.setAttribute("stroke-width", "1");
-                    svg.appendChild(underlineElem);
+
+                // Draw underline
+                if (drawingBold && statement.textLines[i][j] !== " ") {
+                    const underline = document.createElementNS(svgNS, "line");
+                    const width = c.measureText(statement.textLines[i][j]).width + 0.3;
+                    underline.setAttribute("x1", xStart + backgroundCellSize + lengthSoFar);
+                    underline.setAttribute("x2", xStart + backgroundCellSize + lengthSoFar + width);
+                    underline.setAttribute("y1", yStart + (2 + i) * backgroundCellSize + 1);
+                    underline.setAttribute("y2", yStart + (2 + i) * backgroundCellSize + 1);
+                    underline.setAttribute("stroke", "#000");
+                    underline.setAttribute("stroke-width", "1");
+                    svg.appendChild(underline);
                 }
-    
-                // Move cursor and global index
-                cursorX += c.measureText(char).width;
-                globalCharIndex++;
+
+                // Reset font if needed
+                 if (drawingBold) {
+                    fillColor = "rgb(255, 255, 255)";
+                }
+
+                // Update counters
+                if (drawingName) currentNameLength--;
+                if (currentNameLength === 0) {
+                    drawingName = false;
+                    drawingBold = false;
+                }
+                currentIndex++;
+                lengthSoFar += c.measureText(statement.textLines[i][j]).width;
             }
-    
-            // Newline: increase y and track in index
-            currentY += 10;
-            globalCharIndex++;
+
+            // Reset length after each line
+            lengthSoFar = 0;
         }
-    });    
-    
+
+    });
+
 
     // Serialize and download
     const svgData = new XMLSerializer().serializeToString(svg);
