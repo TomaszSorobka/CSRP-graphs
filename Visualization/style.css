@@ -16,12 +16,12 @@ body{
 }
 
 div {
-    margin-top: 30px;
+    margin-top: 35px;
     display: flex;
     justify-content: center;
     align-items: center;
     width: calc(100vw - 20px);
-    height: calc(100vh - 40px);
+    height: calc(100vh - 45px);
     overflow: scroll;
     position: relative;
 
@@ -48,7 +48,7 @@ input, label {
 #exportLabel, #fileLabel {
     border: 2px solid #666;
     border-radius: 5px;
-    padding: 5px;
+    padding: 2.5px;
     box-sizing: border-box;
 }
 

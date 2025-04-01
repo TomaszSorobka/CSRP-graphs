@@ -61,7 +61,7 @@ public class StatementEntitySolution {
     HashSet<Integer> deletedNodes = new HashSet<>();
     HashMap<Integer, int[]> deletedPositions = new HashMap<>();
     ArrayList<Integer> pastAlignments = new ArrayList<>();
-    final int dimensions = 6;
+    final int dimensions = 4;
 
     // Method to make a copy of the solution
     // public StatementEntitySolution copy() {
@@ -309,28 +309,28 @@ public class StatementEntitySolution {
                         GRBLinExpr expr = new GRBLinExpr();
                         expr.addTerm(-1.0, grbEntityCoord[j][2]);
                         expr.addTerm(1.0, grbEntityCoord[i][0]);
-                        expr.addTerm(Integer.MAX_VALUE, vars[0]);
+                        expr.addTerm(dimensions + 1, vars[0]);
                         model.addConstr(expr, GRB.GREATER_EQUAL, 0, "H6_" + i + "_" + j + "_left");
 
                         // x2_e1 - x1_e2 + M * vars[1] >= 0
                         expr = new GRBLinExpr();
                         expr.addTerm(1.0, grbEntityCoord[j][0]);
                         expr.addTerm(-1.0, grbEntityCoord[i][2]);
-                        expr.addTerm(Integer.MAX_VALUE, vars[1]);
+                        expr.addTerm(dimensions + 1, vars[1]);
                         model.addConstr(expr, GRB.GREATER_EQUAL, 0, "H6_" + i + "_" + j + "_right");
 
                         // y1_e1 - y2_e2 + M * vars[2] >= 0
                         expr = new GRBLinExpr();
                         expr.addTerm(-1.0, grbEntityCoord[j][3]);
                         expr.addTerm(1.0, grbEntityCoord[i][1]);
-                        expr.addTerm(Integer.MAX_VALUE, vars[2]);
+                        expr.addTerm(dimensions + 1, vars[2]);
                         model.addConstr(expr, GRB.GREATER_EQUAL, 0, "H6_" + i + "_" + j + "_top");
 
                         // y1_e2 - y2_e1 + M * vars[3] >= 0
                         expr = new GRBLinExpr();
                         expr.addTerm(1.0, grbEntityCoord[j][1]);
                         expr.addTerm(-1.0, grbEntityCoord[i][3]);
-                        expr.addTerm(Integer.MAX_VALUE, vars[3]);
+                        expr.addTerm(dimensions + 1, vars[3]);
                         model.addConstr(expr, GRB.GREATER_EQUAL, 0, "H6_" + i + "_" + j + "_bottom");
 
                         expr = new GRBLinExpr();
@@ -354,25 +354,25 @@ public class StatementEntitySolution {
                     GRBLinExpr expr = new GRBLinExpr();
                     expr.addTerm(1.0, grbStatementCoord[i][0]);
                     expr.addTerm(-1.0, grbStatementCoord[j][0]);
-                    expr.addTerm(Integer.MAX_VALUE, vars[0]);
+                    expr.addTerm(dimensions + 1, vars[0]);
                     model.addConstr(expr, GRB.GREATER_EQUAL, 1, "H7_" + i + "_" + j + "_x1");
 
                     expr = new GRBLinExpr();
                     expr.addTerm(1.0, grbStatementCoord[i][0]);
                     expr.addTerm(-1.0, grbStatementCoord[j][0]);
-                    expr.addTerm(-Integer.MAX_VALUE, vars[1]);
+                    expr.addTerm(-(dimensions + 1), vars[1]);
                     model.addConstr(expr, GRB.LESS_EQUAL, -1, "H7_" + i + "_" + j + "_x2");
 
                     expr = new GRBLinExpr();
                     expr.addTerm(1.0, grbStatementCoord[i][1]);
                     expr.addTerm(-1.0, grbStatementCoord[j][1]);
-                    expr.addTerm(Integer.MAX_VALUE, vars[2]);
+                    expr.addTerm(dimensions + 1, vars[2]);
                     model.addConstr(expr, GRB.GREATER_EQUAL, 1, "H7_" + i + "_" + j + "_y1");
 
                     expr = new GRBLinExpr();
                     expr.addTerm(1.0, grbStatementCoord[i][1]);
                     expr.addTerm(-1.0, grbStatementCoord[j][1]);
-                    expr.addTerm(-Integer.MAX_VALUE, vars[3]);
+                    expr.addTerm(-(dimensions + 1), vars[3]);
                     model.addConstr(expr, GRB.LESS_EQUAL, -1, "H7_" + i + "_" + j + "_y2");
 
                     expr = new GRBLinExpr();
@@ -534,7 +534,7 @@ public class StatementEntitySolution {
                     sols.add(newSolution);
 
                     saveSolutionToFile(newSolution, instance,
-                            "Visualization/Solutions/murder_component_" + sols.size() + ".txt");
+                            "Visualization/Solutions/another_robbery_component_" + sols.size() + ".txt");
                 } else {
                     System.out.println("No optimal solution found.");
 
@@ -618,7 +618,7 @@ public class StatementEntitySolution {
     }
 
     public static void main(String[] args) {
-        String jsonFilePath = "ILP\\data\\structured_dataset.json";
+        String jsonFilePath = "ILP\\data\\robbery.json";
         StatementEntityInstance instance = new StatementEntityInstance(jsonFilePath);
         StatementEntitySolution solution = new StatementEntitySolution();
         solution.computeILPCoord(instance, new ArrayList<>());
