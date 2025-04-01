@@ -42,22 +42,28 @@ class Statement {
     
     extractNames(input) {
         const result = [];
-      
-        // Match: everything before the parentheses
-        const mainMatch = input.match(/^(.+?)\s*\(/);
+    
+        // 1. Match: the name before any ( or [ with a space
+        const mainMatch = input.match(/^([^(^\[]+?)(?=\s*(\(|\[|$))/);
         if (mainMatch) {
-          result.push(mainMatch[1].trim());
+            result.push(mainMatch[1].trim());
         }
-      
-        // Match: everything inside the parentheses
-        const parenMatch = input.match(/\(([^)]+)\)/);
+    
+        // 2. Match names inside parentheses only if preceded by a space
+        const parenMatch = input.match(/(?<=\s)\(([^)]+)\)/);
         if (parenMatch) {
-          const innerNames = parenMatch[1].split(',').map(name => name.trim());
-          result.push(...innerNames);
+            result.push(...parenMatch[1].split(',').map(s => s.trim()));
         }
-      
+    
+        // 3. Match names inside square brackets only if preceded by a space
+        const bracketMatch = input.match(/(?<=\s)\[([^\]]+)\]/);
+        if (bracketMatch) {
+            result.push(...bracketMatch[1].split(',').map(s => s.trim()));
+        }
+    
         return result;
     }
+    
 
     getEntityNamesAndColors() {
         let names = [];
@@ -66,15 +72,7 @@ class Statement {
 
         this.entities.forEach(e => {
             for (let i = 0; i < e.headers.length; i++) {
-                if (e.headers[i].indexOf("/") > -1) {
-                    let variations = this.splitEntityName(e.headers[i]);
-                    names.push(variations[0]);
-                    names.push(variations[1]);
-
-                    colors.push(e.colors[i]);
-                    colors.push(e.colors[i]);
-                }
-                else if (e.headers[i].indexOf("(") > -1) {
+                if (e.headers[i].indexOf("(") > -1 || e.headers[i].indexOf("[") > -1) {
                     let variations = this.extractNames(e.headers[i]);
                     variations.forEach(n => {
                         names.push(n);
