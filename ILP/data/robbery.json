@@ -120,31 +120,31 @@
     "entities": [
         {
             "id": 0,
-            "name": "Miss Margaret Ellington (Miss Ellington)"
+            "name": "Miss Margaret Ellington [Miss Ellington]"
         },
         {
             "id": 1,
-            "name": "Mr. Albert Greenbags (President of the Bank)"
+            "name": "Mr. Albert Greenbags (President of the Bank) [Mr. Greenbags, the president's, Mr. Greenbag's]"
         },
         {
             "id": 2,
-            "name": "Elwood Smith (Janitor of the Bank, Mr. Smith)"
+            "name": "Elwood Smith (Janitor of the Bank) [Mr. Smith, Smith]"
         },
         {
             "id": 3,
-            "name": "Howard Ellington (Brother of Miss Ellington, Acme Employee)"
+            "name": "Howard Ellington (Brother of Miss Ellington, Acme Employee) [Mr. Ellington, Howard]"
         },
         {
             "id": 4,
-            "name": "Dirsey Flowers (Hippie-type Person)"
+            "name": "Dirsey Flowers (hippie) [Dirsey, hippie-type character, hippie-type person]"
         },
         {
             "id": 5,
-            "name": "Anastasia Wallflower"
+            "name": "Anastasia Wallflower [Anastasia]"
         },
         {
             "id": 6,
-            "name": "Arthur Nodough (Mr. Greenbags's Half-brother)"
+            "name": "Arthur Nodough (Mr. Greenbags's Half-brother) [Nodough, Arthur]"
         },
         {
             "id": 7,
@@ -152,7 +152,7 @@
         },
         {
             "id": 8,
-            "name": "Mr. Greenbags's Wife"
+            "name": "Mr. Greenbags's Wife [wife]"
         },
         {
             "id": 9,
@@ -164,7 +164,7 @@
         },
         {
             "id": 11,
-            "name": "Acme Construction Company"
+            "name": "Acme Construction Company [Acme]"
         },
         {
             "id": 12,
@@ -184,11 +184,11 @@
         },
         {
             "id": 16,
-            "name": "East Birdwatch, Wisconsin"
+            "name": "East Birdwatch, Wisconsin [East Birdwatch]"
         },
         {
             "id": 17,
-            "name": "Dogwalk, Georgia"
+            "name": "Dogwalk, Georgia [Dogwalk]"
         },
         {
             "id": 18,
@@ -224,7 +224,7 @@
         },
         {
             "id": 26,
-            "name": "Key(s) to the Bank/Vault"
+            "name": "Key(s) to the Bank/Vault [key, keys]"
         },
         {
             "id": 27,
@@ -249,7 +249,7 @@
         "14": [3],
         "15": [3],
         "16": [11, 13, 14],
-        "17": [17],
+        "17": [17, 20],
         "18": [28],
         "19": [16],
         "20": [11],
