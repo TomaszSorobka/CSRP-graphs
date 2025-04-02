@@ -171,6 +171,9 @@ class Statement {
         let drawingName = false;
         let lengthSoFar = 0;
 
+        let cachedLength = 0;
+        let cachedColor = null;
+
         for (let i = 0; i < this.textLines.length; i++) {
             // Draw each character separately
             for (let j = 0; j < this.textLines[i].length; j++) {
@@ -180,6 +183,12 @@ class Statement {
                     for (let l = 0; l < nameIndices[k].length; l++) {
                         // Switch to entity's color
                         if (currentIndex == nameIndices[k][l]) {
+                            // If we haven't finished drawing a previous name, store info so it could be finished later
+                            if (currentNameLength > 0) {
+                                cachedLength = currentNameLength;
+                                cachedColor = c.fillStyle;
+                            }
+
                             c.fillStyle = namesAndColors[k][1];
                             currentNameLength = namesAndColors[k][0].length;
                             drawingName = true;
@@ -215,9 +224,17 @@ class Statement {
 
                 // Update pointers
                 if (drawingName) currentNameLength--;
+                if (drawingName && cachedLength > 0) cachedLength--;
                 if (currentNameLength == 0) {
-                    drawingName = false;
-                    drawingBold = false;
+                    if (cachedLength == 0) {
+                        drawingName = false;
+                        drawingBold = false;
+                    }
+                    else {
+                        currentNameLength = cachedLength;
+                        cachedLength = 0;
+                        c.fillStyle = cachedColor;
+                    }
                 }
                 currentIndex++;
                 lengthSoFar += c.measureText(this.textLines[i][j]).width;

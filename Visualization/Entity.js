@@ -113,7 +113,7 @@ class Entity {
                     if (this.deleted[i]) {
                         // Fill space behind entity name
                         c.fillStyle = backgroundColor;
-                        c.fillRect(this.xStart + 1, this.yStart + 2 * headerIndex * backgroundCellSize + 1, c.measureText(this.headers[i]).width + 2 * backgroundCellSize, 2 * backgroundCellSize);
+                        c.fillRect(this.xStart + 1, this.yStart + 2 * headerIndex * backgroundCellSize + 1, c.measureText(this.displayHeaders[i]).width + 2 * backgroundCellSize, 2 * backgroundCellSize);
 
                         // Draw crosshatching pattern for the rest of the header
                         c.fillStyle = createCrosshatchPattern(backgroundColor);

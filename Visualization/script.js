@@ -804,10 +804,10 @@ function exportToSVG() {
                         clipPath.setAttribute("id", clipId);
 
                         const clipRect = document.createElementNS(svgNS, "rect");
-                        clipRect.setAttribute("x", entity.xStart);
-                        clipRect.setAttribute("y", headerY);
-                        clipRect.setAttribute("width", width);
-                        clipRect.setAttribute("height", headerHeight);
+                        clipRect.setAttribute("x", entity.xStart + 3);
+                        clipRect.setAttribute("y", headerY + 1);
+                        clipRect.setAttribute("width", width - 4);
+                        clipRect.setAttribute("height", headerHeight - 2);
                         clipPath.appendChild(clipRect);
                         svg.appendChild(clipPath);
 
@@ -841,16 +841,6 @@ function exportToSVG() {
 
                         svg.appendChild(hatchGroup);
 
-                        // Redraw borders on top of crosshatching
-                        const border = document.createElementNS(svgNS, "rect");
-                        border.setAttribute("x", entity.xStart);
-                        border.setAttribute("y", entity.yStart);
-                        border.setAttribute("width", width);
-                        border.setAttribute("height", height);
-                        border.setAttribute("fill", "none");
-                        border.setAttribute("stroke", entity.colors[entity.statements.length > 1 ? 0 : (entity.deleted.includes(true) ? entity.deleted.indexOf(true) : 0)]);
-                        svg.appendChild(border);
-
                         // Bottom line
                         const bottomLine = document.createElementNS(svgNS, "rect");
                         bottomLine.setAttribute("x", entity.xStart);
@@ -861,7 +851,7 @@ function exportToSVG() {
                         svg.appendChild(bottomLine);
 
                         // Solid rect behind entity name
-                        const textWidth = c.measureText(entity.headers[i]).width;
+                        const textWidth = c.measureText(entity.displayHeaders[i]).width;
                         const solidBg = document.createElementNS(svgNS, "rect");
                         solidBg.setAttribute("x", entity.xStart);
                         solidBg.setAttribute("y", headerY);
@@ -913,6 +903,9 @@ function exportToSVG() {
         let drawingName = false;
         let lengthSoFar = 0;
 
+        let cachedLength = 0;
+        let cachedColor = null;
+
         for (let i = 0; i < statement.textLines.length; i++) {
             for (let j = 0; j < statement.textLines[i].length; j++) {
 
@@ -920,6 +913,12 @@ function exportToSVG() {
                 for (let k = 0; k < nameIndices.length; k++) {
                     for (let l = 0; l < nameIndices[k].length; l++) {
                         if (currentIndex == nameIndices[k][l]) {
+                            // If we haven't finished drawing a previous name, store info so it could be finished later
+                            if (currentNameLength > 0) {
+                                cachedLength = currentNameLength;
+                                cachedColor = fillColor;
+                            }
+
                             fillColor = namesAndColors[k][1];
                             currentNameLength = namesAndColors[k][0].length;
                             drawingName = true;
@@ -973,10 +972,20 @@ function exportToSVG() {
 
                 // Update counters
                 if (drawingName) currentNameLength--;
-                if (currentNameLength === 0) {
-                    drawingName = false;
-                    drawingBold = false;
+                if (drawingName && cachedLength > 0) cachedLength--;
+
+                if (currentNameLength == 0) {
+                    if (cachedLength == 0) {
+                        drawingName = false;
+                        drawingBold = false;
+                    }
+                    else {
+                        currentNameLength = cachedLength;
+                        cachedLength = 0;
+                        fillColor = cachedColor;
+                    }
                 }
+
                 currentIndex++;
                 lengthSoFar += c.measureText(statement.textLines[i][j]).width;
             }
