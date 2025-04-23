@@ -530,11 +530,11 @@ public class StatementEntitySolution {
                     pastAlignments.add((int) b.get(GRB.DoubleAttr.X));
 
                     // Add solution to global list of solutions
-                    Solution newSolution = new Solution(w, h, entityIds, entityCoordinates, statementCoordinates);
+                    Solution newSolution = new Solution(instance, w, h, entityIds, entityCoordinates, statementCoordinates);
                     sols.add(newSolution);
 
-                    saveSolutionToFile(newSolution, instance,
-                            "Visualization/Solutions/museum_component_" + sols.size() + ".txt");
+                    newSolution.saveSolutionToFile("Visualization/Solutions/museum_component_" + sols.size() + ".txt");
+                    
                 } else {
                     System.out.println("No optimal solution found.");
 
@@ -585,35 +585,6 @@ public class StatementEntitySolution {
                     }
                 }
             }
-        }
-    }
-
-    public static void saveSolutionToFile(Solution solution, StatementEntityInstance instance, String filename) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
-            writer.write("w: " + solution.w + "\n");
-            writer.write("h: " + solution.h + "\n");
-
-            int i = 0;
-            for (Integer entity : instance.entities.keySet()) {
-                writer.write("Entity " + instance.entities.get(entity) + ": (" +
-                        solution.entityCoordinates[i][0] + ", " +
-                        solution.entityCoordinates[i][1] + ") - (" +
-                        solution.entityCoordinates[i][2] + ", " +
-                        solution.entityCoordinates[i][3] + ")\n");
-                i++;
-            }
-
-            int j = 0;
-            for (Integer statement : instance.statements.keySet()) {
-                writer.write("Statement " + instance.statements.get(statement) + ": (" +
-                        solution.statementCoordinates[j][0] + ", " +
-                        solution.statementCoordinates[j][1] + ")\n");
-                j++;
-            }
-
-            System.out.println("Solution saved to " + filename);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
