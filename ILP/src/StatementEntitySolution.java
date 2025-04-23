@@ -117,7 +117,6 @@ public class StatementEntitySolution {
             for (int i = 0; i < nStatements; i++) {
                 grbStatementCoord[i][0] = model.addVar(0, 20, 0.0, GRB.INTEGER, "s" + i + "_" + "x");
                 grbStatementCoord[i][1] = model.addVar(0, 20, 0.0, GRB.INTEGER, "s" + i + "_" + "y");
-
             }
 
             for (int i = 0; i < nEntities; i++) {
@@ -128,7 +127,7 @@ public class StatementEntitySolution {
             }
 
             /*********************************************************************************************************
-             * CONSTRAINTS *
+             *                                          CONSTRAINTS                                                  *
              *********************************************************************************************************/
 
             // System.out.println("Entity is in component: " + entityIds.contains(0) +
@@ -533,8 +532,8 @@ public class StatementEntitySolution {
                     Solution newSolution = new Solution(instance, w, h, entityIds, entityCoordinates, statementCoordinates);
                     sols.add(newSolution);
 
-                    newSolution.saveSolutionToFile("Visualization/Solutions/museum_component_" + sols.size() + ".txt");
-                    
+                    // newSolution.saveSolutionToFile("Visualization/Solutions/museum_component_" + sols.size() + ".txt");
+                    solutions.add(newSolution);
                 } else {
                     System.out.println("No optimal solution found.");
 
@@ -589,9 +588,10 @@ public class StatementEntitySolution {
     }
 
     public static void main(String[] args) {
-        String jsonFilePath = "ILP\\data\\museum.json";
+        String jsonFilePath = "ILP\\data\\robbery.json";
         StatementEntityInstance instance = new StatementEntityInstance(jsonFilePath);
         StatementEntitySolution solution = new StatementEntitySolution();
         solution.computeILPCoord(instance, new ArrayList<>());
+        SolutionPositioner.computeCompleteSolution(solution.solutions, "Visualization/Solutions/robbery_auto_combined.txt");
     }
 }
