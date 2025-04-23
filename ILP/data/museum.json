@@ -1,0 +1,369 @@
+{
+    "statements": [
+        {
+            "id": 0,
+            "text": "The disappearance of Dr. Harland Bishop was reported at 7:30 a.m. on Tuesday, August 17, by the museum's assistant curator."
+        },
+        {
+            "id": 1,
+            "text": "Dr. Bishop, a renowned archaeologist, was last seen leaving the Restoration Wing at around 10:00 p.m. on Monday night."
+        },
+        {
+            "id": 2,
+            "text": "A priceless artifact known as the Emerald Sphinx was found missing from the museum's secure vault."
+        },
+        {
+            "id": 3,
+            "text": "Security logs indicate the vault was accessed using Dr. Bishop's ID card at 10:17 p.m. Monday."
+        },
+        {
+            "id": 4,
+            "text": "The vault requires both an ID card and a numeric code to open."
+        },
+        {
+            "id": 5,
+            "text": "Only three people knew the numeric code: Dr. Bishop, the museum director, and the chief of security."
+        },
+        {
+            "id": 6,
+            "text": "Dr. Bishop had been in a heated dispute with the museum director over the allocation of research funds."
+        },
+        {
+            "id": 7,
+            "text": "Ms. Lenora Clay, the assistant curator, claimed she heard a loud bang from the Restoration Wing around 10:30 p.m."
+        },
+        {
+            "id": 8,
+            "text": "The janitor, Alan Deeks, stated he saw a shadowy figure carrying something bulky wrapped in canvas toward the back exit at approximately 11:00 p.m."
+        },
+        {
+            "id": 9,
+            "text": "A small trail of dried blood was discovered near the entrance to the Restoration Wing."
+        },
+        {
+            "id": 10,
+            "text": "Security cameras covering the Restoration Wing went offline between 10:15 p.m. and 11:05 p.m. due to a 'network issue.'"
+        },
+        {
+            "id": 11,
+            "text": "A maintenance record shows that the camera server was scheduled for inspection the following morning, but no work order was filed for Monday night."
+        },
+        {
+            "id": 12,
+            "text": "The chief of security, Maurice Penn, was not present at the museum that night, citing illness."
+        },
+        {
+            "id": 13,
+            "text": "Mr. Penn's neighbor reported seeing him loading a heavy duffel bag into his car late Monday night."
+        },
+        {
+            "id": 14,
+            "text": "Dr. Bishop's car was found still parked in the museum lot."
+        },
+        {
+            "id": 15,
+            "text": "Police found a burner phone in a trash bin outside the museum, containing texts arranging a meetup at 1:00 a.m. near Lake Verity."
+        },
+        {
+            "id": 16,
+            "text": "The phone was traced to a prepaid account purchased by someone using a fake name and address."
+        },
+        {
+            "id": 17,
+            "text": "A witness jogging by Lake Verity reported seeing two people arguing near the pier around 1:10 a.m."
+        },
+        {
+            "id": 18,
+            "text": "Divers recovered a blood-stained lab coat and a museum ID badge belonging to Dr. Bishop from the lake."
+        },
+        {
+            "id": 19,
+            "text": "Fingerprint analysis showed that the ID badge had been wiped clean, except for one partial print belonging to Ms. Clay."
+        },
+        {
+            "id": 20,
+            "text": "Ms. Clay denied ever touching Dr. Bishop's badge and said she hadn't been near the lake."
+        },
+        {
+            "id": 21,
+            "text": "Mr. Deeks, the janitor, has a prior conviction for grand theft auto but has worked at the museum for six years without incident."
+        },
+        {
+            "id": 22,
+            "text": "The museum director, Edmund Harrick, was attending a gala in Boston the night of the disappearance, with several witnesses confirming his presence."
+        },
+        {
+            "id": 23,
+            "text": "Records show that Mr. Penn accessed the museum's security override system remotely at 10:10 p.m."
+        },
+        {
+            "id": 24,
+            "text": "An anonymous email was sent to the museum director at 2:00 a.m. Tuesday morning, demanding $3 million in exchange for the safe return of the Emerald Sphinx."
+        },
+        {
+            "id": 25,
+            "text": "Police traced the email's origin to a public library terminal in East Barrow, five miles from Lake Verity."
+        },
+        {
+            "id": 26,
+            "text": "A lockpick set was found in the museum's HVAC vent system during a routine sweep the next morning."
+        },
+        {
+            "id": 27,
+            "text": "The security team noted that the HVAC access panel near the Restoration Wing had fresh tool marks."
+        },
+        {
+            "id": 28,
+            "text": "Dr. Bishop had been scheduled to give a press conference on Tuesday to announce the upcoming exhibition of the Emerald Sphinx."
+        }
+    ],
+    "entities": [
+        {
+            "id": 0,
+            "name": "Dr. Harland Bishop (archaeologist) [Dr. Bishop]"
+        },
+        {
+            "id": 1,
+            "name": "Ms. Lenora Clay (assistant curator) [Ms. Clay]"
+        },
+        {
+            "id": 2,
+            "name": "Alan Deeks (janitor) [Mr. Deeks, Alan Deeks]"
+        },
+        {
+            "id": 3,
+            "name": "Maurice Penn (chief of security) [Mr. Penn]"
+        },
+        {
+            "id": 4,
+            "name": "Edmund Harrick (museum director) [Mr. Harrick, museum director]"
+        },
+        {
+            "id": 5,
+            "name": "Emerald Sphinx (artifact) [Emerald Sphinx, the artifact]"
+        },
+        {
+            "id": 6,
+            "name": "Restoration Wing [Restoration Wing]"
+        },
+        {
+            "id": 7,
+            "name": "Museum Vault [vault]"
+        },
+        {
+            "id": 8,
+            "name": "Museum [museum]"
+        },
+        {
+            "id": 9,
+            "name": "Lake Verity [lake, Lake Verity]"
+        },
+        {
+            "id": 10,
+            "name": "Security Override System [security override system]"
+        },
+        {
+            "id": 11,
+            "name": "Camera Server [camera server]"
+        },
+        {
+            "id": 12,
+            "name": "Blood Trail [dried blood, blood]"
+        },
+        {
+            "id": 13,
+            "name": "Museum ID Badge [ID badge, badge]"
+        },
+        {
+            "id": 14,
+            "name": "Burner Phone [burner phone, phone]"
+        },
+        {
+            "id": 15,
+            "name": "Email to Museum Director [email]"
+        },
+        {
+            "id": 16,
+            "name": "Press Conference [press conference]"
+        },
+        {
+            "id": 17,
+            "name": "HVAC Vent System [HVAC vent system, HVAC access panel]"
+        },
+        {
+            "id": 18,
+            "name": "Fingerprint Analysis [fingerprint analysis]"
+        },
+        {
+            "id": 19,
+            "name": "Public Library in East Barrow [public library terminal in East Barrow]"
+        },
+        {
+            "id": 20,
+            "name": "Witness at Lake Verity [witness]"
+        },
+        {
+            "id": 21,
+            "name": "Police"
+        },
+        {
+            "id": 22,
+            "name": "Museum Security Cameras [security cameras]"
+        },
+        {
+            "id": 23,
+            "name": "Museum Gala in Boston [gala in Boston]"
+        },
+        {
+            "id": 24,
+            "name": "Car Park [car, museum lot]"
+        },
+        {
+            "id": 25,
+            "name": "Numeric Code [numeric code]"
+        },
+        {
+            "id": 26,
+            "name": "ID Card [ID card]"
+        },
+        {
+            "id": 27,
+            "name": "Lab Coat [lab coat]"
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            6,
+            14,
+            18,
+            28
+        ],
+        "1": [
+            0,
+            7,
+            19,
+            20
+        ],
+        "2": [
+            8,
+            21
+        ],
+        "3": [
+            5,
+            12,
+            13,
+            23
+        ],
+        "4": [
+            5,
+            6,
+            22
+        ],
+        "5": [
+            2,
+            24,
+            28
+        ],
+        "6": [
+            1,
+            7,
+            9,
+            10,
+            27
+        ],
+        "7": [
+            2,
+            3,
+            4
+        ],
+        "8": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            8,
+            12,
+            14,
+            21,
+            23,
+            26,
+            27
+        ],
+        "9": [
+            15,
+            17,
+            18
+        ],
+        "10": [
+            23
+        ],
+        "11": [
+            10,
+            11
+        ],
+        "12": [
+            9
+        ],
+        "13": [
+            18,
+            19
+        ],
+        "14": [
+            15,
+            16
+        ],
+        "15": [
+            24,
+            25
+        ],
+        "16": [
+            28
+        ],
+        "17": [
+            26,
+            27
+        ],
+        "18": [
+            18
+        ],
+        "19": [
+            25
+        ],
+        "20": [
+            17
+        ],
+        "21": [
+            14,
+            18,
+            21,
+            24,
+            25,
+            26
+        ],
+        "22": [
+            10
+        ],
+        "23": [
+            22
+        ],
+        "24": [
+            14
+        ],
+        "25": [
+            4
+        ],
+        "26": [
+            3
+        ],
+        "27": [
+            18
+        ]
+    }
+}

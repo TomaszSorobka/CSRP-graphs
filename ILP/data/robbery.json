@@ -128,7 +128,7 @@
         },
         {
             "id": 2,
-            "name": "Elwood Smith (Janitor of the Bank) [Mr. Smith, Smith]"
+            "name": "Elwood Smith (Janitor of the Bank) [Mr. Smith, Smith, janitor]"
         },
         {
             "id": 3,
@@ -164,7 +164,7 @@
         },
         {
             "id": 11,
-            "name": "Acme Construction Company [Acme]"
+            "name": "Acme Construction Company [Acme, construction company]"
         },
         {
             "id": 12,

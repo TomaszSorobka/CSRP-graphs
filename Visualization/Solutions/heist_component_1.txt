@@ -1,0 +1,14 @@
+w: 1
+h: 2
+Entity Waterfront [waterfront]: (1, 2) - (1, 2)
+Entity Felix Marlowe (gallery owner) [Mr. Marlowe]: (0, 0) - (1, 1)
+Entity 'Twilight Over Venice' (painting) [Twilight Over Venice, the painting]: (0, 1) - (1, 2)
+Entity Police: (1, 2) - (1, 2)
+Entity Felix Marlowe's Assistant [assistant]: (0, 0) - (0, 0)
+Entity Collector's Conference in Tokyo [collector's conference in Tokyo]: (0, 0) - (0, 0)
+Entity Insurance Policy [insurance, policy coverage]: (0, 1) - (0, 1)
+Statement A priceless painting, 'Twilight Over Venice,' had been cut from its frame.: (0, 2)
+Statement Mr. Felix Marlowe, the owner of the gallery, was on a business trip in Tokyo at the time of the theft.: (1, 0)
+Statement Mr. Marlowe's assistant confirmed he was attending a collector's conference in Tokyo with verified hotel and flight records.: (0, 0)
+Statement The painting had been insured for $5 million, and Mr. Marlowe had recently increased the policy coverage.: (0, 1)
+Statement Police recovered a high-quality forgery of 'Twilight Over Venice' in an abandoned van near the waterfront.: (1, 2)

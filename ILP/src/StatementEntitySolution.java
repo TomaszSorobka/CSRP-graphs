@@ -534,7 +534,7 @@ public class StatementEntitySolution {
                     sols.add(newSolution);
 
                     saveSolutionToFile(newSolution, instance,
-                            "Visualization/Solutions/another_robbery_component_" + sols.size() + ".txt");
+                            "Visualization/Solutions/museum_component_" + sols.size() + ".txt");
                 } else {
                     System.out.println("No optimal solution found.");
 
@@ -618,7 +618,7 @@ public class StatementEntitySolution {
     }
 
     public static void main(String[] args) {
-        String jsonFilePath = "ILP\\data\\robbery.json";
+        String jsonFilePath = "ILP\\data\\museum.json";
         StatementEntityInstance instance = new StatementEntityInstance(jsonFilePath);
         StatementEntitySolution solution = new StatementEntitySolution();
         solution.computeILPCoord(instance, new ArrayList<>());
