@@ -2,7 +2,6 @@ class Entity {
     constructor(id, name, x1, y1, x2, y2, color, statements) {
         this.id = id;
         this.name = name;
-        this.displayName = this.removeSquareBracketsAndContent(name);
 
         // Cell coordinates
         this.x1 = x1;
@@ -15,6 +14,7 @@ class Entity {
         this.color = color;
         this.colors = [this.color];
 
+        this.displayName = this.removeSquareBracketsAndContent(name);
         this.statements = statements;
         this.headers = [this.name];
         this.displayHeaders = [this.displayName];
@@ -34,7 +34,24 @@ class Entity {
     }
 
     removeSquareBracketsAndContent(input) {
-        return input.replace(/\s*\[[^\]]*\]/g, '');
+        let fullDisplayName = input.replace(/\s*\[[^\]]*\]/g, '');
+        let visible = "";
+
+        for (let i = 0; i < fullDisplayName.length; i++) {
+            let char = fullDisplayName[i];
+            console.log(fullDisplayName + " " + this.width);
+            let testVisible = visible + char;
+            let metrics = c.measureText(testVisible);
+            
+            if (metrics.width >= (cellWidth * (this.width + 1) - 2) * backgroundCellSize) {
+                visible = visible.substring(0, visible.length - 2) + "...";
+                break;
+            } else {
+                visible = testVisible;
+            }
+        }
+
+        return visible;
     }
 
     position() {
