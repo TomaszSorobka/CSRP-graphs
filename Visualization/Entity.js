@@ -39,7 +39,6 @@ class Entity {
 
         for (let i = 0; i < fullDisplayName.length; i++) {
             let char = fullDisplayName[i];
-            console.log(fullDisplayName + " " + this.width);
             let testVisible = visible + char;
             let metrics = c.measureText(testVisible);
             

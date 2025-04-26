@@ -532,7 +532,7 @@ public class StatementEntitySolution {
                     Solution newSolution = new Solution(instance, w, h, entityIds, entityCoordinates, statementCoordinates);
                     sols.add(newSolution);
 
-                    // newSolution.saveSolutionToFile("Visualization/Solutions/museum_component_" + sols.size() + ".txt");
+                    // newSolution.saveSolutionToFile("Visualization/Solutions/test_murder_component_" + sols.size() + ".txt");
                     solutions.add(newSolution);
                 } else {
                     System.out.println("No optimal solution found.");
@@ -588,10 +588,10 @@ public class StatementEntitySolution {
     }
 
     public static void main(String[] args) {
-        String jsonFilePath = "ILP\\data\\robbery.json";
+        String jsonFilePath = "ILP\\data\\structured_dataset.json";
         StatementEntityInstance instance = new StatementEntityInstance(jsonFilePath);
         StatementEntitySolution solution = new StatementEntitySolution();
         solution.computeILPCoord(instance, new ArrayList<>());
-        SolutionPositioner.computeCompleteSolution(solution.solutions, "Visualization/Solutions/robbery_auto_combined.txt");
+        SolutionPositioner.computeCompleteSolution(solution.solutions, "Visualization/Solutions/murder_auto_combined_test.txt");
     }
 }

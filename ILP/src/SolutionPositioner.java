@@ -1,6 +1,7 @@
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.gurobi.gurobi.GRB;
@@ -16,20 +17,11 @@ public class SolutionPositioner {
 
     public static void computeCompleteSolution(ArrayList<Solution> components, String filename) {
         final int nSolutions = components.size();
-
         int[][] solutionCoordinates = new int[nSolutions][2];
 
         try {
             GRBEnv env = new GRBEnv();
             GRBModel model = new GRBModel(env);
-
-            // Cell occupation grid
-            GRBVar[][] cellUsed = new GRBVar[GRID_WIDTH][GRID_HEIGHT];
-            for (int x = 0; x < GRID_WIDTH; x++) {
-                for (int y = 0; y < GRID_HEIGHT; y++) {
-                    cellUsed[x][y] = model.addVar(0, 1, 0, GRB.BINARY, "cellUsed_" + x + "_" + y);
-                }
-            }
 
             // Variables: component placement
             Map<String, GRBVar> placementVars = new HashMap<>();
@@ -46,93 +38,100 @@ public class SolutionPositioner {
                 }
             }
 
-            // Each component placed exactly once
+            // Each component must be placed exactly once
             for (int s = 0; s < nSolutions; s++) {
                 GRBLinExpr expr = new GRBLinExpr();
                 for (int x = 0; x < GRID_WIDTH; x++) {
                     for (int y = 0; y < GRID_HEIGHT; y++) {
                         String key = "place_" + s + "_" + x + "_" + y;
                         if (placementVars.containsKey(key)) {
-                            expr.addTerm(1, placementVars.get(key));
+                            expr.addTerm(1.0, placementVars.get(key));
                         }
                     }
                 }
-                model.addConstr(expr, GRB.EQUAL, 1, "one_placement_" + s);
+                model.addConstr(expr, GRB.EQUAL, 1.0, "one_placement_" + s);
             }
 
-            // Mark occupied cells by component placements
-            for (int x = 0; x < GRID_WIDTH; x++) {
-                for (int y = 0; y < GRID_HEIGHT; y++) {
-                    GRBLinExpr usedSum = new GRBLinExpr();
+            // Build: for each grid cell (gx, gy), gather all placements that cover it
+            Map<String, List<GRBVar>> cellCoveringPlacements = new HashMap<>();
 
-                    for (int s = 0; s < nSolutions; s++) {
-                        for (int ox = 0; ox < GRID_WIDTH; ox++) {
-                            for (int oy = 0; oy < GRID_HEIGHT; oy++) {
-                                String key = "place_" + s + "_" + ox + "_" + oy;
-                                if (!placementVars.containsKey(key)) continue;
+            for (int s = 0; s < nSolutions; s++) {
+                Solution sol = components.get(s);
+                for (int ox = 0; ox < GRID_WIDTH; ox++) {
+                    for (int oy = 0; oy < GRID_HEIGHT; oy++) {
+                        String key = "place_" + s + "_" + ox + "_" + oy;
+                        if (!placementVars.containsKey(key)) continue;
 
-                                for (Point p : components.get(s).cells) {
-                                    if (ox + p.x == x && oy + p.y == y) {
-                                        usedSum.addTerm(1, placementVars.get(key));
-                                    }
-                                }
+                        GRBVar placeVar = placementVars.get(key);
+                        for (Point p : sol.cells) {
+                            int gx = ox + p.x;
+                            int gy = oy + p.y;
+                            if (gx >= 0 && gx < GRID_WIDTH && gy >= 0 && gy < GRID_HEIGHT) {
+                                String cellKey = gx + "," + gy;
+                                cellCoveringPlacements.computeIfAbsent(cellKey, k -> new ArrayList<>()).add(placeVar);
                             }
                         }
                     }
-
-                    model.addConstr(cellUsed[x][y], GRB.EQUAL, usedSum, "exact_use_" + x + "_" + y);
                 }
             }
 
-            // No overlapping: each cell used at most once
-            for (int x = 0; x < GRID_WIDTH; x++) {
-                for (int y = 0; y < GRID_HEIGHT; y++) {
-                    model.addConstr(cellUsed[x][y], GRB.LESS_EQUAL, 1, "no_overlap_" + x + "_" + y);
+            // Constraint: No overlapping → sum of placements covering a cell ≤ 1
+            for (Map.Entry<String, List<GRBVar>> entry : cellCoveringPlacements.entrySet()) {
+                String[] parts = entry.getKey().split(",");
+                int x = Integer.parseInt(parts[0]);
+                int y = Integer.parseInt(parts[1]);
+
+                GRBLinExpr expr = new GRBLinExpr();
+                for (GRBVar var : entry.getValue()) {
+                    expr.addTerm(1.0, var);
                 }
+                model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "no_overlap_" + x + "_" + y);
             }
 
-            // Bounding box width/height
+            // Bounding box width/height (0-based dimensions)
             GRBVar W = model.addVar(0, GRID_WIDTH, 0, GRB.INTEGER, "W");
             GRBVar H = model.addVar(0, GRID_HEIGHT, 0, GRB.INTEGER, "H");
 
-            // Ensure bounding box contains all used cells
-            for (int x = 0; x < GRID_WIDTH; x++) {
-                for (int y = 0; y < GRID_HEIGHT; y++) {
+            // For each cell that might be occupied, enforce bounding box constraints
+            for (Map.Entry<String, List<GRBVar>> entry : cellCoveringPlacements.entrySet()) {
+                String[] parts = entry.getKey().split(",");
+                int gx = Integer.parseInt(parts[0]);
+                int gy = Integer.parseInt(parts[1]);
+            
+                for (GRBVar var : entry.getValue()) {
                     GRBLinExpr exprW = new GRBLinExpr();
-                    exprW.addTerm(x, cellUsed[x][y]);
-                    model.addConstr(W, GRB.GREATER_EQUAL, exprW, "boundW_" + x + "_" + y);
-
+                    exprW.addTerm(gx, var);
+                    model.addConstr(W, GRB.GREATER_EQUAL, exprW, "boundW_" + gx + "_" + gy);
+            
                     GRBLinExpr exprH = new GRBLinExpr();
-                    exprH.addTerm(y, cellUsed[x][y]);
-                    model.addConstr(H, GRB.GREATER_EQUAL, exprH, "boundH_" + x + "_" + y);
+                    exprH.addTerm(gy, var);
+                    model.addConstr(H, GRB.GREATER_EQUAL, exprH, "boundH_" + gx + "_" + gy);
                 }
-            }
+            }            
 
-            // Set optimization objective
+            // Objective: Minimize W + H
             GRBLinExpr totalSize = new GRBLinExpr();
-            totalSize.addTerm(1, W);
-            totalSize.addTerm(1, H);
-
-            // Minimize bounding area
+            totalSize.addTerm(1.0, W);
+            totalSize.addTerm(1.0, H);
             model.setObjective(totalSize, GRB.MINIMIZE);
 
             model.optimize();
 
-            // Output
+            // Extract solution
             int solIndex = 0;
             for (String key : placementVars.keySet()) {
-                if (placementVars.get(key).get(GRB.DoubleAttr.X) > 0) {
-                    int x = Integer.parseInt(key.substring(8, 9));
-                    int y = Integer.parseInt(key.substring(10, 11));
+                if (placementVars.get(key).get(GRB.DoubleAttr.X) > 0.5) {
+                    String[] parts = key.split("_");
+                    int s = Integer.parseInt(parts[1]);
+                    int x = Integer.parseInt(parts[2]);
+                    int y = Integer.parseInt(parts[3]);
 
-                    solutionCoordinates[solIndex][0] = x;
-                    solutionCoordinates[solIndex][1] = y;
-
-                    solIndex++;
+                    solutionCoordinates[s][0] = x;
+                    solutionCoordinates[s][1] = y;
                 }
             }
 
-            // Update coordinates according to positions
+            // Update components based on solved offsets
             offsetCoords(components, solutionCoordinates);
 
             System.out.println("Bounding Box: " + W.get(GRB.DoubleAttr.X) + " x " + H.get(GRB.DoubleAttr.X));
@@ -140,11 +139,10 @@ public class SolutionPositioner {
             // Generate solution file
             Solution.combineSolutionsIntoFile((int) W.get(GRB.DoubleAttr.X), (int) H.get(GRB.DoubleAttr.X), components, filename);
 
-            // Clean up
             model.dispose();
             env.dispose();
 
-        }   catch (GRBException e) {
+        } catch (GRBException e) {
             System.out.println("Error code: " + e.getErrorCode() + ". " + e.getMessage());
         }
     }
@@ -153,7 +151,7 @@ public class SolutionPositioner {
         for (Point p : sol.cells) {
             int x = offsetX + p.x;
             int y = offsetY + p.y;
-            if (x >= GRID_WIDTH || y >= GRID_HEIGHT) return false;
+            if (x < 0 || x >= GRID_WIDTH || y < 0 || y >= GRID_HEIGHT) return false;
         }
         return true;
     }
