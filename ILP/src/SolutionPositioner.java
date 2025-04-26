@@ -52,7 +52,7 @@ public class SolutionPositioner {
                 model.addConstr(expr, GRB.EQUAL, 1.0, "one_placement_" + s);
             }
 
-            // Build: for each grid cell (gx, gy), gather all placements that cover it
+            // For each grid cell (gx, gy), gather all placements that cover it
             Map<String, List<GRBVar>> cellCoveringPlacements = new HashMap<>();
 
             for (int s = 0; s < nSolutions; s++) {
@@ -75,7 +75,7 @@ public class SolutionPositioner {
                 }
             }
 
-            // Constraint: No overlapping → sum of placements covering a cell ≤ 1
+            // No overlapping i.e. sum of placements covering a cell is at most 1
             for (Map.Entry<String, List<GRBVar>> entry : cellCoveringPlacements.entrySet()) {
                 String[] parts = entry.getKey().split(",");
                 int x = Integer.parseInt(parts[0]);
@@ -118,7 +118,6 @@ public class SolutionPositioner {
             model.optimize();
 
             // Extract solution
-            int solIndex = 0;
             for (String key : placementVars.keySet()) {
                 if (placementVars.get(key).get(GRB.DoubleAttr.X) > 0.5) {
                     String[] parts = key.split("_");
@@ -131,7 +130,7 @@ public class SolutionPositioner {
                 }
             }
 
-            // Update components based on solved offsets
+            // Update component coordinates
             offsetCoords(components, solutionCoordinates);
 
             System.out.println("Bounding Box: " + W.get(GRB.DoubleAttr.X) + " x " + H.get(GRB.DoubleAttr.X));
@@ -147,6 +146,7 @@ public class SolutionPositioner {
         }
     }
 
+    // Check if a component can be placed in this grid position
     private static boolean fits(Solution sol, int offsetX, int offsetY) {
         for (Point p : sol.cells) {
             int x = offsetX + p.x;
@@ -156,6 +156,7 @@ public class SolutionPositioner {
         return true;
     }
 
+    // Shift coordinates of all component cells based on that component's position in the grid
     private static void offsetCoords(ArrayList<Solution> components, int[][] offsets) {
         for (int s = 0; s < components.size(); s++) {
             int x = offsets[s][0];
