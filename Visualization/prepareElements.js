@@ -39,7 +39,7 @@ function initializeElements() {
         let y = statements[i].y;
         let text = statements[i].text;
         let entities = statements[i].entities;
-        statementCells[i] = new Statement(id, x, y, i, text, entities);
+        statementCells[i] = new Statement(id, x, y, text, entities);
     }
 }
 

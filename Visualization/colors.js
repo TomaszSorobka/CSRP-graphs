@@ -17,6 +17,26 @@ function rgbToRgba(rgb, alpha) {
     return rgb; // Fallback if input isn't valid
 }
 
+function hexToRgb(hex) {
+    hex = hex.replace(/^#/, '');
+
+    // Handle shorthand like "#f0a"
+    if (hex.length === 3) {
+        hex = hex.split('').map(c => c + c).join('');
+    }
+
+    if (hex.length !== 6) {
+        throw new Error("Invalid hex color");
+    }
+
+    const bigint = parseInt(hex, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+
+    return `rgb(${r}, ${g}, ${b})`;
+}
+
 function createCrosshatchPattern(color) {
     const patternCanvas = document.createElement('canvas');
     const size = backgroundCellSize; // Size of one tile
