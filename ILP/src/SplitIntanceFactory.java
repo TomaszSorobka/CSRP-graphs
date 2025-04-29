@@ -147,6 +147,9 @@ public class SplitIntanceFactory {
             int[] uniqueArr = node.uniqueStatements.stream().mapToInt(Integer::intValue).toArray();
             int[] sharedArr = smallestInstance.entityIndToStatements.get(node.id);
 
+            // Make a new array in case this node was not already in the smallest instance
+            if (sharedArr == null) sharedArr = new int[0];
+
             // Make a combined array
             int[] combinedArr = Arrays.copyOf(sharedArr, sharedArr.length + uniqueArr.length);
 

@@ -1,0 +1,239 @@
+{
+    "statements": [
+        {
+            "id": 0,
+            "text": "The theft was discovered at 6:00 a.m. on Monday, March 3, when the cleaning staff arrived at the Marlowe Art Gallery."
+        },
+        {
+            "id": 1,
+            "text": "A priceless painting, 'Twilight Over Venice,' had been cut from its frame."
+        },
+        {
+            "id": 2,
+            "text": "Mr. Felix Marlowe, the owner of the gallery, was on a business trip in Tokyo at the time of the theft."
+        },
+        {
+            "id": 3,
+            "text": "Surveillance footage showed the gallery's alarm system being deactivated at 2:13 a.m. on March 3."
+        },
+        {
+            "id": 4,
+            "text": "Only three people knew the alarm code: Mr. Marlowe, the gallery manager, and the night guard."
+        },
+        {
+            "id": 5,
+            "text": "The night guard, Isaac Webb, had signed out of his shift at 1:45 a.m., claiming a sudden illness."
+        },
+        {
+            "id": 6,
+            "text": "Mr. Webb was later found unconscious in his apartment, claiming he had been drugged."
+        },
+        {
+            "id": 7,
+            "text": "Traces of a powerful sedative were found in the coffee machine in the gallery's break room."
+        },
+        {
+            "id": 8,
+            "text": "Ms. Chloe Brenner, the gallery manager, stated she had locked the gallery securely at 10:00 p.m. the previous night."
+        },
+        {
+            "id": 9,
+            "text": "A local art dealer, Victor Prowse, was arrested three years ago for attempting to sell a forged Monet painting."
+        },
+        {
+            "id": 10,
+            "text": "Witnesses reported seeing Mr. Prowse near the gallery late Sunday night, wearing a grey overcoat and carrying a black duffel bag."
+        },
+        {
+            "id": 11,
+            "text": "A similar grey overcoat was found discarded in a trash bin behind Prowse's antique store."
+        },
+        {
+            "id": 12,
+            "text": "Security logs showed that Chloe Brenner accessed the alarm system at 2:12 a.m., one minute before it was deactivated."
+        },
+        {
+            "id": 13,
+            "text": "Mr. Marlowe's assistant confirmed he was attending a collector's conference in Tokyo with verified hotel and flight records."
+        },
+        {
+            "id": 14,
+            "text": "The painting had been insured for $5 million, and Mr. Marlowe had recently increased the policy coverage."
+        },
+        {
+            "id": 15,
+            "text": "Police recovered a high-quality forgery of 'Twilight Over Venice' in an abandoned van near the waterfront."
+        },
+        {
+            "id": 16,
+            "text": "Forensic experts believe the forgery was created by the same person who forged the Monet painting three years ago."
+        },
+        {
+            "id": 17,
+            "text": "Victor Prowse denied any involvement and said he was home alone watching television at the time."
+        },
+        {
+            "id": 18,
+            "text": "No fingerprints were found on the forgery, but a single hair was recovered and sent for analysis."
+        },
+        {
+            "id": 19,
+            "text": "The lab confirmed that the hair matched Isaac Webb."
+        }
+    ],
+    "entities": [
+        {
+            "id": 0,
+            "name": "Felix Marlowe (gallery owner) [Mr. Marlowe]"
+        },
+        {
+            "id": 1,
+            "name": "Isaac Webb (night guard) [Mr. Webb, Isaac Webb]"
+        },
+        {
+            "id": 2,
+            "name": "Chloe Brenner (gallery manager) [Ms. Brenner, Chloe Brenner]"
+        },
+        {
+            "id": 3,
+            "name": "Victor Prowse (art dealer, forger) [Mr. Prowse, Victor Prowse]"
+        },
+        {
+            "id": 4,
+            "name": "Marlowe Art Gallery [gallery, Marlowe Art Gallery]"
+        },
+        {
+            "id": 5,
+            "name": "'Twilight Over Venice' (painting) [Twilight Over Venice, the painting]"
+        },
+        {
+            "id": 6,
+            "name": "Gallery Alarm System [alarm system]"
+        },
+        {
+            "id": 7,
+            "name": "Police"
+        },
+        {
+            "id": 8,
+            "name": "Gallery Break Room [break room]"
+        },
+        {
+            "id": 9,
+            "name": "Coffee Machine [coffee machine]"
+        },
+        {
+            "id": 10,
+            "name": "Prowse's Antique Store [Prowse's antique store]"
+        },
+        {
+            "id": 11,
+            "name": "Forensic Experts [forensic experts]"
+        },
+        {
+            "id": 12,
+            "name": "Felix Marlowe's Assistant [assistant]"
+        },
+        {
+            "id": 13,
+            "name": "Collector's Conference in Tokyo [collector's conference in Tokyo]"
+        },
+        {
+            "id": 14,
+            "name": "Insurance Policy [insurance, policy coverage]"
+        },
+        {
+            "id": 15,
+            "name": "Forged Monet Painting [forged Monet painting, Monet painting]"
+        },
+        {
+            "id": 16,
+            "name": "Waterfront [waterfront]"
+        },
+        {
+            "id": 17,
+            "name": "Hair Sample [hair, single hair]"
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            2,
+            4,
+            13,
+            14
+        ],
+        "1": [
+            4,
+            5,
+            6,
+            9,
+            19
+        ],
+        "2": [
+            4,
+            8,
+            12
+        ],
+        "3": [
+            9,
+            10,
+            11,
+            16,
+            17
+        ],
+        "4": [
+            0,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+        ],
+        "5": [
+            1,
+            14,
+            15
+        ],
+        "6": [
+            3,
+            4,
+            12
+        ],
+        "7": [
+            15
+        ],
+        "8": [
+            7
+        ],
+        "9": [
+            7
+        ],
+        "10": [
+            11
+        ],
+        "11": [
+            16
+        ],
+        "12": [
+            13
+        ],
+        "13": [
+            13
+        ],
+        "14": [
+            14
+        ],
+        "15": [
+            9,
+            16
+        ],
+        "16": [
+            15
+        ],
+        "17": [
+            18,
+            19
+        ]
+    }
+}
