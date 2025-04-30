@@ -1,3 +1,23 @@
+// Check if two rectangles (entities) overlap
+function doEntitiesOverlap(e1, e2) {
+    return !(e1.x2 < e2.x1 || e2.x2 < e1.x1 || e1.y2 < e2.y1 || e2.y2 < e1.y1);
+}
+
+// Build an overlap graph: graph[i] is an array of indices of entities overlapping with entity i
+function buildOverlapGraph(entities) {
+    let n = entities.length;
+    let graph = Array.from({ length: n }, () => []);
+    for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+            if (doEntitiesOverlap(entities[i], entities[j])) {
+                graph[i].push(j);
+                graph[j].push(i);
+            }
+        }
+    }
+    return graph;
+}
+
 function calculateGapsAndMargins() {
     // Gap arrays
     rowGaps = [];

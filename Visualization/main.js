@@ -27,8 +27,22 @@ let columnEntities = [];
 let entityRects = [];
 let statementCells = [];
 
+// Color palette
+let readyPalette = [
+    "#4E79A7",
+    "#F28E2B",
+    "#E15759",
+    "#76B7B2",
+    "#59A14F",
+    "#EDC948",
+    "#B07AA1",
+    "#FF9DA7",
+    "#9C755F",
+    "#BAB0AC"
+];
+
 // Colors for copied entities
-let deletedColors = generateDistinctDarkColors(10); // Assumes at most 10 copied entities (TODO: set proper colors)
+let deletedColors; // Assumes at most 10 copied entities (TODO: set proper colors)
 
 // Read solution from input
 document.getElementById('fileInput').addEventListener('change', function (event) {
@@ -101,26 +115,30 @@ function parseData(fileContent) {
 
     // Sort entities by size
     entities.sort((a, b) => ((a.x2 - a.x1) + (a.y2 - a.y1)) - ((b.x2 - b.x1) + (b.y2 - b.y1)));
+
+    // Assign a unique color for each deleted entity
+    let nrDeleted = getNumberOfCopiedEntities(entities);
+    deletedColors = getReadyPalette(nrDeleted, true);
+    
+    // Remove assigned colors from the palette
+    readyPalette.splice(0, nrDeleted);
 }
 
-function reset() {
-    // console.log(entityRects);
-
-    // Clear variables
-    for (const entity in entityRects) {
-        entityRects.pop();
+function getNumberOfCopiedEntities(entities) {
+    let repeated = [];
+    for (let i = 0; i < entities.length; i++) {
+        for (let j = i + 1; j < entities.length; j++) {
+            if (entities[i].name == entities[j].name && !repeated.includes(entities[i].name)) {
+                repeated.push(entities[i].name);
+            }
+        }
     }
 
-    // Clear previous visualizations
-    c.clearRect(0, 0, canvas.width, canvas.height);
-
-    // console.log(entityRects);
+    console.log(repeated);
+    return repeated.length;
 }
 
 function visualize() {
-    // Reset visualization
-    reset();
-
     // Prepare and process data
     initializeElements();
     mergeEntitiesWithSameStatements();

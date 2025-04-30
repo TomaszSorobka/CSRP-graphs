@@ -7,8 +7,17 @@ function initializeElements() {
         }
     });
 
+    // Get a ready palette for non-singleton entities entities.
+    let palette = getReadyPalette(nonSingletonEntities.length, false);
+
+    // Build the overlap graph for all entities.
+    let graph = buildOverlapGraph(nonSingletonEntities);
+
+    // Reassign colors so that overlapping entities have distinct colors.
+    let assignedColors = assignColorsWithOverlap(graph, palette);
+
     // Assign random colors for all non-singleton entities
-    let randomColors = generateDistinctDarkColors(nonSingletonEntities.length);
+    // let randomColors = generateDistinctDarkColors(nonSingletonEntities.length);
     let nextColor = 0;
 
     // Initialize entities
@@ -21,9 +30,9 @@ function initializeElements() {
         let y2 = entities[i].y2;
         let statements = entities[i].statements;
 
-        // Non-singleton entities entities get their assigned colors
+        // Non-singleton entities get their assigned colors
         if (nonSingletonEntities.indexOf(id) > -1) {
-            entityRects[i] = new Entity(id, name, x1, y1, x2, y2, randomColors[nextColor], statements);
+            entityRects[i] = new Entity(id, name, x1, y1, x2, y2, assignedColors[nextColor], statements);
             nextColor++;
         }
         // Singleton entities are assigned white
@@ -77,7 +86,7 @@ function markCopiedEntities() {
     let repeated = [];
     for (let i = 0; i < entities.length; i++) {
         for (let j = i + 1; j < entities.length; j++) {
-            if (entities[i].name == entities[j].name) {
+            if (entities[i].name == entities[j].name && !repeated.includes(entities[i].name)) {
                 repeated.push(entities[i].name);
             }
         }
