@@ -1,21 +1,69 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
 body{
-    margin: 10px;
+    padding: 10px;
     background-color: #fff;
     color: #fff;
     position: relative;
+    width: 100vw;
     height: 100vh;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 div {
+    margin-top: 35px;
     display: flex;
     justify-content: center;
     align-items: center;
+    width: calc(100vw - 20px);
+    height: calc(100vh - 45px);
+    overflow: scroll;
+    position: relative;
+
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+
+    div::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+    }
+}
+
+span {
+    position: absolute;
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+input, label {
+    margin-left: 10px;
+}
+
+#exportLabel, #fileLabel {
+    border: 2px solid #666;
+    border-radius: 5px;
+    padding: 2.5px;
+    box-sizing: border-box;
+}
+
+#export, #fileInput {
+    display: none;
+}
+
+#colorPicker {
+    width: 20px;
+    height: 20px;
 }
 
 canvas{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: max-content;
-    height: max-content;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }

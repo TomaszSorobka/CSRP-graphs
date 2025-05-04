@@ -1,16 +1,22 @@
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+
 public class GreedySplit {
     StatementEntityInstance instance;
     int nEntities;
     int nStatements;
+    ArrayList<Integer> deletedEntities;
 
     public GreedySplit(StatementEntityInstance instance) {
         this.instance = instance;
-        nEntities = instance.numberOfEntities;
-        nStatements = instance.numberOfStatements;
+        this.nEntities = instance.numberOfEntities;
+        this.nStatements = instance.numberOfStatements;
+        this.deletedEntities = new ArrayList<>();
     }
 
-    // Try all possible splits by deleting up to s nodes and return a set of instances for the one with minimal cost
+    // Try all possible splits by deleting up to s nodes and return a set of
+    // instances for the one with minimal cost
     public ArrayList<StatementEntityInstance> findSplit(int s, double alpha) {
         // Make an intersection graph for the parent instance
         IntersectionGraph graph = new IntersectionGraph(instance);
@@ -21,20 +27,26 @@ public class GreedySplit {
         IntersectionGraph bestSplit = graph;
 
         // Get all possible combinations of deleted nodes
-        ArrayList<ArrayList<Integer>> combinations = generateCombinations(n, s);
+        ArrayList<ArrayList<Integer>> combinations = generateCombinations(n,
+                Math.min(s, instance.numberOfEntities - 1));
 
         // For each combination make the split and evaluate its cost
         for (ArrayList<Integer> combination : combinations) {
             // Make a new graph
             IntersectionGraph split = new IntersectionGraph(instance);
+            int initSize = split.components.size();
 
             // Make the split
             split.split(combination);
+
             split.merge(alpha);
+
             split.addDeletedNodes();
 
+            ArrayList<StatementEntityInstance> instances = new SplitIntanceFactory(instance, bestSplit).createInstances();
+
             // Evaluate the cost of the split
-            double cost = cost(split, alpha);
+            double cost = cost(instances, split, alpha, initSize);
 
             // Store the split with minimal cost
             if (cost < bestCost) {
@@ -43,25 +55,28 @@ public class GreedySplit {
             }
         }
 
-        // System.out.println("#components " + bestSplit.components.size());
-        // for (ArrayList<Node> component : bestSplit.components) {
-        //     System.out.println(component.size());
-        // }
-
-        // System.out.println();
-
-        StatementEntityInstance inst = new SplitIntanceFactory(instance, bestSplit).createInstances().get(0);
-        for (int ent : inst.entityIndToStatements.keySet()) {
-            int[] arr = inst.entityIndToStatements.get(ent);
-            System.out.println(inst.entities.get(ent));
-            for (int i = 0; i < arr.length; i++) {
-                System.out.print(" " + arr[i]);
-            }
-            System.out.println();
+        getDeletedEntities(bestSplit);   
+        System.out.println("--------------COMPONENTS----------------");
+        System.out.println(bestSplit.components.size()); 
+        System.out.println(bestSplit.components.get(0).get(0).id);
+        System.out.println(IntersectionGraph.containsId(11, bestSplit.components.get(1)));
+        for (Node f : bestSplit.components.get(1)) {
+            System.out.print(f.id + " ");
         }
-
+        System.out.println();
         // Return a set of instances for the components of the best split
-        return new SplitIntanceFactory(instance, bestSplit).createInstances(); 
+        return new SplitIntanceFactory(instance, bestSplit).createInstances();
+    }
+
+    // Create an array list containing the indices of the deleted nodes from this
+    // split
+    private void getDeletedEntities(IntersectionGraph graph) {
+        System.out.println("-----------------DELETED----------------");
+        for (Node deletedNode : graph.deletedNodes) {
+            deletedEntities.add(deletedNode.id);
+            System.out.print(deletedNode.id + " ");
+        }
+        System.out.println();
     }
 
     public static ArrayList<ArrayList<Integer>> generateCombinations(int n, int s) {
@@ -72,12 +87,13 @@ public class GreedySplit {
         return result;
     }
 
-    private static void backtrack(int n, int size, int start, ArrayList<Integer> current, ArrayList<ArrayList<Integer>> result) {
+    private static void backtrack(int n, int size, int start, ArrayList<Integer> current,
+            ArrayList<ArrayList<Integer>> result) {
         if (current.size() == size) {
             result.add(new ArrayList<>(current));
             return;
         }
-        
+
         for (int i = start; i < n; i++) {
             current.add(i);
             backtrack(n, size, i + 1, current, result);
@@ -85,20 +101,44 @@ public class GreedySplit {
         }
     }
 
-    private double cost(IntersectionGraph graph, double alpha) {
+    private double cost(ArrayList<StatementEntityInstance> insts, IntersectionGraph graph, double alpha, int initSize) {
         // Do not consider "splits" that do not actually split the graph
-        // TODO should it instead be compared to the number of components in the parent instance graph in case that one is already disconnected?
-        if (graph.components.size() == 1) return Double.MAX_VALUE;
+        // TODO should it instead be compared to the number of components in the parent
+        // instance graph in case that one is already disconnected?
+        if (graph.components.size() == 1)
+            return Double.MAX_VALUE;
 
         double cost = 0;
-        cost += (3 * graph.components.size());
+        cost += graph.components.size();
         cost += graph.deletedNodes.size();
+        cost += graph.deletedNodeCopies.size();
 
-        int w = 5;
+        int w = 10;
         int maxAllowed = (int) Math.floor((1 - alpha) * graph.intersectionGraph.length);
 
         for (ArrayList<Node> component : graph.components) {
-            if (component.size() > maxAllowed) cost += w;
+            if (component.size() > maxAllowed)
+                cost += w;
+        }
+
+        // Add size difference between the biggest and smallest component
+        Collections.sort(graph.components, (o1, o2) -> (Integer.compare(o1.size(), o2.size())));
+        cost += ((double) graph.components.get(graph.components.size() - 1).size() / (double) graph.components.get(0).size());
+
+        // Add the statements that repeat in an instance to the cost? 
+        for (StatementEntityInstance inst : insts) {
+            HashSet<Integer> statements = new HashSet<>();
+            int nrRepetitions = 0;
+            for (Integer ent : inst.entityIndToStatements.keySet()) {
+                for (int i = 0; i < inst.entityIndToStatements.get(ent).length; i++) {
+                    if (statements.contains(inst.entityIndToStatements.get(ent)[i]))
+                        nrRepetitions++;
+                    statements.add(inst.entityIndToStatements.get(ent)[i]);
+                }
+                statements.clear();
+            }
+
+            cost += 20*(nrRepetitions/inst.numberOfStatements);
         }
 
         return cost;

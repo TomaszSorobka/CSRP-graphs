@@ -1,16 +1,23 @@
 class Statement {
-    constructor(id, x, y, i, text, entities) {
+    constructor(id, x, y, text, entities) {
+        // Identifiers
         this.id = id;
+        this.text = text;
+        this.entities = entities;
+
+        // Cell coordinates
         this.x = x;
         this.y = y;
-        this.i = i;
+
+        // Pixel coordinates
         this.xStart;
         this.yStart;
-        this.text = text;
+        
+        // Lines of text stored as separate strings
         this.textLines = this.preprocessText();
-        this.entities = entities;
     }
 
+    // Split text into lines to fit into a statement cell
     preprocessText() {
         let lines = [];
         let lineLength = (cellWidth - 2) * backgroundCellSize;
@@ -18,6 +25,7 @@ class Statement {
         let words = this.text.split(" ");
         let line = "";
 
+        // Build line word by word
         for (let word of words) {
             let testLine = line + word;
             let metrics = c.measureText(testLine);
@@ -38,39 +46,69 @@ class Statement {
         }
 
         return lines;
-    }     
-
+    }   
+    
+    // Get all variations from an entity name
+    extractNames(input) {
+        const result = [];
+    
+        // Match the name before any ( or [ with a space
+        const mainMatch = input.match(/^([^(^\[]+?)(?=\s*(\(|\[|$))/);
+        if (mainMatch) {
+            result.push(mainMatch[1].trim());
+        }
+    
+        // Match names inside parentheses only if preceded by a space
+        const parenMatch = input.match(/(?<=\s)\(([^)]+)\)/);
+        if (parenMatch) {
+            result.push(...parenMatch[1].split(',').map(s => s.trim()));
+        }
+    
+        // Match names inside square brackets only if preceded by a space
+        const bracketMatch = input.match(/(?<=\s)\[([^\]]+)\]/);
+        if (bracketMatch) {
+            result.push(...bracketMatch[1].split(',').map(s => s.trim()));
+        }
+    
+        return result;
+    }
+    
+    // Get all entity names appearing in the statement text and their corresponding colors
     getEntityNamesAndColors() {
         let names = [];
         let colors = [];
         let combined = [];
 
+        // Check the headers of all entities appearing in the statement
         this.entities.forEach(e => {
             for (let i = 0; i < e.headers.length; i++) {
-                if (e.headers[i].indexOf("/") > -1) {
-                    let variations = this.splitEntityName(e.headers[i]);
-                    names.push(variations[0]);
-                    names.push(variations[1]);
-
-                    colors.push(`rgb(${e.colors[i][0]}, ${e.colors[i][1]}, ${e.colors[i][2]})`);
-                    colors.push(`rgb(${e.colors[i][0]}, ${e.colors[i][1]}, ${e.colors[i][2]})`);
+                // Find variations of necessary
+                if (e.headers[i].indexOf("(") > -1 || e.headers[i].indexOf("[") > -1) {
+                    let variations = this.extractNames(e.headers[i]);
+                    variations.forEach(n => {
+                        names.push(n);
+                        colors.push(e.colors[i]);
+                    });
                 }
                 else {
                     names.push(e.headers[i]);
-                    colors.push(`rgb(${e.colors[i][0]}, ${e.colors[i][1]}, ${e.colors[i][2]})`);
+                    colors.push(e.colors[i]);
                 }
             }
         });
 
+        // Combine names and colors into a single array
         for (let i = 0; i < names.length; i++) {
             combined[i] = [names[i], colors[i]];
         }
 
+        // Sort by name length in increasing order
         combined.sort((a, b) => a[0].length - b[0].length);
 
         return combined;
     }
 
+    // Find all indices of a name in the text
     getIndicesOf(searchStr, str, caseSensitive) {
         let searchStrLen = searchStr.length;
         if (searchStrLen == 0) {
@@ -88,72 +126,62 @@ class Statement {
         return indices;
     }
 
-    splitEntityName(str) {
-        let parts = str.split('/');
-        // Ensure there's exactly one '/'
-        if (parts.length !== 2) return null;
-        
-        let before = parts[0].trim();
-        let after = parts[1].trim();
-        
-        let beforeWords = before.split(' ');
-        beforeWords.pop();
-    
-        let modifiedBefore = beforeWords.join(' ');
-        let modifiedString = modifiedBefore + ' ' + after;
-        
-        return [before, modifiedString];
-    }
-
     position() {
+        // Sum up all row gaps before the statement
         let cumulativeRowGap = 0;
         for(let i = 0; i <= this.x; i++) {
             cumulativeRowGap += rowGaps[i];
         }
 
+        // Sum up all column gaps before the statement
         let cumulativeColumnGap = 0;
         for(let i = 0; i <= this.y; i++) {
             cumulativeColumnGap += columnGaps[i];
         }
-
+        // Sum up the cell heights of every row above the statement
         let combinedPreviousCellHeight = 0;
         for (let i = 0; i < this.y; i++) {
             combinedPreviousCellHeight += cellHeights[i];
         }
 
-        let cellXPos = this.x * backgroundCellSize * cellWidth;
-        let cellYPos = backgroundCellSize * combinedPreviousCellHeight;
-        let cellXGap = cumulativeRowGap * backgroundCellSize;
-        let cellYGap = cumulativeColumnGap * backgroundCellSize;
+        // Find pixel coordinates of top-left corner without gaps
+        let xPos = this.x * backgroundCellSize * cellWidth;
+        let yPos = backgroundCellSize * combinedPreviousCellHeight;
 
-        this.xStart = cellXPos + cellXGap;
-        this.yStart = cellYPos + cellYGap;
+        // Find cumulative gaps left of and above statement
+        let xGap = cumulativeRowGap * backgroundCellSize;
+        let yGap = cumulativeColumnGap * backgroundCellSize;
+
+        // Top-left corner pixel coordinates
+        this.xStart = xPos + xGap;
+        this.yStart = yPos + yGap;
     }
 
     draw() {
-        c.fillStyle = "rgba(255, 255, 255, 0.7)";
+        // Draw background
+        c.fillStyle = "rgb(255, 255, 255)";
         c.fillRect(this.xStart, this.yStart, backgroundCellSize * cellWidth, backgroundCellSize * cellHeights[this.y]);
 
-        // c.fillStyle = "#000";
-        // for (let i = 0; i < this.textLines.length; i++) {
-        //     c.fillText(this.textLines[i], this.xStart + backgroundCellSize, this.yStart + (2 + i) * backgroundCellSize);
-        // }
-
-        // Get entity names, their colors and find their indices in the text
+        // Get entity names and their colors
         let namesAndColors = this.getEntityNamesAndColors();
-        let nameIndices = [];
 
+        // Find name indices in the text
+        let nameIndices = [];
         for (let i = 0; i < namesAndColors.length; i++) {
             nameIndices.push(this.getIndicesOf(namesAndColors[i][0], this.text, false));
         }
 
+        // Pointers
         let currentIndex = 0;
         let currentNameLength = 0;
         let drawingName = false;
         let lengthSoFar = 0;
 
+        let cachedLength = 0;
+        let cachedColor = null;
+
+        // Draw each character in statement text
         for (let i = 0; i < this.textLines.length; i++) {
-            // Draw each character separately
             for (let j = 0; j < this.textLines[i].length; j++) {
 
                 // Check if we are at the start of an entity name
@@ -161,6 +189,12 @@ class Statement {
                     for (let l = 0; l < nameIndices[k].length; l++) {
                         // Switch to entity's color
                         if (currentIndex == nameIndices[k][l]) {
+                            // If we haven't finished drawing a previous name, store info so it can be finished later
+                            if (currentNameLength > 0) {
+                                cachedLength = currentNameLength;
+                                cachedColor = c.fillStyle;
+                            }
+
                             c.fillStyle = namesAndColors[k][1];
                             currentNameLength = namesAndColors[k][0].length;
                             drawingName = true;
@@ -196,10 +230,20 @@ class Statement {
 
                 // Update pointers
                 if (drawingName) currentNameLength--;
+                if (drawingName && cachedLength > 0) cachedLength--;
                 if (currentNameLength == 0) {
-                    drawingName = false;
-                    drawingBold = false;
+                    if (cachedLength == 0) {
+                        drawingName = false;
+                        drawingBold = false;
+                    }
+                    else {
+                        currentNameLength = cachedLength;
+                        cachedLength = 0;
+                        c.fillStyle = cachedColor;
+                    }
                 }
+
+                // Move on to next character
                 currentIndex++;
                 lengthSoFar += c.measureText(this.textLines[i][j]).width;
             }

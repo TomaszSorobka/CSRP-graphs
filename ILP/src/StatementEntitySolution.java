@@ -1,8 +1,7 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import com.gurobi.gurobi.GRB;
 import com.gurobi.gurobi.GRBEnv;
@@ -12,71 +11,11 @@ import com.gurobi.gurobi.GRBModel;
 import com.gurobi.gurobi.GRBVar;
 
 public class StatementEntitySolution {
-
-    // StatementEntityInstance instance;
-    // // Solution representation - coordinate of top left corner and bottom right
-    // corner of each entity
-    // // entity 0 has coordinates entityCoordinates[0] = {xt, yt, xb, yb}
-    // int[][] entityCoordinates;
-    // // same for statements
-    // int[][] statementCoordinates;
-
-    // // Total dimensions of the solution
-    // int w;
-    // int h;
-
-    // // shorthand for the number of entities and statements
-    // int nEntities;
-    // int nStatements;
-
-    // // List of entity IDs
-    // List<Integer> entityIds;
-
-    // // List of statement IDs
-    // List<Integer> statementIds;
-
-    // // cost of the solution
-    // double cost;
-
-    // // dimensions of the entities and statements, statementDimensions[i] =
-    // {width, height}
-    // double[] statementDimensions;
-
-    // public StatementEntitySolution(StatementEntityInstance instance) {
-    // this.instance = instance;
-    // nEntities = instance.numberOfEntities;
-    // nStatements = instance.numberOfStatements;
-    // entityIds = new ArrayList<>(instance.entities.keySet());
-    // statementIds = new ArrayList<>(instance.statements.keySet());
-
-    // entityCoordinates = new int[nEntities][4];
-    // statementCoordinates = new int[nStatements][2];
-    // statementDimensions = new double[2]; // width, height
-    // }
-
     ArrayList<Solution> solutions = new ArrayList<>();
-
-    // Method to make a copy of the solution
-    // public StatementEntitySolution copy() {
-    // StatementEntitySolution copy = new StatementEntitySolution(instance);
-
-    // for (int i = 0; i < nEntities; i++) {
-    // copy.entityCoordinates[i][0] = entityCoordinates[i][0];
-    // copy.entityCoordinates[i][1] = entityCoordinates[i][1];
-    // copy.entityCoordinates[i][2] = entityCoordinates[i][2];
-    // copy.entityCoordinates[i][3] = entityCoordinates[i][3];
-    // }
-
-    // for (int i = 0; i < nStatements; i++) {
-    // copy.statementCoordinates[i][0] = statementCoordinates[i][0];
-    // copy.statementCoordinates[i][1] = statementCoordinates[i][1];
-    // }
-
-    // copy.statementDimensions[0] = statementDimensions[0];
-    // copy.statementDimensions[1] = statementDimensions[1];
-    // copy.cost = cost;
-    // return copy;
-    // }
+    HashSet<Integer> deletedNodes = new HashSet<>();
+    HashMap<Integer, int[]> deletedPositions = new HashMap<>();
+    ArrayList<Integer> pastAlignments = new ArrayList<>();
+    final int dimensions = 4;
 
     // Method to compute the best solution with ILP
     public void computeILPCoord(StatementEntityInstance instance, ArrayList<Solution> sols) {
@@ -85,14 +24,6 @@ public class StatementEntitySolution {
         final int nStatements = instance.numberOfStatements;
         ArrayList<Integer> entityIds = new ArrayList<>(instance.entities.keySet());
         ArrayList<Integer> statementIds = new ArrayList<>(instance.statements.keySet());
-
-        // System.out.println("nStatements " + nStatements);
-        // System.out.println("statementIds " + statementIds.size());
-
-        // System.out.println("statement ids");
-        // for (Integer integer : statementIds) {
-        // System.out.println(integer);
-        // }
 
         int w;
         int h;
@@ -110,7 +41,6 @@ public class StatementEntitySolution {
             for (int i = 0; i < nStatements; i++) {
                 grbStatementCoord[i][0] = model.addVar(0, 20, 0.0, GRB.INTEGER, "s" + i + "_" + "x");
                 grbStatementCoord[i][1] = model.addVar(0, 20, 0.0, GRB.INTEGER, "s" + i + "_" + "y");
-
             }
 
             for (int i = 0; i < nEntities; i++) {
@@ -121,8 +51,51 @@ public class StatementEntitySolution {
             }
 
             /*********************************************************************************************************
-             *                                             CONSTRAINTS                                               *
+             *                                          CONSTRAINTS                                                  *
              *********************************************************************************************************/
+
+            GRBVar b = model.addVar(0, 1, 0.0, GRB.BINARY, "useYAlignment");
+
+            // TEST CONSTRAINT FOR Y COORDINATE OR X COORDINATE OF DELETED NODES
+            for (Integer entityId : deletedNodes) {
+                if (entityIds.contains(entityId) && deletedPositions.containsKey(entityId)) {
+                    int entIndex = entityIds.indexOf(entityId);
+
+                    int xTarget = deletedPositions.get(entityId)[0];
+                    int yTarget = deletedPositions.get(entityId)[1];
+                    int M = 1000;
+
+                    // Constraint for y
+                    // model.addConstr(grbEntityCoord[entIndex][1] - yTarget <= M * (1 - b1), ...);
+                    // model.addConstr(yTarget - grbEntityCoord[entIndex][1] <= M * (1 - b1), ...);
+
+                    // ---- y == yTarget if b == 1 ----
+                    // y - yTarget <= M * (1 - b) ----> y + M*b <= yTarget + M
+                    GRBLinExpr yExpr1 = new GRBLinExpr();
+                    yExpr1.addTerm(1.0, grbEntityCoord[entIndex][1]); // y
+                    yExpr1.addTerm(M, b);
+                    model.addConstr(yExpr1, GRB.LESS_EQUAL, yTarget + M, "y_upper_" + entityId);
+
+                    // yTarget - y <= M * (1 - b) ----> y - M*b >= yTarget - M
+                    GRBLinExpr yExpr2 = new GRBLinExpr();
+                    yExpr2.addTerm(1.0, grbEntityCoord[entIndex][1]); // y
+                    yExpr2.addTerm(-M, b);
+                    model.addConstr(yExpr2, GRB.GREATER_EQUAL, yTarget - M, "y_lower_" + entityId);
+
+                    // ---- x == xTarget if b == 0 ----
+                    // x - xTarget <= M * b ----> x - M*b <= xTarget
+                    GRBLinExpr xExpr1 = new GRBLinExpr();
+                    xExpr1.addTerm(1.0, grbEntityCoord[entIndex][0]); // y
+                    xExpr1.addTerm(-M, b);
+                    model.addConstr(xExpr1, GRB.LESS_EQUAL, xTarget, "x_upper_" + entityId);
+
+                    // xTarget - x <= M * b ----> x + M*b >= xTarget
+                    GRBLinExpr xExpr2 = new GRBLinExpr();
+                    xExpr2.addTerm(1.0, grbEntityCoord[entIndex][1]); // y
+                    xExpr2.addTerm(M, b);
+                    model.addConstr(xExpr2, GRB.GREATER_EQUAL, xTarget, "x_lower_" + entityId);
+                }
+            }
 
             // All coordinates are non-negative (H0)
             for (int i = 0; i < nStatements; i++) {
@@ -137,12 +110,12 @@ public class StatementEntitySolution {
 
             // All coordinates are at most 4 / Restrict solution size (H00)
             for (int i = 0; i < nStatements; i++) {
-                model.addConstr(grbStatementCoord[i][0], GRB.LESS_EQUAL, 4, "H00_" + i + "_x");
-                model.addConstr(grbStatementCoord[i][1], GRB.LESS_EQUAL, 4, "H00_" + i + "_y");
+                model.addConstr(grbStatementCoord[i][0], GRB.LESS_EQUAL, dimensions, "H00_" + i + "_x");
+                model.addConstr(grbStatementCoord[i][1], GRB.LESS_EQUAL, dimensions, "H00_" + i + "_y");
             }
             for (int i = 0; i < nEntities; i++) {
                 for (int j = 0; j < 4; j++) {
-                    model.addConstr(grbEntityCoord[i][j], GRB.LESS_EQUAL, 4, "H00_e_" + i + "_" + j);
+                    model.addConstr(grbEntityCoord[i][j], GRB.LESS_EQUAL, dimensions, "H00_e_" + i + "_" + j);
                 }
             }
 
@@ -252,28 +225,28 @@ public class StatementEntitySolution {
                         GRBLinExpr expr = new GRBLinExpr();
                         expr.addTerm(-1.0, grbEntityCoord[j][2]);
                         expr.addTerm(1.0, grbEntityCoord[i][0]);
-                        expr.addTerm(Integer.MAX_VALUE, vars[0]);
+                        expr.addTerm(dimensions + 1, vars[0]);
                         model.addConstr(expr, GRB.GREATER_EQUAL, 0, "H6_" + i + "_" + j + "_left");
 
                         // x2_e1 - x1_e2 + M * vars[1] >= 0
                         expr = new GRBLinExpr();
                         expr.addTerm(1.0, grbEntityCoord[j][0]);
                         expr.addTerm(-1.0, grbEntityCoord[i][2]);
-                        expr.addTerm(Integer.MAX_VALUE, vars[1]);
+                        expr.addTerm(dimensions + 1, vars[1]);
                         model.addConstr(expr, GRB.GREATER_EQUAL, 0, "H6_" + i + "_" + j + "_right");
 
                         // y1_e1 - y2_e2 + M * vars[2] >= 0
                         expr = new GRBLinExpr();
                         expr.addTerm(-1.0, grbEntityCoord[j][3]);
                         expr.addTerm(1.0, grbEntityCoord[i][1]);
-                        expr.addTerm(Integer.MAX_VALUE, vars[2]);
+                        expr.addTerm(dimensions + 1, vars[2]);
                         model.addConstr(expr, GRB.GREATER_EQUAL, 0, "H6_" + i + "_" + j + "_top");
 
                         // y1_e2 - y2_e1 + M * vars[3] >= 0
                         expr = new GRBLinExpr();
                         expr.addTerm(1.0, grbEntityCoord[j][1]);
                         expr.addTerm(-1.0, grbEntityCoord[i][3]);
-                        expr.addTerm(Integer.MAX_VALUE, vars[3]);
+                        expr.addTerm(dimensions + 1, vars[3]);
                         model.addConstr(expr, GRB.GREATER_EQUAL, 0, "H6_" + i + "_" + j + "_bottom");
 
                         expr = new GRBLinExpr();
@@ -297,25 +270,25 @@ public class StatementEntitySolution {
                     GRBLinExpr expr = new GRBLinExpr();
                     expr.addTerm(1.0, grbStatementCoord[i][0]);
                     expr.addTerm(-1.0, grbStatementCoord[j][0]);
-                    expr.addTerm(Integer.MAX_VALUE, vars[0]);
+                    expr.addTerm(dimensions + 1, vars[0]);
                     model.addConstr(expr, GRB.GREATER_EQUAL, 1, "H7_" + i + "_" + j + "_x1");
 
                     expr = new GRBLinExpr();
                     expr.addTerm(1.0, grbStatementCoord[i][0]);
                     expr.addTerm(-1.0, grbStatementCoord[j][0]);
-                    expr.addTerm(-Integer.MAX_VALUE, vars[1]);
+                    expr.addTerm(-(dimensions + 1), vars[1]);
                     model.addConstr(expr, GRB.LESS_EQUAL, -1, "H7_" + i + "_" + j + "_x2");
 
                     expr = new GRBLinExpr();
                     expr.addTerm(1.0, grbStatementCoord[i][1]);
                     expr.addTerm(-1.0, grbStatementCoord[j][1]);
-                    expr.addTerm(Integer.MAX_VALUE, vars[2]);
+                    expr.addTerm(dimensions + 1, vars[2]);
                     model.addConstr(expr, GRB.GREATER_EQUAL, 1, "H7_" + i + "_" + j + "_y1");
 
                     expr = new GRBLinExpr();
                     expr.addTerm(1.0, grbStatementCoord[i][1]);
                     expr.addTerm(-1.0, grbStatementCoord[j][1]);
-                    expr.addTerm(-Integer.MAX_VALUE, vars[3]);
+                    expr.addTerm(-(dimensions + 1), vars[3]);
                     model.addConstr(expr, GRB.LESS_EQUAL, -1, "H7_" + i + "_" + j + "_y2");
 
                     expr = new GRBLinExpr();
@@ -361,10 +334,16 @@ public class StatementEntitySolution {
                 expr.addTerm(1.0, maxHeight);
                 expr.addTerm(-1.0, grbEntityCoord[i][3]);
                 model.addConstr(expr, GRB.GREATER_EQUAL, 0, "H9_" + i + "_h");
+
             }
 
-            // Ensure squareness, difference between max width and max height is minimized
-            // (H10)
+            // Sum of width height constraint
+            GRBLinExpr totalSize = new GRBLinExpr();
+            totalSize.addTerm(1.0, maxHeight);
+            totalSize.addTerm(1.0, maxWidth);
+            model.addConstr(totalSize, GRB.LESS_EQUAL, 8.0, "total_layout_size");
+
+            // Ensure squareness, difference between max width and max height is minimized (H10)
             GRBVar diff = model.addVar(0.0, Integer.MAX_VALUE, 0.0, GRB.INTEGER, "diff");
             GRBLinExpr positiveDiff = new GRBLinExpr();
             positiveDiff.addTerm(1.0, diff);
@@ -381,108 +360,105 @@ public class StatementEntitySolution {
             // Objective function
             GRBLinExpr MINIMIZE_ME = new GRBLinExpr();
             MINIMIZE_ME.addTerm(1.0, diff);
-            MINIMIZE_ME.addTerm(1.0, maxHeight);
-            MINIMIZE_ME.addTerm(1.0, maxWidth);
+            MINIMIZE_ME.addTerm(2.0, maxHeight);
+            MINIMIZE_ME.addTerm(2.0, maxWidth);
 
             for (int i = 0; i < nEntities; i++) {
                 MINIMIZE_ME.addTerm(1.0, grbEntityCoord[i][2]);
                 MINIMIZE_ME.addTerm(-1.0, grbEntityCoord[i][0]);
-                MINIMIZE_ME.addTerm(-1.0, grbEntityCoord[i][1]);
                 MINIMIZE_ME.addTerm(1.0, grbEntityCoord[i][3]);
+                MINIMIZE_ME.addTerm(-1.0, grbEntityCoord[i][1]);
             }
 
             // Favor top left
             for (int i = 0; i < nStatements; i++) {
-                MINIMIZE_ME.addTerm(1.0, grbStatementCoord[i][0]);
-                MINIMIZE_ME.addTerm(1.0, grbStatementCoord[i][1]);
+                MINIMIZE_ME.addTerm(0.5, grbStatementCoord[i][0]);
+                MINIMIZE_ME.addTerm(0.5, grbStatementCoord[i][1]);
             }
 
             model.setObjective(MINIMIZE_ME, GRB.MINIMIZE);
 
-            // Set the time limit for the optimization (in seconds)
-            // model.set(GRB.DoubleParam.TimeLimit, 30.0);
+            // If instance has more statements than could fit in the grid, split immediately
+            if (nStatements > (Math.pow(dimensions + 1, 2))) {
+                System.out.println("Instance too large.");
 
-            model.optimize();
-
-            // Check if the optimization was interrupted or completed successfully
-            int status = model.get(GRB.IntAttr.Status);
-
-            // Check if the optimization was interrupted or completed
-            if (status == GRB.Status.OPTIMAL) {
-
-                // Extract solution
-                w = (int) maxWidth.get(GRB.DoubleAttr.X);
-                h = (int) maxHeight.get(GRB.DoubleAttr.X);
-
-                for (int i = 0; i < nEntities; i++) {
-                    entityCoordinates[i][0] = (int) grbEntityCoord[i][0].get(GRB.DoubleAttr.X);
-                    entityCoordinates[i][1] = (int) grbEntityCoord[i][1].get(GRB.DoubleAttr.X);
-                    entityCoordinates[i][2] = (int) grbEntityCoord[i][2].get(GRB.DoubleAttr.X);
-                    entityCoordinates[i][3] = (int) grbEntityCoord[i][3].get(GRB.DoubleAttr.X);
-                }
-
-                for (int i = 0; i < nStatements; i++) {
-                    statementCoordinates[i][0] = (int) grbStatementCoord[i][0].get(GRB.DoubleAttr.X);
-                    statementCoordinates[i][1] = (int) grbStatementCoord[i][1].get(GRB.DoubleAttr.X);
-                }
-
-                Solution newSolution = new Solution(w, h, entityCoordinates, statementCoordinates);
-                sols.add(newSolution);
-
-                saveSolutionToFile(newSolution, instance, "Visualization/Solutions/component_" + sols.size() + ".txt");
+                getSplit(instance, sols);
             } else {
-                System.out.println("No optimal solution found.");
+                model.optimize();
 
-                GreedySplit splitInst = new GreedySplit(instance);
-                ArrayList<StatementEntityInstance> split = splitInst.findSplit(5, 1.0 / 3);
+                // Check if the optimization was interrupted or completed successfully
+                int status = model.get(GRB.IntAttr.Status);
 
-                for (StatementEntityInstance inst : split) {
-                    computeILPCoord(inst, sols);
+                // Check if a solution was found
+                if (status == GRB.Status.OPTIMAL) {
+
+                    // Extract solution
+                    w = (int) maxWidth.get(GRB.DoubleAttr.X);
+                    h = (int) maxHeight.get(GRB.DoubleAttr.X);
+
+                    for (int i = 0; i < nEntities; i++) {
+                        entityCoordinates[i][0] = (int) grbEntityCoord[i][0].get(GRB.DoubleAttr.X);
+                        entityCoordinates[i][1] = (int) grbEntityCoord[i][1].get(GRB.DoubleAttr.X);
+                        entityCoordinates[i][2] = (int) grbEntityCoord[i][2].get(GRB.DoubleAttr.X);
+                        entityCoordinates[i][3] = (int) grbEntityCoord[i][3].get(GRB.DoubleAttr.X);
+                    }
+
+                    for (int i = 0; i < nStatements; i++) {
+                        statementCoordinates[i][0] = (int) grbStatementCoord[i][0].get(GRB.DoubleAttr.X);
+                        statementCoordinates[i][1] = (int) grbStatementCoord[i][1].get(GRB.DoubleAttr.X);
+                    }
+
+                    // Add deleted node positions to the hashmap
+                    for (Integer entityId : deletedNodes) {
+                        if (entityIds.contains(entityId) && !deletedPositions.keySet().contains(entityId)) {
+                            deletedPositions.put(entityId,
+                                    new int[] {
+                                            (int) grbEntityCoord[entityIds.indexOf(entityId)][0].get(GRB.DoubleAttr.X),
+                                            (int) grbEntityCoord[entityIds.indexOf(entityId)][1].get(GRB.DoubleAttr.X)
+                                    });
+                        }
+                    }
+
+                    // Add the alignment to the list
+                    pastAlignments.add((int) b.get(GRB.DoubleAttr.X));
+
+                    // Add solution to global list of solutions
+                    Solution newSolution = new Solution(instance, w, h, entityIds, entityCoordinates, statementCoordinates);
+                    sols.add(newSolution);
+
+                    // Add component to class' solution list
+                    solutions.add(newSolution);
+                } else {
+                    System.out.println("No optimal solution found.");
+
+                    getSplit(instance, sols);
                 }
-            }
 
-            // Clean up
-            model.dispose();
-            env.dispose();
+                // Clean up
+                model.dispose();
+                env.dispose();
+            }
 
         } catch (GRBException e) {
             System.out.println("Error code: " + e.getErrorCode() + ". " + e.getMessage());
         }
     }
 
-    public static void saveSolutionToFile(Solution solution, StatementEntityInstance instance, String filename) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
-            writer.write("w: " + solution.w + "\n");
-            writer.write("h: " + solution.h + "\n");
+    private void getSplit(StatementEntityInstance instance, ArrayList<Solution> sols) {
+        GreedySplit splitInst = new GreedySplit(instance);
+        ArrayList<StatementEntityInstance> split = splitInst.findSplit(5, 1.0 / 3);
+        deletedNodes.addAll(splitInst.deletedEntities);
 
-            int i = 0;
-            for (Integer entity : instance.entities.keySet()) {
-                writer.write("Entity " + instance.entities.get(entity) + ": (" +
-                        solution.entityCoordinates[i][0] + ", " +
-                        solution.entityCoordinates[i][1] + ") - (" +
-                        solution.entityCoordinates[i][2] + ", " +
-                        solution.entityCoordinates[i][3] + ")\n");
-                i++;
-            }
-
-            int j = 0;
-            for (Integer statement : instance.statements.keySet()) {
-                writer.write("Statement " + instance.statements.get(statement) + ": (" +
-                        solution.statementCoordinates[j][0] + ", " +
-                        solution.statementCoordinates[j][1] + ")\n");
-                j++;
-            }
-
-            System.out.println("Solution saved to " + filename);
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (StatementEntityInstance inst : split) {
+            computeILPCoord(inst, sols);
         }
     }
 
     public static void main(String[] args) {
-        String jsonFilePath = "ILP\\data\\structured_dataset.json";
+        String jsonFilePath = "ILP\\data\\museum.json";
         StatementEntityInstance instance = new StatementEntityInstance(jsonFilePath);
         StatementEntitySolution solution = new StatementEntitySolution();
         solution.computeILPCoord(instance, new ArrayList<>());
+        SolutionPositioner.computeCompleteSolution(solution.solutions, "Visualization/Solutions/museum_auto_combined_test.txt");
     }
 }

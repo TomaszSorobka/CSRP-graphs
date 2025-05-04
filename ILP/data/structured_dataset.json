@@ -128,7 +128,7 @@
         },
         {
             "id": 4,
-            "name": "Elevator Operator/Man"
+            "name": "Elevator Operator/Man [elevator operator, elevator man]"
         },
         {
             "id": 5,
@@ -164,7 +164,7 @@
         },
         {
             "id": 13,
-            "name": "Car (Mr. Scott's Car)"
+            "name": "Mr. Scott's Car [car]"
         },
         {
             "id": 14,
@@ -176,7 +176,7 @@
         },
         {
             "id": 16,
-            "name": "Mr. Scott's Apartment/Room"
+            "name": "Mr. Scott's Apartment/Room [Mr. Scott's room, Mr. Scott's apartment]"
         },
         {
             "id": 17,

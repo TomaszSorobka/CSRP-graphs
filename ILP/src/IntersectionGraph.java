@@ -57,9 +57,11 @@ public class IntersectionGraph {
     private int maxComponent = 0;
     ArrayList<Node> deletedNodes = new ArrayList<>();
     ArrayList<Node> deletedNodeCopies = new ArrayList<>();
+    GraphHelper helper;
 
     IntersectionGraph(StatementEntityInstance instance) {
         createGraph(instance);
+        helper = new GraphHelper(instance);
     }
 
     public int getGraphIndexFromId(int id) {
@@ -165,18 +167,6 @@ public class IntersectionGraph {
         // Delete node
         deletedNodes.add(intersectionGraph[nodeIndex]);
         intersectionGraph[nodeIndex].deleted = true;
-
-        // // Remove node from all non deleted adjacency lists
-        // for (int i = 0; i < intersectionGraph.length; i++) {
-        //     if (!intersectionGraph[i].deleted) {
-        //         for (Edge e : intersectionGraph[i].adj) {
-        //             if (e.target == intersectionGraph[nodeIndex].id) {
-        //                 intersectionGraph[i].adj.remove(e);
-        //                 break;
-        //             }
-        //         }
-        //     }
-        // }
     }
 
     private void recomputeComponents(int deletedIndex) {
@@ -259,6 +249,10 @@ public class IntersectionGraph {
 
     // Merge small components until they fit the specified size bound
     public void merge(Double alpha) {
+        if (components.isEmpty()) {
+            components.add(new ArrayList<Node>());    
+            return;
+        }
         final int minAllowed = (int) Math.ceil(alpha * intersectionGraph.length);
         final int maxAllowed = (int) Math.floor((1 - alpha) * intersectionGraph.length);
 
@@ -288,6 +282,7 @@ public class IntersectionGraph {
 
             // Fix order
             Collections.sort(components, (o1, o2) -> (Integer.compare(o1.size(), o2.size())));
+            minCompSize = components.get(0).size();
         }
     }
 
@@ -321,6 +316,28 @@ public class IntersectionGraph {
         }
 
         return compInd;
+    }
+
+    // Find the component with the highest number of nodes from the list (in case of a tie pick the smallest one)
+    private int findBestComponent(DeletedNodeGroup group) {
+        int max = 0;
+        int compId = -1;
+
+        for (ArrayList<Node> component : components) {
+            int contains = 0;
+            for (Integer entity : group.entities) {
+                if (containsId(entity, component)) contains++;
+            }
+
+            if (max < contains) {
+                if (compId == -1 || component.size() < components.get(findComponentIndex(compId)).size()) {
+                    max = contains;
+                    compId = component.get(0).comp;
+                }
+            }
+        }
+
+        return compId;
     }
 
     private ArrayList<Node> findSmallestComponent() {
@@ -364,54 +381,95 @@ public class IntersectionGraph {
         addAllDeletedNodesToAtLeastOneComponent();
     }
 
-    /* 
-     * For each edge between deleted nodes where the nodes do not share a component,
-     * find the smallest component with a copy of one deleted node and add to it a copy of the other deleted node
-    */
-    private void addCopiesToPreserveDeletedEdges() {
-        // Go through each pair of deleted nodes
-        for (int i = 0; i < deletedNodes.size(); i++) {
-            for (int j = i + 1; j < deletedNodes.size(); j++) {
-                // Find if there is an edge between them in the original graph
-                if (deletedNodes.get(i).connectedTo(deletedNodes.get(j)) || deletedNodes.get(j).connectedTo(deletedNodes.get(i))) {
 
-                    // Find if the nodes have copies in the same component
-                    boolean sharedComponent = false;
-                    for (ArrayList<Node> component : components) {
-                        if (containsId(deletedNodes.get(i).id, component) && containsId(deletedNodes.get(j).id, component)) {
-                            sharedComponent = true;
-                        }
-                    }
+    private int findComponent(int id) {
+        for (int i = 0; i < this.components.size(); i++) {
+            if (containsId(id, components.get(i))) {
+                return components.get(i).get(0).comp;
+            }
+        }
 
-                    // If they do not share a component, find the smallest component containing either one
-                    if (!sharedComponent) {
-                        int smallestWithFirst = findSmallestComponentContainingNode(deletedNodes.get(i).id);
-                        int smallestWithSecond = findSmallestComponentContainingNode(deletedNodes.get(j).id);
+        System.out.println("you fucked up");
+        return -1;
+    }
 
-                        // Copy the other node into the component
-                        if (components.get(smallestWithFirst).size() < components.get(smallestWithSecond).size()) {
-                            // Make a copy and set its component
-                            Node copy = deletedNodes.get(j).copy();
-                            copy.comp = components.get(smallestWithFirst).get(0).comp;
-
-                            // Add the copy to the component and the global deleted copies list
-                            components.get(smallestWithFirst).add(copy);
-                            deletedNodeCopies.add(copy);
-                        }
-                        else {
-                            // Make a copy and set its component
-                            Node copy = deletedNodes.get(i).copy();
-                            copy.comp = components.get(smallestWithSecond).get(0).comp;
-
-                            // Add the copy to the component and the global deleted copies list
-                            components.get(smallestWithSecond).add(copy);
-                            deletedNodeCopies.add(copy);
-                        }
-                    }
+    private void fillGroupComponents() {
+        for (DeletedNodeGroup group : helper.groups) {
+            for (Integer statement : group.statements) {
+                if (helper.invertedNonDeleted.containsKey(statement)) {
+                    ArrayList<Integer> entities = helper.invertedNonDeleted.get(statement);
+                    int comp = findComponent(entities.get(0));
+                    group.components.add(comp);
                 }
             }
         }
     }
+
+    private int findComponentIndex(int comp) {
+        for (int i = 0; i < components.size(); i++) {
+            if (components.get(i).get(0).comp == comp) {
+                return i;
+            }
+        }
+
+        System.out.println("you fucked up");
+        return -1;
+    }
+
+    private void putCopyInComponent(int id, ArrayList<Node> component) {
+        Node node = intersectionGraph[getGraphIndexFromId(id)];
+
+        // Make a copy and update its component
+        Node copy = node.copy();
+        copy.comp = component.get(0).comp;
+
+        // Add the copy to the component and the global deleted copies list
+        component.add(copy);
+        deletedNodeCopies.add(copy);
+    }
+
+    private void addCopiesToComponent(DeletedNodeGroup group, ArrayList<Node> component) {
+        // Track which nodes are not already in the component
+        ArrayList<Integer> missingFromComponent = new ArrayList<>();
+
+        // Add all missing nodes
+        for (Integer entity : group.entities) {
+            if (!containsId(entity, component)) {
+                missingFromComponent.add(entity);
+            }
+        }
+
+        // Copy the missing nodes into the component
+        for (Integer missingId : missingFromComponent) {
+            putCopyInComponent(missingId, component);
+        }
+    }
+
+    private void addCopiesToPreserveDeletedEdges() {
+        helper.setup(deletedNodes);
+
+        fillGroupComponents();
+
+        for (DeletedNodeGroup group : helper.groups) {
+            if (!group.components.isEmpty()) {
+                for (Integer component : group.components) {
+                    int index = findComponentIndex(component);
+                    addCopiesToComponent(group, components.get(index));
+                }
+            }
+            else {
+                int compId = findBestComponent(group);
+                group.components.add(compId);
+                addCopiesToComponent(group, components.get(findComponentIndex(compId)));
+            }
+        }
+    }
+
+    /* 
+     * For each edge between deleted nodes where the nodes do not share a component,
+     * find the smallest component with a copy of one deleted node and add to it a copy of the other deleted node
+    */
+    
 
     // For all nodes, remove edges to any node that is not in their component
     private void deleteRedundantEdges() {
@@ -429,15 +487,27 @@ public class IntersectionGraph {
         }
     }
 
-    // public void printGraph() {
-    //     for (int i = 0; i < intersectionGraph.length; i++) {
-    //         System.out.println(instance.entities.get(intersectionGraph[i].id) + " connects to ");
-
-    //         for (int j = 0; j < intersectionGraph[i].adj.size(); j++) {
-    //             System.out.print(instance.entities.get(intersectionGraph[i].adj.get(j).target) + " ");
-    //         }
-
-    //         System.out.println("end of this entity \n");
-    //     }
-    // }
+    public void printGraph() {
+        System.out.println("___________________ PRINTING GRAGH ______________________");
+        System.out.println("Number of entities: " + this.intersectionGraph.length);
+        System.out.println("Number of components: " + this.components.size());
+        System.out.println("_______ Components ______");
+        for (ArrayList<Node> comp : components) {
+            System.out.println();
+            for (Node node : comp) {
+                System.out.print(node.id + " ");
+            }
+            System.out.println();
+            for (Node node: comp) {
+                System.out.print("Node " + node.id + " connects to: ");
+                for (Edge e : node.adj) {
+                    System.out.print(e.target + " ");
+                }
+            }
+        }
+        System.out.println("_____ Deleted nodes _____");
+        for (Node node : deletedNodes) {
+            System.out.print(node.id + " ");
+        }
+    }
 }

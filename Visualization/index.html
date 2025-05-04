@@ -7,12 +7,25 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <input type="file" id="fileInput">
+    <span>
+        <label for="fileInput" id="fileLabel">Select file</label>
+        <input type="file" id="fileInput">
+        <label for="export" id="exportLabel">Export</label>
+        <input type="button" id="export" onclick="exportToSVG()">
+        <label for="colorPicker">Select color:</label>
+        <input type="color" id="colorPicker" value="rgb(255, 0, 0)"/>
+    </span>
 
     <div><canvas id="canvas"></canvas></div>
 
     <script src="Entity.js"></script>
     <script src="Statement.js"></script>
-    <script src="script.js"></script>
+    <script src="colors.js"></script>
+    <script src="prepareElements.js"></script>
+    <script src="position.js"></script>
+    <script src="draw.js"></script>
+    <script src="interaction.js"></script>
+    <script src="svg.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>
