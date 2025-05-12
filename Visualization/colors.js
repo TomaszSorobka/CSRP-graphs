@@ -119,9 +119,6 @@ function assignColorsWithOverlap(graph, palette) {
             // assignedColors[i] = palette[chosenPaletteIdx];
             assignedColors[i] = `rgb(${palette[chosenPaletteIdx][0]}, ${palette[chosenPaletteIdx][1]}, ${palette[chosenPaletteIdx][2]})`;
             usage[chosenPaletteIdx] += 1;  // Increment usage count
-
-            // Debug logging
-            console.log(`Entity ${i} assigned color ${palette[chosenPaletteIdx]} (usage: ${usage[chosenPaletteIdx]})`);
         }
     }
 

@@ -42,7 +42,7 @@ let readyPalette = [
 ];
 
 // Colors for copied entities
-let deletedColors; // Assumes at most 10 copied entities (TODO: set proper colors)
+let deletedColors;
 
 // Read solution from input
 document.getElementById('fileInput').addEventListener('change', function (event) {
@@ -134,7 +134,6 @@ function getNumberOfCopiedEntities(entities) {
         }
     }
 
-    console.log(repeated);
     return repeated.length;
 }
 

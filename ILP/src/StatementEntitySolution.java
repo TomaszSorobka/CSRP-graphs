@@ -455,10 +455,10 @@ public class StatementEntitySolution {
     }
 
     public static void main(String[] args) {
-        String jsonFilePath = "ILP\\data\\museum.json";
+        String jsonFilePath = "ILP\\data\\structured_dataset.json";
         StatementEntityInstance instance = new StatementEntityInstance(jsonFilePath);
         StatementEntitySolution solution = new StatementEntitySolution();
         solution.computeILPCoord(instance, new ArrayList<>());
-        SolutionPositioner.computeCompleteSolution(solution.solutions, "Visualization/Solutions/museum_auto_combined_test.txt");
+        SolutionPositioner.computeCompleteSolution(solution.solutions, "Visualization/Solutions/murder_auto_combined.txt");
     }
 }

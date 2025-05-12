@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 
 public class GreedySplit {
     StatementEntityInstance instance;
@@ -56,14 +55,7 @@ public class GreedySplit {
         }
 
         getDeletedEntities(bestSplit);   
-        System.out.println("--------------COMPONENTS----------------");
-        System.out.println(bestSplit.components.size()); 
-        System.out.println(bestSplit.components.get(0).get(0).id);
-        System.out.println(IntersectionGraph.containsId(11, bestSplit.components.get(1)));
-        for (Node f : bestSplit.components.get(1)) {
-            System.out.print(f.id + " ");
-        }
-        System.out.println();
+    
         // Return a set of instances for the components of the best split
         return new SplitIntanceFactory(instance, bestSplit).createInstances();
     }
@@ -71,12 +63,9 @@ public class GreedySplit {
     // Create an array list containing the indices of the deleted nodes from this
     // split
     private void getDeletedEntities(IntersectionGraph graph) {
-        System.out.println("-----------------DELETED----------------");
         for (Node deletedNode : graph.deletedNodes) {
             deletedEntities.add(deletedNode.id);
-            System.out.print(deletedNode.id + " ");
         }
-        System.out.println();
     }
 
     public static ArrayList<ArrayList<Integer>> generateCombinations(int n, int s) {
@@ -103,8 +92,6 @@ public class GreedySplit {
 
     private double cost(ArrayList<StatementEntityInstance> insts, IntersectionGraph graph, double alpha, int initSize) {
         // Do not consider "splits" that do not actually split the graph
-        // TODO should it instead be compared to the number of components in the parent
-        // instance graph in case that one is already disconnected?
         if (graph.components.size() == 1)
             return Double.MAX_VALUE;
 
@@ -124,22 +111,6 @@ public class GreedySplit {
         // Add size difference between the biggest and smallest component
         Collections.sort(graph.components, (o1, o2) -> (Integer.compare(o1.size(), o2.size())));
         cost += ((double) graph.components.get(graph.components.size() - 1).size() / (double) graph.components.get(0).size());
-
-        // Add the statements that repeat in an instance to the cost? 
-        for (StatementEntityInstance inst : insts) {
-            HashSet<Integer> statements = new HashSet<>();
-            int nrRepetitions = 0;
-            for (Integer ent : inst.entityIndToStatements.keySet()) {
-                for (int i = 0; i < inst.entityIndToStatements.get(ent).length; i++) {
-                    if (statements.contains(inst.entityIndToStatements.get(ent)[i]))
-                        nrRepetitions++;
-                    statements.add(inst.entityIndToStatements.get(ent)[i]);
-                }
-                statements.clear();
-            }
-
-            cost += 20*(nrRepetitions/inst.numberOfStatements);
-        }
 
         return cost;
     }
