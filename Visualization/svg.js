@@ -35,6 +35,9 @@ function setup(svg, svgNS) {
 }
 
 function drawEntities(svg, svgNS) {
+    // Draw entities in order of their starting y coordinates
+    entityRects.sort((a, b) => a.yStart - b.yStart);
+
     // Create entity groups
     const entityGroups = new Map();
     entityRects.forEach(entity => {
