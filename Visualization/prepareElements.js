@@ -54,7 +54,7 @@ function initializeElements() {
 
 function mergeEntitiesWithSameStatements() {
     for (let i = 0; i < entityRects.length; i++) {
-        for (let j = i + 1; j < entityRects.length; j++) {
+        for (let j = entityRects.length - 1; j >= i + 1; j--) {
             // Check if a pair of entities have the same statements
             if (entityRects[i].statements.sort().join(',') === entityRects[j].statements.sort().join(',')) {
 
@@ -70,8 +70,10 @@ function mergeEntitiesWithSameStatements() {
             }
         }
     }
+}
 
-    // Add entities to statements' entity lists after merging
+function mapEntitiesToStatements() {
+    // Add entities to statements' entity lists
     for (let i = 0; i < entityRects.length; i++) {
         for (let j = 0; j < statements.length; j++) {
             if (entityRects[i].statements.includes(statements[j].id)) {

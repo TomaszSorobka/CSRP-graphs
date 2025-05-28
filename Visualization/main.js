@@ -141,6 +141,7 @@ function visualize() {
     // Prepare and process data
     initializeElements();
     mergeEntitiesWithSameStatements();
+    mapEntitiesToStatements();
     markCopiedEntities();
     calculateGapsAndMargins();
     calculateCellHeights();
