@@ -97,7 +97,7 @@ public class StatementEntitySolution {
                 }
             }
 
-            // All coordinates are non-negative (H0)
+            // All coordinates are non-negative (C00)
             for (int i = 0; i < nStatements; i++) {
                 model.addConstr(grbStatementCoord[i][0], GRB.GREATER_EQUAL, 0, "H0_" + i + "_x");
                 model.addConstr(grbStatementCoord[i][1], GRB.GREATER_EQUAL, 0, "H0_" + i + "_y");
@@ -108,7 +108,7 @@ public class StatementEntitySolution {
                 }
             }
 
-            // All coordinates are at most 4 / Restrict solution size (H00)
+            // All coordinates are at most 4 / Restrict solution size (C01)
             for (int i = 0; i < nStatements; i++) {
                 model.addConstr(grbStatementCoord[i][0], GRB.LESS_EQUAL, dimensions, "H00_" + i + "_x");
                 model.addConstr(grbStatementCoord[i][1], GRB.LESS_EQUAL, dimensions, "H00_" + i + "_y");
@@ -259,7 +259,7 @@ public class StatementEntitySolution {
                 }
             }
 
-            // Statements have distinct coordinates (H7)
+            // Statements have distinct coordinates (C1)
             for (int i = 0; i < nStatements; i++) {
                 for (int j = i + 1; j < nStatements; j++) {
                     GRBVar[] vars = new GRBVar[4];
@@ -300,7 +300,7 @@ public class StatementEntitySolution {
                 }
             }
 
-            // Single statement entities take up only 1 cell (H5)
+            // Single statement entities take up only 1 cell (C2)
             for (int i = 0; i < nEntities; i++) {
                 if (instance.entityIndToStatements.get(entityIds.get(i)).length == 1) {
                     GRBLinExpr expr = new GRBLinExpr();
