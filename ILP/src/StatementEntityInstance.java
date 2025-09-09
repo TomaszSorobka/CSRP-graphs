@@ -2,6 +2,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -96,5 +98,38 @@ public class StatementEntityInstance {
 
         // Add entity to statement map
         this.entityIndToStatements = new HashMap<>(entityStatements);
+    }
+
+    public void print() {
+        System.out.println("Number of Statements: " + numberOfStatements);
+        System.out.println("Number of Entities: " + numberOfEntities);
+
+        System.out.println("\nStatements:");
+        for (Map.Entry<Integer, String> entry : statements.entrySet()) {
+            System.out.println("  [" + entry.getKey() + "] " + entry.getValue());
+        }
+
+        System.out.println("\nEntities:");
+        for (Map.Entry<Integer, String> entry : entities.entrySet()) {
+            System.out.println("  [" + entry.getKey() + "] " + entry.getValue());
+        }
+
+        System.out.println("\nEntity -> Statements mapping:");
+        for (Map.Entry<Integer, int[]> entry : entityIndToStatements.entrySet()) {
+            int entityId = entry.getKey();
+            int[] stmtIds = entry.getValue();
+
+            System.out.print("  [" + entityId + "] " + entities.get(entityId) + " -> ");
+            if (stmtIds != null && stmtIds.length > 0) {
+                System.out.print("[");
+                for (int i = 0; i < stmtIds.length; i++) {
+                    System.out.print(stmtIds[i]);
+                    if (i < stmtIds.length - 1) System.out.print(", ");
+                }
+                System.out.println("]");
+            } else {
+                System.out.println("[]");
+            }
+        }
     }
 }
