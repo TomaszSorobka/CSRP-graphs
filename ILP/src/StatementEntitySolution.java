@@ -23,6 +23,8 @@ import ilp.constraints.H2OutsideNonMembers;
 import ilp.constraints.H6DisjointEntitiesDoNotOverlap;
 import ilp.constraints.H8MaxWidth;
 import ilp.constraints.H9MaxHeight;
+import ilp.objective.CompactSquareTopLeft;
+import ilp.objective.ObjectiveModule;
 import ilp.variables.Vars;
 import ilp.variables.VarsFactory;
 import instance.StatementEntityInstance;
@@ -95,27 +97,10 @@ public class StatementEntitySolution {
                 m.add(ctx);
             }
 
-            // Objective function
-            GRBLinExpr MINIMIZE_ME = new GRBLinExpr();
-            MINIMIZE_ME.addTerm(1.0, ctx.v.diff);
-            MINIMIZE_ME.addTerm(2.0, ctx.v.maxHeight);
-            MINIMIZE_ME.addTerm(2.0, ctx.v.maxWidth);
+            
 
-            for (int i = 0; i < nEntities; i++) {
-                MINIMIZE_ME.addTerm(1.0, ctx.v.entityCoordinates[i][2]);
-                MINIMIZE_ME.addTerm(-1.0, ctx.v.entityCoordinates[i][0]);
-                MINIMIZE_ME.addTerm(1.0, ctx.v.entityCoordinates[i][3]);
-                MINIMIZE_ME.addTerm(-1.0, ctx.v.entityCoordinates[i][1]);
-            }
-
-            // Favor top left
-            for (int i = 0; i < nStatements; i++) {
-                MINIMIZE_ME.addTerm(0.5, ctx.v.statementCoordinates[i][0]);
-                MINIMIZE_ME.addTerm(0.5, ctx.v.statementCoordinates[i][1]);
-            }
-
-            ctx.model.setObjective(MINIMIZE_ME, GRB.MINIMIZE);
-
+            ObjectiveModule objective = new CompactSquareTopLeft();
+            objective.apply(ctx);
             ctx.model.optimize();
 
             // Check if the optimization was interrupted or completed successfully

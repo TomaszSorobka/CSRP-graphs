@@ -15,6 +15,6 @@ public class C3TotalLayoutSize implements ConstraintModule {
         GRBLinExpr totalSize = new GRBLinExpr();
         totalSize.addTerm(1.0, ctx.v.maxHeight);
         totalSize.addTerm(1.0, ctx.v.maxWidth);
-        ctx.model.addConstr(totalSize, GRB.LESS_EQUAL, 8.0, "total_layout_size");
+        ctx.model.addConstr(totalSize, GRB.LESS_EQUAL, ctx.maxSizeSum, "total_layout_size");
     }
 }
