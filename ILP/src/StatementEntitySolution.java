@@ -22,7 +22,8 @@ public class StatementEntitySolution {
     public void computeILPCoord(StatementEntityInstance instance, ArrayList<Solution> sols) {
         // Setup
         final int nEntities = instance.numberOfEntities;
-        final int nStatements = instance.numberOfStatements;        ArrayList<Integer> entityIds = new ArrayList<>(instance.entities.keySet());
+        final int nStatements = instance.numberOfStatements;
+        ArrayList<Integer> entityIds = new ArrayList<>(instance.entities.keySet());
         ArrayList<Integer> statementIds = new ArrayList<>(instance.statements.keySet());
 
         int w;
@@ -51,7 +52,7 @@ public class StatementEntitySolution {
             }
 
             /*********************************************************************************************************
-             *                                          CONSTRAINTS                                                  *
+             * CONSTRAINTS *
              *********************************************************************************************************/
 
             GRBVar b = model.addVar(0, 1, 0.0, GRB.BINARY, "useYAlignment");
@@ -235,7 +236,7 @@ public class StatementEntitySolution {
                     expr = new GRBLinExpr();
                     expr.addTerm(1.0, grbStatementCoord[i][0]);
                     expr.addTerm(-1.0, grbStatementCoord[j][0]);
-                    expr.addTerm(-1.0*M, vars[1]);
+                    expr.addTerm(-1.0 * M, vars[1]);
                     model.addConstr(expr, GRB.LESS_EQUAL, -1, "H7_" + i + "_" + j + "_x2");
 
                     expr = new GRBLinExpr();
@@ -247,7 +248,7 @@ public class StatementEntitySolution {
                     expr = new GRBLinExpr();
                     expr.addTerm(1.0, grbStatementCoord[i][1]);
                     expr.addTerm(-1.0, grbStatementCoord[j][1]);
-                    expr.addTerm(-1.0*M, vars[3]);
+                    expr.addTerm(-1.0 * M, vars[3]);
                     model.addConstr(expr, GRB.LESS_EQUAL, -1, "H7_" + i + "_" + j + "_y2");
 
                     expr = new GRBLinExpr();
@@ -302,7 +303,8 @@ public class StatementEntitySolution {
             totalSize.addTerm(1.0, maxWidth);
             model.addConstr(totalSize, GRB.LESS_EQUAL, 8.0, "total_layout_size");
 
-            // Ensure squareness, difference between max width and max height is minimized (H10)
+            // Ensure squareness, difference between max width and max height is minimized
+            // (H10)
             GRBVar diff = model.addVar(0.0, Integer.MAX_VALUE, 0.0, GRB.INTEGER, "diff");
             GRBLinExpr positiveDiff = new GRBLinExpr();
             positiveDiff.addTerm(1.0, diff);
@@ -382,7 +384,8 @@ public class StatementEntitySolution {
                     pastAlignments.add((int) b.get(GRB.DoubleAttr.X));
 
                     // Add solution to global list of solutions
-                    Solution newSolution = new Solution(instance, w, h, entityIds, entityCoordinates, statementCoordinates);
+                    Solution newSolution = new Solution(instance, w, h, entityIds, entityCoordinates,
+                            statementCoordinates);
                     sols.add(newSolution);
 
                     // Add component to class' solution list
@@ -413,11 +416,24 @@ public class StatementEntitySolution {
         }
     }
 
+    // test
+    private static void testDatasets() {
+        String[] datasets = { "structured_dataset", "small_world_4", "robbery" };
+
+        for (String name : datasets) {
+            String input = "data\\" + name + ".json";
+            String output = "solutions\\" + name + "-test.txt";
+
+            System.out.println("Running ILP on " + name + "...");
+            StatementEntityInstance instance = new StatementEntityInstance(input);
+            StatementEntitySolution solution = new StatementEntitySolution();
+            solution.computeILPCoord(instance, new ArrayList<>());
+            SolutionPositioner.computeCompleteSolution(solution.solutions, output);
+            System.out.println("Wrote: " + output);
+        }
+    }
+
     public static void main(String[] args) {
-        String jsonFilePath = "data\\structured_dataset.json";
-        StatementEntityInstance instance = new StatementEntityInstance(jsonFilePath);
-        StatementEntitySolution solution = new StatementEntitySolution();
-        solution.computeILPCoord(instance, new ArrayList<>());
-        SolutionPositioner.computeCompleteSolution(solution.solutions, "solutions/murder-test.txt");
+        testDatasets();
     }
 }
