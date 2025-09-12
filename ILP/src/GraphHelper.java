@@ -3,6 +3,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import instance.StatementEntityInstance;
+
 public class GraphHelper {
     StatementEntityInstance instance;
     HashMap<Integer, ArrayList<Integer>> invertedDeleted;

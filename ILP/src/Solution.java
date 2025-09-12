@@ -2,6 +2,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import instance.StatementEntityInstance;
+
 import java.awt.Point;
 
 public class Solution {

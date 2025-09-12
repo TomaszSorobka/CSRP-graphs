@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.Collections;
 
+import instance.StatementEntityInstance;
+
 public class GreedySplit {
     StatementEntityInstance instance;
     int nEntities;

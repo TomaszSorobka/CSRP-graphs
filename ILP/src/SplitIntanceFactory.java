@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
+import instance.StatementEntityInstance;
+
 public class SplitIntanceFactory {
     StatementEntityInstance parentInstance;
     IntersectionGraph graph;
