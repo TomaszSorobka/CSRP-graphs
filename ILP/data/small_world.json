@@ -1,0 +1,141 @@
+{
+    "statements": [
+        {
+            "id": 0,
+            "text": "Watts and Strogatz introduced a random rewiring procedure parameterized by p to interpolate between regular and random networks."
+        },
+        {
+            "id": 1,
+            "text": "Small-world networks exhibit high clustering like regular lattices yet have short characteristic path lengths like random graphs."
+        },
+        {
+            "id": 2,
+            "text": "Empirical networks—namely the film actors collaboration graph, the US power grid, and the C. elegans neural network—display small-world properties."
+        },
+        {
+            "id": 3,
+            "text": "The characteristic path length L(p) drops rapidly with small p due to the addition of short cuts, while C(p) remains almost unchanged."
+        },
+        {
+            "id": 4,
+            "text": "In a simple infectious-disease model on small-world networks, the critical infectiousness r½ decreases with p and the global infection time T(p) mirrors the behavior of L(p)."
+        }
+    ],
+    "entities": [
+        {
+            "id": 0,
+            "name": "Duncan J. Watts [Watts]"
+        },
+        {
+            "id": 1,
+            "name": "Steven H. Strogatz [Strogatz]"
+        },
+        {
+            "id": 2,
+            "name": "Regular lattice [regular, regular lattices]"
+        },
+        {
+            "id": 3,
+            "name": "Random graph [random, random graphs]"
+        },
+        {
+            "id": 4,
+            "name": "Rewiring probability p [p]"
+        },
+        {
+            "id": 5,
+            "name": "Small-world networks [small-world]"
+        },
+        {
+            "id": 6,
+            "name": "Film actors collaboration graph"
+        },
+        {
+            "id": 7,
+            "name": "C. elegans neural network"
+        },
+        {
+            "id": 8,
+            "name": "Western US power grid network [the US power grid]"
+        },
+        {
+            "id": 9,
+            "name": "Clustering coefficient (C) [C(p)]"
+        },
+        {
+            "id": 10,
+            "name": "Characteristic path length (L) [L(p)]"
+        },
+        {
+            "id": 11,
+            "name": "Short cuts"
+        },
+        {
+            "id": 12,
+            "name": "Infectious disease model [infectious-disease model]"
+        },
+        {
+            "id": 13,
+            "name": "Critical infectiousness r½"
+        },
+        {
+            "id": 14,
+            "name": "Global infection time T(p) [T(p)]"
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            0
+        ],
+        "1": [
+            0
+        ],
+        "2": [
+            0,
+            1
+        ],
+        "3": [
+            0,
+            1
+        ],
+        "4": [
+            0,
+            3,
+            4
+        ],
+        "5": [
+            1,
+            2
+        ],
+        "6": [
+            2
+        ],
+        "7": [
+            2
+        ],
+        "8": [
+            2
+        ],
+        "9": [
+            1,
+            3
+        ],
+        "10": [
+            1,
+            3,
+            4
+        ],
+        "11": [
+            3
+        ],
+        "12": [
+            4
+        ],
+        "13": [
+            4
+        ],
+        "14": [
+            4
+        ]
+    }
+}
