@@ -1,8 +1,10 @@
 package ilp.solvers;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import com.gurobi.gurobi.GRB;
@@ -26,8 +28,8 @@ import ilp.constraints.H8MaxWidth;
 import ilp.constraints.H9MaxHeight;
 import ilp.objective.CompactSquareTopLeft;
 import ilp.objective.ObjectiveModule;
-import ilp.variables.Vars;
-import ilp.variables.VarsFactory;
+import io.SolutionWriter;
+import model.PositionedSolution;
 import model.Solution;
 import model.StatementEntityInstance;
 import split.GreedySplit;
@@ -100,8 +102,6 @@ public class StatementEntitySolution {
                 m.add(ctx);
             }
 
-            
-
             ObjectiveModule objective = new CompactSquareTopLeft();
             objective.apply(ctx);
             ctx.model.optimize();
@@ -112,38 +112,7 @@ public class StatementEntitySolution {
             // Check if a solution was found
             if (status == GRB.Status.OPTIMAL) {
 
-                // Extract solution
-                w = (int) ctx.v.maxWidth.get(GRB.DoubleAttr.X);
-                h = (int) ctx.v.maxHeight.get(GRB.DoubleAttr.X);
-
-                for (int i = 0; i < nEntities; i++) {
-                    entityCoordinates[i][0] = (int) ctx.v.entityCoordinates[i][0].get(GRB.DoubleAttr.X);
-                    entityCoordinates[i][1] = (int) ctx.v.entityCoordinates[i][1].get(GRB.DoubleAttr.X);
-                    entityCoordinates[i][2] = (int) ctx.v.entityCoordinates[i][2].get(GRB.DoubleAttr.X);
-                    entityCoordinates[i][3] = (int) ctx.v.entityCoordinates[i][3].get(GRB.DoubleAttr.X);
-                }
-
-                for (int i = 0; i < nStatements; i++) {
-                    statementCoordinates[i][0] = (int) ctx.v.statementCoordinates[i][0].get(GRB.DoubleAttr.X);
-                    statementCoordinates[i][1] = (int) ctx.v.statementCoordinates[i][1].get(GRB.DoubleAttr.X);
-                }
-
-                // Add deleted node positions to the hashmap
-                for (Integer entityId : deletedNodes) {
-                    if (entityIds.contains(entityId) && !deletedPositions.keySet().contains(entityId)) {
-                        deletedPositions.put(entityId,
-                                new int[] {
-                                        (int) ctx.v.entityCoordinates[entityIdToIdx.get(entityId)][0].get(GRB.DoubleAttr.X),
-                                        (int) ctx.v.entityCoordinates[entityIdToIdx.get(entityId)][1].get(GRB.DoubleAttr.X)
-                                });
-                    }
-                }
-
-                // Add solution to global list of solutions
-                Solution newSolution = new Solution(instance, w, h, entityIds, entityCoordinates,
-                        statementCoordinates);
-                sols.add(newSolution);
-
+                Solution newSolution = extractSolution(ctx, instance, entityIds, statementIds, entityIdToIdx);
                 // Add component to class' solution list
                 solutions.add(newSolution);
             } else {
@@ -172,6 +141,39 @@ public class StatementEntitySolution {
         }
     }
 
+    private Solution extractSolution(ModelContext ctx,
+            StatementEntityInstance instance,
+            ArrayList<Integer> entityIds,
+            List<Integer> statementIds,
+            Map<Integer, Integer> entityIdToIdx) throws GRBException {
+
+        int nEntities = entityIds.size();
+        int nStatements = statementIds.size();
+        // Extract solution
+        int w = (int) ctx.v.maxWidth.get(GRB.DoubleAttr.X);
+        int h = (int) ctx.v.maxHeight.get(GRB.DoubleAttr.X);
+
+        int[][] entityCoordinates = new int[nEntities][4];
+        int[][] statementCoordinates = new int[nStatements][2];
+
+        for (int i = 0; i < nEntities; i++) {
+            entityCoordinates[i][0] = (int) ctx.v.entityCoordinates[i][0].get(GRB.DoubleAttr.X);
+            entityCoordinates[i][1] = (int) ctx.v.entityCoordinates[i][1].get(GRB.DoubleAttr.X);
+            entityCoordinates[i][2] = (int) ctx.v.entityCoordinates[i][2].get(GRB.DoubleAttr.X);
+            entityCoordinates[i][3] = (int) ctx.v.entityCoordinates[i][3].get(GRB.DoubleAttr.X);
+        }
+
+        for (int i = 0; i < nStatements; i++) {
+            statementCoordinates[i][0] = (int) ctx.v.statementCoordinates[i][0].get(GRB.DoubleAttr.X);
+            statementCoordinates[i][1] = (int) ctx.v.statementCoordinates[i][1].get(GRB.DoubleAttr.X);
+        }
+
+        // Add solution to global list of solutions
+        Solution newSolution = new Solution(instance, w, h, entityIds, entityCoordinates, statementCoordinates);
+
+        return newSolution;
+    }
+
     // test
     private static void testDatasets() {
         String[] datasets = { "structured_dataset", "small_world_4", "robbery" };
@@ -190,7 +192,15 @@ public class StatementEntitySolution {
                 e.printStackTrace();
             }
 
-            SolutionPositioner.computeCompleteSolution(solution.solutions, output);
+            PositionedSolution finalLayout = SolutionPositioner.computeCompleteSolution(solution.solutions);
+
+            // Write result to file
+            SolutionWriter.saveMultipleToFile(
+                    finalLayout.solutions,
+                    finalLayout.width,
+                    finalLayout.height,
+                    "solutions/final-output.txt");
+
             System.out.println("Wrote: " + output);
         }
     }

@@ -16,7 +16,7 @@ public final class ModelContext implements AutoCloseable {
   public final GRBModel model;
 
   // IDs and index lookups
-  public final List<Integer> entityIds;
+  public final ArrayList<Integer> entityIds;
   public final List<Integer> statementIds;
   public final Map<Integer,Integer> entityIdToIdx;
   public final Map<Integer,Integer> statementIdToIdx;

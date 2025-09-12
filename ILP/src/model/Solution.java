@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.awt.Point;
 
 public class Solution {
-    StatementEntityInstance instance;
-    int w;
-    int h;
+    public StatementEntityInstance instance;
+    public int w;
+    public int h;
     ArrayList<Integer> entityIds;
     public int[][] entityCoordinates;
     public int[][] statementCoordinates;

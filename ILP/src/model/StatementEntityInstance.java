@@ -1,4 +1,5 @@
 package model;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -76,6 +77,17 @@ public class StatementEntityInstance {
         }
     }
 
+    public StatementEntityInstance(
+            Map<Integer, String> entities,
+            Map<Integer, String> statements,
+            Map<Integer, int[]> entityIndToStatements) {
+        this.entities = (HashMap<Integer, String>) entities;
+        this.statements = (HashMap<Integer, String>) statements;
+        this.entityIndToStatements = (HashMap<Integer, int[]>) entityIndToStatements;
+        this.numberOfEntities = entities.size();
+        this.numberOfStatements = statements.size();
+    }
+
     public StatementEntityInstance(int[] entities, int[] statements, HashMap<Integer, int[]> entityStatements,
             StatementEntityInstance inst) {
         numberOfEntities = entities.length;
@@ -125,7 +137,8 @@ public class StatementEntityInstance {
                 System.out.print("[");
                 for (int i = 0; i < stmtIds.length; i++) {
                     System.out.print(stmtIds[i]);
-                    if (i < stmtIds.length - 1) System.out.print(", ");
+                    if (i < stmtIds.length - 1)
+                        System.out.print(", ");
                 }
                 System.out.println("]");
             } else {
