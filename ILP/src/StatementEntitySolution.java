@@ -56,47 +56,6 @@ public class StatementEntitySolution {
 
             GRBVar b = model.addVar(0, 1, 0.0, GRB.BINARY, "useYAlignment");
 
-            // TEST CONSTRAINT FOR Y COORDINATE OR X COORDINATE OF DELETED NODES
-            for (Integer entityId : deletedNodes) {
-                if (entityIds.contains(entityId) && deletedPositions.containsKey(entityId)) {
-                    int entIndex = entityIds.indexOf(entityId);
-
-                    int xTarget = deletedPositions.get(entityId)[0];
-                    int yTarget = deletedPositions.get(entityId)[1];
-                    int M = 1000;
-
-                    // Constraint for y
-                    // model.addConstr(grbEntityCoord[entIndex][1] - yTarget <= M * (1 - b1), ...);
-                    // model.addConstr(yTarget - grbEntityCoord[entIndex][1] <= M * (1 - b1), ...);
-
-                    // ---- y == yTarget if b == 1 ----
-                    // y - yTarget <= M * (1 - b) ----> y + M*b <= yTarget + M
-                    GRBLinExpr yExpr1 = new GRBLinExpr();
-                    yExpr1.addTerm(1.0, grbEntityCoord[entIndex][1]); // y
-                    yExpr1.addTerm(M, b);
-                    model.addConstr(yExpr1, GRB.LESS_EQUAL, yTarget + M, "y_upper_" + entityId);
-
-                    // yTarget - y <= M * (1 - b) ----> y - M*b >= yTarget - M
-                    GRBLinExpr yExpr2 = new GRBLinExpr();
-                    yExpr2.addTerm(1.0, grbEntityCoord[entIndex][1]); // y
-                    yExpr2.addTerm(-M, b);
-                    model.addConstr(yExpr2, GRB.GREATER_EQUAL, yTarget - M, "y_lower_" + entityId);
-
-                    // ---- x == xTarget if b == 0 ----
-                    // x - xTarget <= M * b ----> x - M*b <= xTarget
-                    GRBLinExpr xExpr1 = new GRBLinExpr();
-                    xExpr1.addTerm(1.0, grbEntityCoord[entIndex][0]); // y
-                    xExpr1.addTerm(-M, b);
-                    model.addConstr(xExpr1, GRB.LESS_EQUAL, xTarget, "x_upper_" + entityId);
-
-                    // xTarget - x <= M * b ----> x + M*b >= xTarget
-                    GRBLinExpr xExpr2 = new GRBLinExpr();
-                    xExpr2.addTerm(1.0, grbEntityCoord[entIndex][1]); // y
-                    xExpr2.addTerm(M, b);
-                    model.addConstr(xExpr2, GRB.GREATER_EQUAL, xTarget, "x_lower_" + entityId);
-                }
-            }
-
             // All coordinates are non-negative (C00)
             for (int i = 0; i < nStatements; i++) {
                 model.addConstr(grbStatementCoord[i][0], GRB.GREATER_EQUAL, 0, "H0_" + i + "_x");
@@ -459,6 +418,6 @@ public class StatementEntitySolution {
         StatementEntityInstance instance = new StatementEntityInstance(jsonFilePath);
         StatementEntitySolution solution = new StatementEntitySolution();
         solution.computeILPCoord(instance, new ArrayList<>());
-        SolutionPositioner.computeCompleteSolution(solution.solutions, "Visualization/Solutions/murder_auto_combined.txt");
+        SolutionPositioner.computeCompleteSolution(solution.solutions, "Visualization/Solutions/murder-test.txt");
     }
 }

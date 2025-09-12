@@ -290,6 +290,7 @@ public class IntersectionGraph {
     public void addDeletedNodes() {
         addDeletedCopies();
         addCopiesToPreserveDeletedEdges();
+        addAllDeletedNodesToAtLeastOneComponent();
         deleteRedundantEdges();
     }
 
@@ -329,7 +330,7 @@ public class IntersectionGraph {
                 if (containsId(entity, component)) contains++;
             }
 
-            if (max < contains) {
+            if (max <= contains) {
                 if (compId == -1 || component.size() < components.get(findComponentIndex(compId)).size()) {
                     max = contains;
                     compId = component.get(0).comp;
@@ -376,9 +377,6 @@ public class IntersectionGraph {
                 }
             }
         }
-
-        // If any deleted nodes are not connected to any non deleted nodes, add them to the smallest component
-        addAllDeletedNodesToAtLeastOneComponent();
     }
 
 
