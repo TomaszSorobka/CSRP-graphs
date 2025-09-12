@@ -5,7 +5,7 @@ import com.gurobi.gurobi.GRBModel;
 
 import ilp.variables.Vars;
 import ilp.variables.VarsFactory;
-import instance.StatementEntityInstance;
+import model.StatementEntityInstance;
 
 import java.util.*;
 

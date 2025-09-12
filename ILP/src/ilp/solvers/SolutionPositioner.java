@@ -1,3 +1,4 @@
+package ilp.solvers;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +11,8 @@ import com.gurobi.gurobi.GRBException;
 import com.gurobi.gurobi.GRBLinExpr;
 import com.gurobi.gurobi.GRBModel;
 import com.gurobi.gurobi.GRBVar;
+
+import model.Solution;
 
 public class SolutionPositioner {
     static final int GRID_WIDTH = 30;

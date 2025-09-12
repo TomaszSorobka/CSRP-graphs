@@ -1,13 +1,14 @@
+package split;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import instance.StatementEntityInstance;
+import model.StatementEntityInstance;
 
 public class GreedySplit {
     StatementEntityInstance instance;
     int nEntities;
     int nStatements;
-    ArrayList<Integer> deletedEntities;
+    public ArrayList<Integer> deletedEntities;
 
     public GreedySplit(StatementEntityInstance instance) {
         this.instance = instance;
