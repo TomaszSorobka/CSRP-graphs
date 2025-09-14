@@ -1,16 +1,16 @@
-// Check if two rectangles (entities) overlap
+// Check if two entities overlap
 function doEntitiesOverlap(e1, e2) {
-    return !(e1.x2 < e2.x1 || e2.x2 < e1.x1 || e1.y2 < e2.y1 || e2.y2 < e1.y1);
+    return !(e1.x1 < e2.x1 || e2.x2 < e1.x1 || e1.y2 < e2.y1 || e2.y2 < e1.y1);
 }
 
-// Check only for a vertical overlap
+// Check only for a vertical rectangle overlap
 function doEntitiesOverlapVertically(e1, e2) {
-    return (e1.y1 >= e2.y1 && e1.y1 <= e2.y2) || (e2.y1 >= e1.y1 && e2.y1 <= e1.y2);
+    return (e1.coords[0].y >= e2.coords[0].y && e1.coords[0].y <= e2.coords[2].y) || (e2.coords[0].y >= e1.coords[0].y && e2.coords[0].y <= e1.coords[2].y);
 }
 
-// Check only for a horizontal overlap
+// Check only for a horizontal rectangle overlap
 function doEntitiesOverlapHorizontally(e1, e2) {
-    return (e1.x1 >= e2.x1 && e1.x1 <= e2.x2) || (e2.x1 >= e1.x1 && e2.x1 <= e1.x2);
+    return (e1.coords[0].x >= e2.coords[0].x && e1.coords[0].x <= e2.coords[2].x) || (e2.coords[0].x >= e1.coords[0].x && e2.coords[0].x <= e1.coords[2].x);
 }
 
 // Build an overlap graph: graph[i] is an array of indices of entities overlapping with entity i
@@ -45,10 +45,10 @@ function initializeGapAndEntityArrays(width, height, rowGaps, columnGaps, rowEnt
 function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, columnEntities) {
     // Record on which rows and columns entities start and end
     for (let i = 0; i < entityRects.length; i++) {
-        let x1 = entityRects[i].x1;
-        let x2 = entityRects[i].x2;
-        let y1 = entityRects[i].y1;
-        let y2 = entityRects[i].y2;
+        let x1 = entityRects[i].coords[0].x;
+        let x2 = entityRects[i].coords[2].x;
+        let y1 = entityRects[i].coords[0].y;
+        let y2 = entityRects[i].coords[2].y;
 
         rowEntities[x1].push([i, "x1"]);
         rowEntities[x2 + 1].push([i, "x2"]);

@@ -1,18 +1,14 @@
 class Entity {
-    constructor(id, name, x1, y1, x2, y2, color, statements) {
+    constructor(id, name, coords, color, statements) {
         // Identifiers
         this.id = id;
         this.statements = statements;
 
         // Cell coordinates
-        this.x1 = x1;
-        this.y1 = y1;
-        this.x2 = x2;
-        this.y2 = y2;
+        this.coords = coords;
 
         // Cell dimensions
-        this.width = this.x2 - this.x1;
-        this.height = this.y2 - this.y1;
+        this.computeDimensions();
 
         // Pixel coordinates
         this.xStart;
@@ -37,27 +33,41 @@ class Entity {
         this.deleted = [];
     }
 
+    computeDimensions() {
+        let tempCoords = this.coords.slice();
+
+        // Sort corner points based on their x coordinate
+        tempCoords.sort((a, b) => a.x - b.x);
+        // Find the largest difference
+        this.width = tempCoords[tempCoords.length - 1].x - tempCoords[0].x;
+
+        // Sort corner points based on their y coordinate
+        tempCoords.sort((a, b) => a.y - b.y);
+        // Find the largest difference
+        this.height = tempCoords[tempCoords.length - 1].y - tempCoords[0].y;
+    }
+
     position() {
         // Sum up all row gaps before the start of the entity
         let cumulativeRowGap = 0;
-        for(let i = 0; i <= this.x1; i++) {
+        for(let i = 0; i <= this.coords[0].x; i++) {
             cumulativeRowGap += rowGaps[i];
         }
 
         // Sum up all column gaps before the start of the entity
         let cumulativeColumnGap = 0;
-        for(let i = 0; i <= this.y1; i++) {
+        for(let i = 0; i <= this.coords[0].y; i++) {
             cumulativeColumnGap += columnGaps[i];
         }
 
         // Sum up the cell heights of every row above the entity
         let combinedPreviousCellHeight = 0;
-        for (let i = 0; i < this.y1; i++) {
+        for (let i = 0; i < this.coords[0].y; i++) {
             combinedPreviousCellHeight += cellHeights[i];
         }
 
         // Find pixel coordinates of top-left corner without gaps
-        let xPos = this.x1 * backgroundCellSize * cellWidth - backgroundCellSize * this.marginLeft;
+        let xPos = this.coords[0].x * backgroundCellSize * cellWidth - backgroundCellSize * this.marginLeft;
         let yPos = backgroundCellSize * combinedPreviousCellHeight - backgroundCellSize * this.marginTop;
 
         // Find cumulative gaps left of and above entity
@@ -70,24 +80,24 @@ class Entity {
 
         // Sum up all row gaps inside the entity
         cumulativeRowGap = 0;
-        for(let i = 0; i <= this.x1 + this.width; i++) {
+        for(let i = 0; i <= this.coords[0].x + this.width; i++) {
             cumulativeRowGap += rowGaps[i];
         }
 
         // Sum up all column gaps inside the entity
         cumulativeColumnGap = 0;
-        for(let i = 0; i <= this.y1 + this.height; i++) {
+        for(let i = 0; i <= this.coords[0].y + this.height; i++) {
             cumulativeColumnGap += columnGaps[i];
         }
 
         // Sum up the cell heights of every row inside the entity
         let combinedCellHeight = 0;
-        for (let i = this.y1; i <= this.y1 + this.height; i++) {
+        for (let i = this.coords[0].y; i <= this.coords[0].y + this.height; i++) {
             combinedCellHeight += cellHeights[i];
         }
 
         // Find pixel coordinates of bottom-right corner without gaps
-        let xSize = (this.x1 + this.width + 1) * backgroundCellSize * cellWidth;
+        let xSize = (this.coords[0].x + this.width + 1) * backgroundCellSize * cellWidth;
         let ySize = backgroundCellSize * (combinedPreviousCellHeight + combinedCellHeight);
 
         // Find cumulative gaps inside the entity
