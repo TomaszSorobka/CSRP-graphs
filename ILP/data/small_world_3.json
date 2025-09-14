@@ -1,0 +1,210 @@
+{
+    "statements": [
+        {
+            "id": 0,
+            "text": "Watts & Strogatz introduced models of networks of coupled dynamical systems ranging from regular to random to explore small-world networks."
+        },
+        {
+            "id": 1,
+            "text": "They use a random rewiring procedure to interpolate between regular and random networks using rewiring probability p."
+        },
+        {
+            "id": 2,
+            "text": "They find that for intermediate p, networks have high clustering like regular and small path lengths like random, thus small-world networks."
+        },
+        {
+            "id": 3,
+            "text": "Small-world networks reduce emergence of cooperation in iterated Prisoner's dilemma models."
+        },
+        {
+            "id": 4,
+            "text": "Small-world connectivity enhances performance of cellular automata density classification tasks."
+        },
+                {
+            "id": 5,
+            "text": "Small-world coupling allows near-mean-field synchronizability of phase oscillators even with fewer edges."
+        },
+        {
+            "id": 6,
+            "text": "They model infectious disease spread on small-world graphs, showing critical infectiousness r_half decreases with p."
+        },
+        {
+            "id": 7,
+            "text": "For a maximally infectious disease, the global infection time T mirrors L(p), so disease spreads quickly in small-world networks."
+        },
+        {
+            "id": 8,
+            "text": "Empirical examples of small-world networks include the film actor collaboration graph, the power grid, and the C. elegans neural network."
+        },
+        {
+            "id": 9,
+            "text": "They define characteristic path length L as average shortest path length and clustering coefficient C as average cliquishness in the networks."
+        },
+        {
+            "id": 10,
+            "text": "Shortcuts are long-range edges introduced by rewiring that drastically reduce L but minimally affect C."
+        }
+    ],
+    "entities": [
+        {
+            "id": 15,
+            "name": "Network of coupled dynamical systems [networks of coupled dynamical systems]"
+        },
+        {
+            "id": 16,
+            "name": "Random rewiring procedure"
+        },
+        {
+            "id": 17,
+            "name": "Iterated Prisoner's dilemma cooperation model [iterated Prisoner's dilemma models]"
+        },
+        {
+            "id": 18,
+            "name": "Cellular automata density classification"
+        },
+        {
+            "id": 19,
+            "name": "Phase oscillators synchronizability"
+        },
+        {
+            "id": 0,
+            "name": "Duncan J. Watts [Watts]"
+        },
+        {
+            "id": 1,
+            "name": "Steven H. Strogatz [Strogatz]"
+        },
+        {
+            "id": 2,
+            "name": "Regular network [regular, regular networks]"
+        },
+        {
+            "id": 3,
+            "name": "Random network [random, random graphs, random networks]"
+        },
+        {
+            "id": 4,
+            "name": "Rewiring probability p [p]"
+        },
+        {
+            "id": 5,
+            "name": "Small-world network [Small-world, small-world, Small-world networks, small-world networks, small-world graphs]"
+        },
+        {
+            "id": 6,
+            "name": "Collaboration graph of film actors [film actor collaboration graph]"
+        },
+        {
+            "id": 7,
+            "name": "Neural network of C. elegans [C. elegans neural network]"
+        },
+        {
+            "id": 8,
+            "name": "Power grid of western United States [the power grid]"
+        },
+        {
+            "id": 9,
+            "name": "Clustering coefficient (C) [clustering]"
+        },
+        {
+            "id": 10,
+            "name": "Characteristic path length L [L(p), path lengths, L, characteristic path length L]"
+        },
+        {
+            "id": 11,
+            "name": "Shortcut [Shortcuts]"
+        },
+        {
+            "id": 12,
+            "name": "Infectious disease spreading model [infectious disease spread, infectious disease]"
+        },
+        {
+            "id": 13,
+            "name": "Critical infectiousness r_half"
+        },
+        {
+            "id": 14,
+            "name": "Global infection time T [global infection time T]"
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            0
+        ],
+        "1": [
+            0
+        ],
+        "2": [
+            0,
+            1
+        ],
+        "3": [
+            0,
+            1
+        ],
+        "4": [
+            1,
+            2,
+            6,
+            7
+        ],
+        "5": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+        ],
+        "6": [
+            8
+        ],
+        "7": [
+            8
+        ],
+        "8": [
+            8
+        ],
+        "9": [
+            9,
+            10,
+            2        
+        ],
+        "10": [
+            2,
+            10,
+            7,
+            9
+        ],
+        "11": [
+            10
+        ],
+        "12": [
+            6,
+            7
+        ],
+        "13": [
+            6
+        ],
+        "14": [
+            7
+        ],
+        "15": [
+            0       
+        ],
+        "16": [
+            1
+        ],
+        "17": [
+            3
+        ],
+        "18": [
+            4
+        ],
+        "19": [
+            5
+        ]
+    }
+}
