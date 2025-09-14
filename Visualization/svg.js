@@ -2,7 +2,7 @@ function exportToSVG() {
     // Create svg and set parameters
     const svgNS = "http://www.w3.org/2000/svg";
     const svg = document.createElementNS(svgNS, "svg");
-    setup(svg, svgNS);
+    createSVG(svg, svgNS);
 
     // Draw elements
     drawEntities(svg, svgNS);
@@ -19,7 +19,7 @@ function exportToSVG() {
     link.click();
 }
 
-function setup(svg, svgNS) {
+function createSVG(svg, svgNS) {
     svg.setAttribute("xmlns", svgNS);
     svg.setAttribute("width", canvas.width);
     svg.setAttribute("height", canvas.height);
@@ -150,7 +150,7 @@ function drawStatements(svg, svgNS) {
         let nameIndices = [];
 
         for (let i = 0; i < namesAndColors.length; i++) {
-            nameIndices.push(statement.getIndicesOf(namesAndColors[i][0], statement.text, false));
+            nameIndices.push(getIndicesOf(namesAndColors[i][0], statement.text, false));
         }
 
         // Pointers

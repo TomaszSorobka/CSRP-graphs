@@ -2,8 +2,6 @@ class Entity {
     constructor(id, name, x1, y1, x2, y2, color, statements) {
         // Identifiers
         this.id = id;
-        this.name = name;
-        this.color = color;
         this.statements = statements;
 
         // Cell coordinates
@@ -29,41 +27,14 @@ class Entity {
         this.marginBottom = 1;
 
         // Header names and their colors
-        this.headers = [this.name];
-        this.colors = [this.color];
+        this.headers = [name];
+        this.colors = [color];
 
-        // Version of the name to be shown in the header
-        this.displayName = this.preprocessName(name);
-        
         // Visible versions for all headers
-        this.displayHeaders = [this.displayName];
+        this.displayHeaders = [preprocessEntityName(name, this.width)];
 
         // Boolean array showing which headers are for copied entities
         this.deleted = [];
-    }
-
-    preprocessName(input) {
-        // Remove invisible name variations
-        let fullDisplayName = input.replace(/\s*\[[^\]]*\]/g, '');
-
-        // Store the visible portion of the name
-        let visible = "";
-
-        for (let i = 0; i < fullDisplayName.length; i++) {
-            let char = fullDisplayName[i];
-            let testVisible = visible + char;
-            let metrics = c.measureText(testVisible);
-            
-            // Truncate name if it is too long to fit in the header
-            if (metrics.width >= (cellWidth * (this.width + 1) - 2) * backgroundCellSize) {
-                visible = visible.substring(0, visible.length - 2) + "...";
-                break;
-            } else {
-                visible = testVisible;
-            }
-        }
-
-        return visible;
     }
 
     position() {

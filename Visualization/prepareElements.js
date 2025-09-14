@@ -1,4 +1,4 @@
-function initializeElements() {
+function initializeElements(colorPalette, entities, statements, entityRects, statementCells) {
     // Gather all non-singleton entities
     let nonSingletonEntities = [];
     entities.forEach(e => {
@@ -7,20 +7,19 @@ function initializeElements() {
         }
     });
 
-    // Get a ready palette for non-singleton entities entities.
-    let palette = getReadyPalette(nonSingletonEntities.length, false);
+    // Get a ready palette for non-singleton entities
+    let palette = getReadyPalette(colorPalette, nonSingletonEntities.length, false);
 
-    // Build the overlap graph for all entities.
+    // Build the overlap graph for all entities
     let graph = buildOverlapGraph(nonSingletonEntities);
 
-    // Reassign colors so that overlapping entities have distinct colors.
+    // Reassign colors so that overlapping entities have distinct colors
     let assignedColors = assignColorsWithOverlap(graph, palette);
 
-    // Assign random colors for all non-singleton entities
-    // let randomColors = generateDistinctDarkColors(nonSingletonEntities.length);
+    // Keep track of the next color to be assigned to an entity
     let nextColor = 0;
 
-    // Initialize entities
+    // Initialize entity rectangles
     for (var i = 0; i < entities.length; i++) {
         let id = entities[i].id;
         let name = entities[i].name;
@@ -41,7 +40,7 @@ function initializeElements() {
         }
     }
 
-    // Initialize statements
+    // Initialize statement cells
     for (var i = 0; i < statements.length; i++) {
         let id = statements[i].id;
         let x = statements[i].x;
@@ -52,16 +51,16 @@ function initializeElements() {
     }
 }
 
-function mergeEntitiesWithSameStatements() {
+function mergeEntityRectsWithSameStatements(entityRects) {
     for (let i = 0; i < entityRects.length; i++) {
         for (let j = entityRects.length - 1; j >= i + 1; j--) {
             // Check if a pair of entities have the same statements
             if (entityRects[i].statements.sort().join(',') === entityRects[j].statements.sort().join(',')) {
 
                 // Add second entity's information to first entity
-                entityRects[i].headers.push(entityRects[j].name);
-                entityRects[i].displayHeaders.push(entityRects[j].displayName);
-                entityRects[i].colors.push(entityRects[j].color);
+                entityRects[i].headers = entityRects[i].headers.concat(entityRects[j].headers);
+                entityRects[i].displayHeaders = entityRects[i].displayHeaders.concat(entityRects[j].displayHeaders);
+                entityRects[i].colors = entityRects[i].colors.concat(entityRects[j].colors);
 
                 // Increase first entity's margin to cover the additional header
                 entityRects[i].marginTop += 2;
@@ -72,8 +71,8 @@ function mergeEntitiesWithSameStatements() {
     }
 }
 
-function mapEntitiesToStatements() {
-    // Add entities to statements' entity lists
+// Add entity rectangles to statements' entity lists
+function mapEntityRectsToStatements(entityRects, statements) {
     for (let i = 0; i < entityRects.length; i++) {
         for (let j = 0; j < statements.length; j++) {
             if (entityRects[i].statements.includes(statements[j].id)) {
@@ -83,8 +82,8 @@ function mapEntitiesToStatements() {
     }
 }
 
-function markCopiedEntities() {
-    // Collect names of copied entities
+// Find the names of all entities that have multiple copies
+function getCopiedEntities(entities) {
     let repeated = [];
     for (let i = 0; i < entities.length; i++) {
         for (let j = i + 1; j < entities.length; j++) {
@@ -94,6 +93,10 @@ function markCopiedEntities() {
         }
     }
 
+    return repeated;
+}
+
+function processEntityRectHeaders(entityRects, repeated) {
     // Mark headers as copied or not
     entityRects.forEach(e => {
         e.headers.forEach(h => {
@@ -105,16 +108,18 @@ function markCopiedEntities() {
     entityRects.forEach(e => {
         for (let i = 0; i < e.headers.length; i++) {
             if (repeated.includes(e.headers[i])) {
-                e.colors[i] = deletedColors[repeated.indexOf(e.headers[i])];
+                e.colors[i] = copiedEntityColors[repeated.indexOf(e.headers[i])];
             }
         }
     });
 
     // Set number of visible headers
     entityRects.forEach(e => {
+        // For non-singleton entities draw all headers
         if (e.statements.length > 1) {
             e.visibleHeaders = e.headers.length;
         }
+        // For singletons draw only headers of copied entities
         else {
             e.visibleHeaders = e.deleted.filter(d => d == true).length;
         }

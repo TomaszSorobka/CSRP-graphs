@@ -33,8 +33,8 @@ function hexToRgb(hex) {
     return `rgb(${r}, ${g}, ${b})`;
 }
 
-function getReadyPalette(n, format) {
-    let base = readyPalette.map(hex => format? hexToRgb(hex) : rgbToColorArray(hexToRgb(hex)));
+function getReadyPalette(colorPalette, n, format) {
+    let base = colorPalette.map(hex => format? hexToRgb(hex) : rgbToColorArray(hexToRgb(hex)));
     let palette = [];
     for (let i = 0; i < n; i++) {
         palette.push(base[i % base.length]);

@@ -3,6 +3,16 @@ function doEntitiesOverlap(e1, e2) {
     return !(e1.x2 < e2.x1 || e2.x2 < e1.x1 || e1.y2 < e2.y1 || e2.y2 < e1.y1);
 }
 
+// Check only for a vertical overlap
+function doEntitiesOverlapVertically(e1, e2) {
+    return (e1.y1 >= e2.y1 && e1.y1 <= e2.y2) || (e2.y1 >= e1.y1 && e2.y1 <= e1.y2);
+}
+
+// Check only for a horizontal overlap
+function doEntitiesOverlapHorizontally(e1, e2) {
+    return (e1.x1 >= e2.x1 && e1.x1 <= e2.x2) || (e2.x1 >= e1.x1 && e2.x1 <= e1.x2);
+}
+
 // Build an overlap graph: graph[i] is an array of indices of entities overlapping with entity i
 function buildOverlapGraph(entities) {
     let n = entities.length;
@@ -18,27 +28,21 @@ function buildOverlapGraph(entities) {
     return graph;
 }
 
-function calculateGapsAndMargins() {
-    // Gap arrays
-    rowGaps = [];
-    columnGaps = [];
-
-    // Store which entities start and end on every row and column
-    rowEntities = [];
-    columnEntities = [];
-
+function initializeGapAndEntityArrays(width, height, rowGaps, columnGaps, rowEntities, columnEntities) {
     // Initialize row arrays
-    for (let i = 0; i <= w; i++) {
+    for (let i = 0; i <= width; i++) {
         rowGaps[i] = 1;
         rowEntities[i] = [];
     }
 
     // Initialize column arrays
-    for (let i = 0; i <= h; i++) {
+    for (let i = 0; i <= height; i++) {
         columnGaps[i] = 1;
         columnEntities[i] = [];
     }
+}
 
+function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, columnEntities) {
     // Record on which rows and columns entities start and end
     for (let i = 0; i < entityRects.length; i++) {
         let x1 = entityRects[i].x1;
@@ -62,123 +66,159 @@ function calculateGapsAndMargins() {
         }
     }
 
-    // Set horizontal entity margins
-    for (let i = 0; i < rowEntities.length; i++) {
-        for (let j = 0; j < rowEntities[i].length; j++) {
-            for (let k = j + 1; k < rowEntities[i].length; k++) {
+    // Set entity margins
+    calculateMargins();
 
-                // Get entity coordinates
-                let firstY1 = entityRects[rowEntities[i][j][0]].y1;
-                let firstY2 = entityRects[rowEntities[i][j][0]].y2;
+    // Set grid gaps
+    calculateGaps();
 
-                let secondY1 = entityRects[rowEntities[i][k][0]].y1;
-                let secondY2 = entityRects[rowEntities[i][k][0]].y2;
 
-                // Entities overlap
-                if ((firstY1 >= secondY1 && firstY1 <= secondY2) || (secondY1 >= firstY1 && secondY1 <= firstY2)) {
+    /* -----------------------------HELPER FUNCTIONS----------------------------- */
 
-                    // Increase the bigger entity's margin
-                    if (rowEntities[i][j][1] == "x1" && rowEntities[i][k][1] == "x1" && entityRects[rowEntities[i][k][0]].marginLeft == entityRects[rowEntities[i][j][0]].marginLeft) {
-                        if (entityRects[rowEntities[i][k][0]].statements.length > 1) entityRects[rowEntities[i][k][0]].marginLeft = entityRects[rowEntities[i][j][0]].marginLeft + 1;
-                    }
-                    else if (rowEntities[i][j][1] == "x2" && rowEntities[i][k][1] == "x2" && entityRects[rowEntities[i][k][0]].marginRight == entityRects[rowEntities[i][j][0]].marginRight) {
-                        if (entityRects[rowEntities[i][k][0]].statements.length > 1) entityRects[rowEntities[i][k][0]].marginRight = entityRects[rowEntities[i][j][0]].marginRight + 1;
+    function calculateMargins() {
+        for (let i = 0; i < rowEntities.length; i++) {
+            calculateHorizontalMargins(i);
+            calculateHorizontalMargins(i); // Check and fix any equal margins that resulted from wrong comparison order
+        }
+
+        // Set vertical entity margins
+        for (let i = 0; i < columnEntities.length; i++) {
+            calculateVerticalMargins(i);
+            calculateVerticalMargins(i); // Check and fix any equal margins that resulted from wrong comparison order
+        }
+
+        function calculateVerticalMargins(i) {
+            for (let j = 0; j < columnEntities[i].length; j++) {
+                for (let k = j + 1; k < columnEntities[i].length; k++) {
+                    // Get entities
+                    let e1 = entityRects[columnEntities[i][j][0]];
+                    let e2 = entityRects[columnEntities[i][k][0]];
+
+                    // Entities overlap
+                    if (doEntitiesOverlapHorizontally(e1, e2)) {
+
+                        // Increase the bigger entity's margin
+                        if (columnEntities[i][j][1] == "y1" && columnEntities[i][k][1] == "y1" && Math.abs(entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][j][0]].marginTop) <= entityRects[columnEntities[i][k][0]].visibleHeaders * 2 + 1) {
+                            // If their headers overlap, increase (preferably) the bigger entity's top margin such that there is enough space for all its headers
+                            if (entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][k][0]].visibleHeaders * 2 >= entityRects[columnEntities[i][j][0]].marginTop - entityRects[columnEntities[i][j][0]].visibleHeaders * 2) {
+                                if (entityRects[columnEntities[i][k][0]].statements.length > 1) entityRects[columnEntities[i][k][0]].marginTop = entityRects[columnEntities[i][j][0]].marginTop + entityRects[columnEntities[i][k][0]].visibleHeaders * 2 + 1;
+                            }
+                            else {
+                                // If the smaller entity's header is above the bigger entity's header just increase the smaller entity's header as that's a smaller increase
+                                if (entityRects[columnEntities[i][j][0]].statements.length > 1) entityRects[columnEntities[i][j][0]].marginTop = entityRects[columnEntities[i][k][0]].marginTop + entityRects[columnEntities[i][j][0]].visibleHeaders * 2 + 1;
+                            }
+                        }
+                        else if (columnEntities[i][j][1] == "y2" && columnEntities[i][k][1] == "y2" && entityRects[columnEntities[i][k][0]].marginBottom == entityRects[columnEntities[i][j][0]].marginBottom) {
+                            if (entityRects[columnEntities[i][k][0]].statements.length > 1) entityRects[columnEntities[i][k][0]].marginBottom = entityRects[columnEntities[i][j][0]].marginBottom + 1;
+                        }
                     }
                 }
             }
         }
 
-        // Check and fix any equal margins that resulted from wrong comparison order
-        for (let j = 0; j < rowEntities[i].length; j++) {
-            for (let k = j + 1; k < rowEntities[i].length; k++) {
+        function calculateHorizontalMargins(i) {
+            for (let j = 0; j < rowEntities[i].length; j++) {
+                for (let k = j + 1; k < rowEntities[i].length; k++) {
+                    // Get entities
+                    let e1 = entityRects[rowEntities[i][j][0]];
+                    let e2 = entityRects[rowEntities[i][k][0]];
 
-                // Get entity coordinates
-                let firstY1 = entityRects[rowEntities[i][j][0]].y1;
-                let firstY2 = entityRects[rowEntities[i][j][0]].y2;
+                    // Entities overlap
+                    if (doEntitiesOverlapVertically(e1, e2)) {
 
-                let secondY1 = entityRects[rowEntities[i][k][0]].y1;
-                let secondY2 = entityRects[rowEntities[i][k][0]].y2;
-
-                // Entities overlap
-                if ((firstY1 >= secondY1 && firstY1 <= secondY2) || (secondY1 >= firstY1 && secondY1 <= firstY2)) {
-
-                    // Increase the bigger entity's margin
-                    if (rowEntities[i][j][1] == "x1" && rowEntities[i][k][1] == "x1" && entityRects[rowEntities[i][k][0]].marginLeft == entityRects[rowEntities[i][j][0]].marginLeft) {
-                        if (entityRects[rowEntities[i][k][0]].statements.length > 1) entityRects[rowEntities[i][k][0]].marginLeft = entityRects[rowEntities[i][j][0]].marginLeft + 1;
-                    }
-                    else if (rowEntities[i][j][1] == "x2" && rowEntities[i][k][1] == "x2" && entityRects[rowEntities[i][k][0]].marginRight == entityRects[rowEntities[i][j][0]].marginRight) {
-                        if (entityRects[rowEntities[i][k][0]].statements.length > 1) entityRects[rowEntities[i][k][0]].marginRight = entityRects[rowEntities[i][j][0]].marginRight + 1;
+                        // Increase the bigger entity's margin
+                        if (rowEntities[i][j][1] == "x1" && rowEntities[i][k][1] == "x1" && entityRects[rowEntities[i][k][0]].marginLeft == entityRects[rowEntities[i][j][0]].marginLeft) {
+                            if (entityRects[rowEntities[i][k][0]].statements.length > 1) entityRects[rowEntities[i][k][0]].marginLeft = entityRects[rowEntities[i][j][0]].marginLeft + 1;
+                        }
+                        else if (rowEntities[i][j][1] == "x2" && rowEntities[i][k][1] == "x2" && entityRects[rowEntities[i][k][0]].marginRight == entityRects[rowEntities[i][j][0]].marginRight) {
+                            if (entityRects[rowEntities[i][k][0]].statements.length > 1) entityRects[rowEntities[i][k][0]].marginRight = entityRects[rowEntities[i][j][0]].marginRight + 1;
+                        }
                     }
                 }
             }
         }
     }
 
-    // Set vertical entity margins
-    for (let i = 0; i < columnEntities.length; i++) {
-        for (let j = 0; j < columnEntities[i].length; j++) {
-            for (let k = j + 1; k < columnEntities[i].length; k++) {
+    function calculateGaps() {
+        increaseRowGaps();
+        increaseColumnGaps();
+    }
 
-                // Get entity coordinates
-                let firstX1 = entityRects[columnEntities[i][j][0]].x1;
-                let firstX2 = entityRects[columnEntities[i][j][0]].x2;
+    function increaseRowGaps() {
+        increaseRowGapsNested();
+        increaseRowGapsNeighbouring();
+    }
 
-                let secondX1 = entityRects[columnEntities[i][k][0]].x1;
-                let secondX2 = entityRects[columnEntities[i][k][0]].x2;
+    function increaseColumnGaps() {
+        increaseColumnGapsNested();
+        increaseColumnGapsNeighbouring();
+    }
 
-                // Entities overlap
-                if ((firstX1 >= secondX1 && firstX1 <= secondX2) || (secondX1 >= firstX1 && secondX1 <= firstX2)) {
+    // Increase column gaps to fit the highest number of nested entities
+    function increaseColumnGapsNested() {
+        for (let i = 0; i < columnEntities.length; i++) {
+            let maxMargin = 0;
 
-                    // Increase the bigger entity's margin
-                    if (columnEntities[i][j][1] == "y1" && columnEntities[i][k][1] == "y1" && Math.abs(entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][j][0]].marginTop) <= entityRects[columnEntities[i][k][0]].visibleHeaders * 2 + 1) {
-                        // If their headers overlap, increase (preferably) the bigger entity's top margin such that there is enough space for all its headers
-                        if (entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][k][0]].visibleHeaders * 2 >= entityRects[columnEntities[i][j][0]].marginTop - entityRects[columnEntities[i][j][0]].visibleHeaders * 2) {
-                            if (entityRects[columnEntities[i][k][0]].statements.length > 1) entityRects[columnEntities[i][k][0]].marginTop = entityRects[columnEntities[i][j][0]].marginTop + entityRects[columnEntities[i][k][0]].visibleHeaders * 2 + 1;
-                        }
-                        else {
-                            // If the smaller entity's header is above the bigger entity's header just increase the smaller entity's header as that's a smaller increase
-                            if (entityRects[columnEntities[i][j][0]].statements.length > 1) entityRects[columnEntities[i][j][0]].marginTop = entityRects[columnEntities[i][k][0]].marginTop + entityRects[columnEntities[i][j][0]].visibleHeaders * 2 + 1;
+            for (let j = 0; j < columnEntities[i].length; j++) {
+                for (let k = 0; k < statementCells.length; k++) {
+                    if (columnEntities[i][j][1] == "y1" && entityRects[columnEntities[i][j][0]].marginTop > maxMargin) {
+
+                        // Check if there is a statement in the previous row that would overlap with the entity if the gap is not increased
+                        let ex1 = entityRects[columnEntities[i][j][0]].x1;
+                        let ex2 = entityRects[columnEntities[i][j][0]].x2;
+                        let sx = statementCells[k].x;
+                        let sy = statementCells[k].y;
+                        let statementInPreviousRow = (sy == i);
+                        let statementAndEntityOverlap = (sx <= ex2 && sx >= ex1);
+
+                        // Increase the gap for the first and last row or if such a statement was found
+                        if ((i == 0 || i == columnEntities.length - 1 || (statementInPreviousRow && statementAndEntityOverlap))) {
+                            maxMargin = entityRects[columnEntities[i][j][0]].marginTop;
                         }
                     }
-                    else if (columnEntities[i][j][1] == "y2" && columnEntities[i][k][1] == "y2" && entityRects[columnEntities[i][k][0]].marginBottom == entityRects[columnEntities[i][j][0]].marginBottom) {
-                        if (entityRects[columnEntities[i][k][0]].statements.length > 1) entityRects[columnEntities[i][k][0]].marginBottom = entityRects[columnEntities[i][j][0]].marginBottom + 1;
+                    else if (columnEntities[i][j][1] == "y2" && entityRects[columnEntities[i][j][0]].marginBottom > maxMargin) {
+
+                        // Check if there is a statement in the next row that would overlap with the entity if the gap is not increased
+                        let ex1 = entityRects[columnEntities[i][j][0]].x1;
+                        let ex2 = entityRects[columnEntities[i][j][0]].x2;
+                        let sx = statementCells[k].x;
+                        let sy = statementCells[k].y;
+                        let statementInNextRow = (sy == i);
+                        let statementAndEntityOverlap = (sx <= ex2 && sx >= ex1);
+
+                        // Increase the gap for the first and last row or if such a statement was found
+                        if (i == 0 || i == columnEntities.length - 1 || (statementInNextRow && statementAndEntityOverlap)) {
+                            maxMargin = entityRects[columnEntities[i][j][0]].marginBottom;
+                        }
                     }
                 }
             }
+
+            columnGaps[i] += maxMargin;
         }
+    }
 
-        // Check and fix any equal margins that resulted from wrong comparison order
-        for (let j = 0; j < columnEntities[i].length; j++) {
-            for (let k = j + 1; k < columnEntities[i].length; k++) {
+    // Increase column gaps to fit highest sum of margins from neighbouring rows
+    function increaseColumnGapsNeighbouring() {
+        for (let i = 0; i < columnEntities.length; i++) {
+            for (let j = 0; j < columnEntities[i].length; j++) {
+                for (let k = j + 1; k < columnEntities[i].length; k++) {
+                    // Get entities
+                    let e1 = entityRects[columnEntities[i][j][0]];
+                    let e2 = entityRects[columnEntities[i][k][0]];
 
-                // Get entity coordinates
-                let firstX1 = entityRects[columnEntities[i][j][0]].x1;
-                let firstX2 = entityRects[columnEntities[i][j][0]].x2;
+                    // Entities overlap
+                    if (doEntitiesOverlapHorizontally(e1, e2)) {
 
-                let secondX1 = entityRects[columnEntities[i][k][0]].x1;
-                let secondX2 = entityRects[columnEntities[i][k][0]].x2;
-
-                // Entities overlap
-                if ((firstX1 >= secondX1 && firstX1 <= secondX2) || (secondX1 >= firstX1 && secondX1 <= firstX2)) {
-                    // Increase the bigger entity's margin
-                    if (columnEntities[i][j][1] == "y1" && columnEntities[i][k][1] == "y1" && Math.abs(entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][j][0]].marginTop) <= entityRects[columnEntities[i][k][0]].visibleHeaders * 2 + 1) {
-
-                        // If their headers overlap, increase (preferably) the bigger entity's top margin such that there is enough space for all its headers
-                        if (entityRects[columnEntities[i][k][0]].marginTop - entityRects[columnEntities[i][k][0]].visibleHeaders * 2 >= entityRects[columnEntities[i][j][0]].marginTop - entityRects[columnEntities[i][j][0]].visibleHeaders * 2) {
-
-                            if (entityRects[columnEntities[i][k][0]].statements.length > 1) {
-                                entityRects[columnEntities[i][k][0]].marginTop = entityRects[columnEntities[i][j][0]].marginTop + entityRects[columnEntities[i][k][0]].visibleHeaders * 2 + 1;
-                            }
+                        // Entities are in two different (neighbouring) rows and the sum of their margins is bigger than the gap
+                        if (columnEntities[i][j][1] == "y2" && columnEntities[i][k][1] == "y1" && entityRects[columnEntities[i][k][0]].marginTop + entityRects[columnEntities[i][j][0]].marginBottom >= columnGaps[i]) {
+                            // Increase gap to fit the difference
+                            columnGaps[i] += entityRects[columnEntities[i][k][0]].marginTop + entityRects[columnEntities[i][j][0]].marginBottom - columnGaps[i] + 1;
                         }
-                        else {
-                            // If the smaller entity's header is above the bigger entity's header just increase the smaller entity's header as that's a smaller increase
-                            if (entityRects[columnEntities[i][j][0]].statements.length > 1) {
-                                entityRects[columnEntities[i][j][0]].marginTop = entityRects[columnEntities[i][k][0]].marginTop + entityRects[columnEntities[i][j][0]].visibleHeaders * 2 + 1;
-                            }
+                        else if (columnEntities[i][j][1] == "y1" && columnEntities[i][k][1] == "y2" && entityRects[columnEntities[i][k][0]].marginBottom + entityRects[columnEntities[i][j][0]].marginTop >= columnGaps[i]) {
+                            // Increase gap to fit the difference
+                            columnGaps[i] += entityRects[columnEntities[i][k][0]].marginBottom + entityRects[columnEntities[i][j][0]].marginTop - columnGaps[i] + 1;
                         }
-                    }
-                    else if (columnEntities[i][j][1] == "y2" && columnEntities[i][k][1] == "y2" && entityRects[columnEntities[i][k][0]].marginBottom == entityRects[columnEntities[i][j][0]].marginBottom) {
-                        if (entityRects[columnEntities[i][k][0]].statements.length > 1) entityRects[columnEntities[i][k][0]].marginBottom = entityRects[columnEntities[i][j][0]].marginBottom + 1;
                     }
                 }
             }
@@ -186,141 +226,70 @@ function calculateGapsAndMargins() {
     }
 
     // Increase row gaps to fit the highest number of nested entities
-    for (let i = 0; i < rowEntities.length; i++) {
-        let maxMargin = 0;
+    function increaseRowGapsNested() {
+        for (let i = 0; i < rowEntities.length; i++) {
+            let maxMargin = 0;
 
-        for (let j = 0; j < rowEntities[i].length; j++) {
-            for (let k = 0; k < statementCells.length; k++) {
-                if (rowEntities[i][j][1] == "x1" && entityRects[rowEntities[i][j][0]].marginLeft > maxMargin) {
+            for (let j = 0; j < rowEntities[i].length; j++) {
+                for (let k = 0; k < statementCells.length; k++) {
+                    if (rowEntities[i][j][1] == "x1" && entityRects[rowEntities[i][j][0]].marginLeft > maxMargin) {
 
-                    // Check if there is a statement in the previous column that would overlap with the entity if the gap is not increased
-                    let ey1 = entityRects[rowEntities[i][j][0]].y1;
-                    let ey2 = entityRects[rowEntities[i][j][0]].y2;
-                    let sx = statementCells[k].x;
-                    let sy = statementCells[k].y;
-                    let statementInPreviousColumn = (sx == i);
-                    let statementAndEntityOverlap = (sy <= ey2 && sy >= ey1);
+                        // Check if there is a statement in the previous column that would overlap with the entity if the gap is not increased
+                        let ey1 = entityRects[rowEntities[i][j][0]].y1;
+                        let ey2 = entityRects[rowEntities[i][j][0]].y2;
+                        let sx = statementCells[k].x;
+                        let sy = statementCells[k].y;
+                        let statementInPreviousColumn = (sx == i);
+                        let statementAndEntityOverlap = (sy <= ey2 && sy >= ey1);
 
-                    // Increase the gap for the first and last column or if such a statement was found
-                    if (i == 0 || i == rowEntities.length - 1 || (statementInPreviousColumn && statementAndEntityOverlap)) {
-                        maxMargin = entityRects[rowEntities[i][j][0]].marginLeft;
+                        // Increase the gap for the first and last column or if such a statement was found
+                        if (i == 0 || i == rowEntities.length - 1 || (statementInPreviousColumn && statementAndEntityOverlap)) {
+                            maxMargin = entityRects[rowEntities[i][j][0]].marginLeft;
+                        }
                     }
-                }
-                else if (rowEntities[i][j][1] == "x2" && entityRects[rowEntities[i][j][0]].marginRight > maxMargin) {
+                    else if (rowEntities[i][j][1] == "x2" && entityRects[rowEntities[i][j][0]].marginRight > maxMargin) {
 
-                    // Check if there is a statement in the next column that would overlap with the entity if the gap is not increased
-                    let ey1 = entityRects[rowEntities[i][j][0]].y1;
-                    let ey2 = entityRects[rowEntities[i][j][0]].y2;
-                    let sx = statementCells[k].x;
-                    let sy = statementCells[k].y;
-                    let statementInNextColumn = (sx == i);
-                    let statementAndEntityOverlap = (sy <= ey2 && sy >= ey1);
+                        // Check if there is a statement in the next column that would overlap with the entity if the gap is not increased
+                        let ey1 = entityRects[rowEntities[i][j][0]].y1;
+                        let ey2 = entityRects[rowEntities[i][j][0]].y2;
+                        let sx = statementCells[k].x;
+                        let sy = statementCells[k].y;
+                        let statementInNextColumn = (sx == i);
+                        let statementAndEntityOverlap = (sy <= ey2 && sy >= ey1);
 
-                    // Increase the gap for the first and last column or if such a statement was found
-                    if (i == 0 || i == rowEntities.length - 1 || (statementInNextColumn && statementAndEntityOverlap)) {
-                        maxMargin = entityRects[rowEntities[i][j][0]].marginRight;
-                    }
-                }
-            }
-        }
-
-        rowGaps[i] += maxMargin;
-    }
-
-    // Increase column gaps to fit the highest number of nested entities
-    for (let i = 0; i < columnEntities.length; i++) {
-        let maxMargin = 0;
-
-        for (let j = 0; j < columnEntities[i].length; j++) {
-            for (let k = 0; k < statementCells.length; k++) {
-                if (columnEntities[i][j][1] == "y1" && entityRects[columnEntities[i][j][0]].marginTop > maxMargin) {
-
-                    // Check if there is a statement in the previous row that would overlap with the entity if the gap is not increased
-                    let ex1 = entityRects[columnEntities[i][j][0]].x1;
-                    let ex2 = entityRects[columnEntities[i][j][0]].x2;
-                    let sx = statementCells[k].x;
-                    let sy = statementCells[k].y;
-                    let statementInPreviousRow = (sy == i);
-                    let statementAndEntityOverlap = (sx <= ex2 && sx >= ex1);
-
-                    // Increase the gap for the first and last row or if such a statement was found
-                    if ((i == 0 || i == columnEntities.length - 1 || (statementInPreviousRow && statementAndEntityOverlap))) {
-                        maxMargin = entityRects[columnEntities[i][j][0]].marginTop;
-                    }
-                }
-                else if (columnEntities[i][j][1] == "y2" && entityRects[columnEntities[i][j][0]].marginBottom > maxMargin) {
-                    
-                    // Check if there is a statement in the next row that would overlap with the entity if the gap is not increased
-                    let ex1 = entityRects[columnEntities[i][j][0]].x1;
-                    let ex2 = entityRects[columnEntities[i][j][0]].x2;
-                    let sx = statementCells[k].x;
-                    let sy = statementCells[k].y;
-                    let statementInNextRow = (sy == i);
-                    let statementAndEntityOverlap = (sx <= ex2 && sx >= ex1);
-
-                    // Increase the gap for the first and last row or if such a statement was found
-                    if (i == 0 || i == columnEntities.length - 1 || (statementInNextRow && statementAndEntityOverlap)) {
-                        maxMargin = entityRects[columnEntities[i][j][0]].marginBottom;
+                        // Increase the gap for the first and last column or if such a statement was found
+                        if (i == 0 || i == rowEntities.length - 1 || (statementInNextColumn && statementAndEntityOverlap)) {
+                            maxMargin = entityRects[rowEntities[i][j][0]].marginRight;
+                        }
                     }
                 }
             }
-        }
 
-        columnGaps[i] += maxMargin;
+            rowGaps[i] += maxMargin;
+        }
     }
 
     // Increase row gaps to fit highest sum of margins from neighbouring columns
-    for (let i = 0; i < rowEntities.length; i++) {
-        for (let j = 0; j < rowEntities[i].length; j++) {
-            for (let k = j + 1; k < rowEntities[i].length; k++) {
+    function increaseRowGapsNeighbouring() {
+        for (let i = 0; i < rowEntities.length; i++) {
+            for (let j = 0; j < rowEntities[i].length; j++) {
+                for (let k = j + 1; k < rowEntities[i].length; k++) {
+                    // Get entities
+                    let e1 = entityRects[rowEntities[i][j][0]];
+                    let e2 = entityRects[rowEntities[i][k][0]];
 
-                // Get entity coordinates
-                let firstY1 = entityRects[rowEntities[i][j][0]].y1;
-                let firstY2 = entityRects[rowEntities[i][j][0]].y2;
+                    // Entities overlap
+                    if (doEntitiesOverlapVertically(e1, e2)) {
 
-                let secondY1 = entityRects[rowEntities[i][k][0]].y1;
-                let secondY2 = entityRects[rowEntities[i][k][0]].y2;
-
-                // Entities overlap
-                if ((firstY1 >= secondY1 && firstY1 <= secondY2) || (secondY1 >= firstY1 && secondY1 <= firstY2)) {
-
-                    // Entities are in two different (neighbouring) columns and the sum of their margins is bigger than the gap
-                    if (rowEntities[i][j][1] == "x2" && rowEntities[i][k][1] == "x1" && entityRects[rowEntities[i][k][0]].marginLeft + entityRects[rowEntities[i][j][0]].marginRight >= rowGaps[i]) {
-                        // Increase gap to fit the difference
-                        rowGaps[i] += entityRects[rowEntities[i][k][0]].marginLeft + entityRects[rowEntities[i][j][0]].marginRight - rowGaps[i] + 1;
-                    }
-                    else if (rowEntities[i][j][1] == "x1" && rowEntities[i][k][1] == "x2" && entityRects[rowEntities[i][k][0]].marginRight + entityRects[rowEntities[i][j][0]].marginLeft >= rowGaps[i]) {
-                        // Increase gap to fit the difference
-                        rowGaps[i] += entityRects[rowEntities[i][k][0]].marginRight + entityRects[rowEntities[i][j][0]].marginLeft - rowGaps[i] + 1;
-                    }
-                }
-            }
-        }
-    }
-
-    // Increase column gaps to fit highest sum of margins from neighbouring rows
-    for (let i = 0; i < columnEntities.length; i++) {
-        for (let j = 0; j < columnEntities[i].length; j++) {
-            for (let k = j + 1; k < columnEntities[i].length; k++) {
-
-                // Get entity coordinates
-                let firstX1 = entityRects[columnEntities[i][j][0]].x1;
-                let firstX2 = entityRects[columnEntities[i][j][0]].x2;
-
-                let secondX1 = entityRects[columnEntities[i][k][0]].x1;
-                let secondX2 = entityRects[columnEntities[i][k][0]].x2;
-
-                // Entities overlap
-                if ((firstX1 >= secondX1 && firstX1 <= secondX2) || (secondX1 >= firstX1 && secondX1 <= firstX2)) {
-
-                    // Entities are in two different (neighbouring) rows and the sum of their margins is bigger than the gap
-                    if (columnEntities[i][j][1] == "y2" && columnEntities[i][k][1] == "y1" && entityRects[columnEntities[i][k][0]].marginTop + entityRects[columnEntities[i][j][0]].marginBottom >= columnGaps[i]) {
-                        // Increase gap to fit the difference
-                        columnGaps[i] += entityRects[columnEntities[i][k][0]].marginTop + entityRects[columnEntities[i][j][0]].marginBottom - columnGaps[i] + 1;
-                    }
-                    else if (columnEntities[i][j][1] == "y1" && columnEntities[i][k][1] == "y2" && entityRects[columnEntities[i][k][0]].marginBottom + entityRects[columnEntities[i][j][0]].marginTop >= columnGaps[i]) {
-                        // Increase gap to fit the difference
-                        columnGaps[i] += entityRects[columnEntities[i][k][0]].marginBottom + entityRects[columnEntities[i][j][0]].marginTop - columnGaps[i] + 1;
+                        // Entities are in two different (neighbouring) columns and the sum of their margins is bigger than the gap
+                        if (rowEntities[i][j][1] == "x2" && rowEntities[i][k][1] == "x1" && entityRects[rowEntities[i][k][0]].marginLeft + entityRects[rowEntities[i][j][0]].marginRight >= rowGaps[i]) {
+                            // Increase gap to fit the difference
+                            rowGaps[i] += entityRects[rowEntities[i][k][0]].marginLeft + entityRects[rowEntities[i][j][0]].marginRight - rowGaps[i] + 1;
+                        }
+                        else if (rowEntities[i][j][1] == "x1" && rowEntities[i][k][1] == "x2" && entityRects[rowEntities[i][k][0]].marginRight + entityRects[rowEntities[i][j][0]].marginLeft >= rowGaps[i]) {
+                            // Increase gap to fit the difference
+                            rowGaps[i] += entityRects[rowEntities[i][k][0]].marginRight + entityRects[rowEntities[i][j][0]].marginLeft - rowGaps[i] + 1;
+                        }
                     }
                 }
             }
@@ -329,10 +298,10 @@ function calculateGapsAndMargins() {
 }
 
 // Set dynamic cell heights for each row
-function calculateCellHeights() {
+function calculateCellHeights(cellHeights, statementCells, totalHeight) {
 
     // Initialize all heights to 0
-    for (let i = 0; i <= h; i++) {
+    for (let i = 0; i <= totalHeight; i++) {
         cellHeights[i] = 0;
     }
 
@@ -344,13 +313,13 @@ function calculateCellHeights() {
     }
 
     // Add padding above and below the text
-    for (let i = 0; i <= h; i++) {
+    for (let i = 0; i <= totalHeight; i++) {
         cellHeights[i] += 2;
     }
 }
 
 // Resize and center canvas on the screen
-function setCanvasDimensions() {
+function setCanvasDimensions(rowGaps, columnGaps, cellHeights) {
 
     // Sum over all gaps
     let rowGapSum = 0;
@@ -369,7 +338,7 @@ function setCanvasDimensions() {
     }
 
     // Combine into total canvas dimensions
-    canvas.width = w * cellWidth * backgroundCellSize + rowGapSum * backgroundCellSize;
+    canvas.width = solutionWidth * cellWidth * backgroundCellSize + rowGapSum * backgroundCellSize;
     canvas.height = sumHeights * backgroundCellSize + columnGapSum * backgroundCellSize;
 
     // Cancel centering if solution is too big to fit on the screen

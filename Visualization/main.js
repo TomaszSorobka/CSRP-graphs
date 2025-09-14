@@ -1,14 +1,23 @@
 // Solution
-let w;
-let h;
+let solutionWidth;
+let solutionHeight;
 let entities = [];
 let statements = [];
+
+// Names of copied entities
+let copiedEntityNames;
+// Colors for copied entities
+let copiedEntityColors;
 
 // Canvas
 const canvas = document.getElementById('canvas');
 const c = canvas.getContext('2d');
 c.font = "normal 10px sans-serif";
 c.globalCompositeOperation = "source-over";
+
+// Canvas elements to be drawn
+let entityRects = [];
+let statementCells = [];
 
 // Grid sizes
 const backgroundCellSize = 10;
@@ -23,12 +32,8 @@ let columnGaps = [];
 let rowEntities = [];
 let columnEntities = [];
 
-// Canvas elements to be drawn
-let entityRects = [];
-let statementCells = [];
-
-// Color palette
-let readyPalette = [
+// All available colors
+const colors = [
     "#4E79A7",
     "#F28E2B",
     "#E15759",
@@ -41,21 +46,23 @@ let readyPalette = [
     "#BAB0AC"
 ];
 
-// Colors for copied entities
-let deletedColors;
+// Color palette to be used for the current visualization
+let colorPalette = colors.slice();
 
 // Read solution from input
 document.getElementById('fileInput').addEventListener('change', function (event) {
     const file = event.target.files[0];
     if (!file) return;
 
+    reset(); // Clear any previous visuazliations
+
     const reader = new FileReader();
     reader.onload = function (e) {
         const fileContent = e.target.result;
         parseData(fileContent); // Ensure data is processed first
 
-        visualize(); // Visualize solution
-        setInterval(loop, 0.1);
+        setup(); // Compute visualization
+        setInterval(visualize, 0.1); // Show the solution
     };
     reader.readAsText(file);
 });
@@ -66,9 +73,11 @@ function parseData(fileContent) {
     const sizeMatch = fileContent.match(sizeRegex);
 
     if (sizeMatch) {
-        w = parseInt(sizeMatch[1], 10) + 1;
-        h = parseInt(sizeMatch[2], 10) + 1;
+        solutionWidth = parseInt(sizeMatch[1], 10) + 1;
+        solutionHeight = parseInt(sizeMatch[2], 10) + 1;
     }
+
+    initializeGapAndEntityArrays(solutionWidth, solutionHeight, rowGaps, columnGaps, rowEntities, columnEntities);
 
     // Regex to capture entity data (including names and coordinates)
     const entityRegex = /Entity (.+?): \((\-?\d+), (\-?\d+)\) - \((\-?\d+), (\-?\d+)\)/g;
@@ -116,46 +125,72 @@ function parseData(fileContent) {
     // Sort entities by size
     entities.sort((a, b) => ((a.x2 - a.x1) + (a.y2 - a.y1)) - ((b.x2 - b.x1) + (b.y2 - b.y1)));
 
+    // Find the names of all entities with multiple copies
+    copiedEntityNames = getCopiedEntities(entities);
+
     // Assign a unique color for each deleted entity
-    let nrDeleted = getNumberOfCopiedEntities(entities);
-    deletedColors = getReadyPalette(nrDeleted, true);
+    let nrDeleted = copiedEntityNames.length;
+    copiedEntityColors = getReadyPalette(colorPalette, nrDeleted, true);
     
     // Remove assigned colors from the palette
-    readyPalette.splice(0, nrDeleted);
+    colorPalette.splice(0, nrDeleted);
 }
 
-function getNumberOfCopiedEntities(entities) {
-    let repeated = [];
-    for (let i = 0; i < entities.length; i++) {
-        for (let j = i + 1; j < entities.length; j++) {
-            if (entities[i].name == entities[j].name && !repeated.includes(entities[i].name)) {
-                repeated.push(entities[i].name);
-            }
-        }
-    }
+// Clear previous visualizations
+function reset() {
+    // Reset the canvas
+    canvas.width = 0;
+    canvas.height = 0;
+    canvas.style.left = '50%';
+    canvas.style.top = '50%';
+    canvas.style.transform = 'translate(-50%, -50%)';
 
-    return repeated.length;
+    // Clear the previous solution
+    solutionWidth = undefined;
+    solutionHeight = undefined;
+    entities = [];
+    statements = [];
+    copiedEntityNames = undefined;
+    copiedEntityColors = undefined;
+
+    // Clear previous elements and dimensions
+    entityRects = [];
+    statementCells = [];
+    cellHeights = [];
+    rowGaps = [];
+    columnGaps = [];
+    rowEntities = [];
+    columnEntities = [];
+
+    // Reset the color palette
+    colorPalette = colors.slice();
 }
 
-function visualize() {
-    // Prepare and process data
-    initializeElements();
-    mergeEntitiesWithSameStatements();
-    mapEntitiesToStatements();
-    markCopiedEntities();
-    calculateGapsAndMargins();
-    calculateCellHeights();
-    setCanvasDimensions();
+// Prepare and process data
+function setup() {
+    // Initialize the elements to be drawn on screen from the data
+    initializeElements(colorPalette, entities, statements, entityRects, statementCells);
 
-    // Draw solution
-    // drawBackgroundGrid();
-    drawElements();
+    // Prepare entity rectangles to be drawn
+    mergeEntityRectsWithSameStatements(entityRects);
+    mapEntityRectsToStatements(entityRects, statements);
+    processEntityRectHeaders(entityRects, copiedEntityNames);
+
+    // Calculate and set pixel dimensions
+    calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, columnEntities);
+    calculateCellHeights(cellHeights, statementCells, solutionHeight);
+    setCanvasDimensions(rowGaps, columnGaps, cellHeights);
+
+    drawElements(entityRects, statementCells);
+
+    // Make the Export button functional
+    document.getElementById("export").addEventListener("click", () => exportToSVG());
 }
 
 // Clear and redraw solution to show changes
-function loop() {
+function visualize() {
     c.clearRect(0, 0, canvas.width, canvas.height);
 
-    // drawBackgroundGrid();
-    drawElements();
+    drawBackgroundGrid();
+    drawElements(entityRects, statementCells);
 }

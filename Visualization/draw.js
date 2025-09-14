@@ -1,5 +1,5 @@
 // Draw elements on canvas
-function drawElements() {
+function drawElements(entityRects, statementCells) {
     // Calculate each entity's position and draw it accordingly
     for (let i = 0; i < entityRects.length; i++) {
         entityRects[i].position();

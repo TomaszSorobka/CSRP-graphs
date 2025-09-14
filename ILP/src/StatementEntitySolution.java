@@ -39,8 +39,8 @@ public class StatementEntitySolution {
             GRBVar[][] grbEntityCoord = new GRBVar[entityIds.size()][4];
 
             for (int i = 0; i < nStatements; i++) {
-                grbStatementCoord[i][0] = model.addVar(0, 20, 0.0, GRB.INTEGER, "s" + i + "_" + "x");
-                grbStatementCoord[i][1] = model.addVar(0, 20, 0.0, GRB.INTEGER, "s" + i + "_" + "y");
+                grbStatementCoord[i][0] = model.addVar(0, dimensions, 0.0, GRB.INTEGER, "s" + i + "_" + "x");
+                grbStatementCoord[i][1] = model.addVar(0, dimensions, 0.0, GRB.INTEGER, "s" + i + "_" + "y");
             }
 
             for (int i = 0; i < nEntities; i++) {
@@ -56,27 +56,27 @@ public class StatementEntitySolution {
 
             GRBVar b = model.addVar(0, 1, 0.0, GRB.BINARY, "useYAlignment");
 
-            // All coordinates are non-negative (C00)
-            for (int i = 0; i < nStatements; i++) {
-                model.addConstr(grbStatementCoord[i][0], GRB.GREATER_EQUAL, 0, "H0_" + i + "_x");
-                model.addConstr(grbStatementCoord[i][1], GRB.GREATER_EQUAL, 0, "H0_" + i + "_y");
-            }
-            for (int i = 0; i < nEntities; i++) {
-                for (int j = 0; j < 4; j++) {
-                    model.addConstr(grbEntityCoord[i][j], GRB.GREATER_EQUAL, 0, "H0_e_" + i + "_" + j);
-                }
-            }
+            // // All coordinates are non-negative (C00)
+            // for (int i = 0; i < nStatements; i++) {
+            //     model.addConstr(grbStatementCoord[i][0], GRB.GREATER_EQUAL, 0, "H0_" + i + "_x");
+            //     model.addConstr(grbStatementCoord[i][1], GRB.GREATER_EQUAL, 0, "H0_" + i + "_y");
+            // }
+            // for (int i = 0; i < nEntities; i++) {
+            //     for (int j = 0; j < 4; j++) {
+            //         model.addConstr(grbEntityCoord[i][j], GRB.GREATER_EQUAL, 0, "H0_e_" + i + "_" + j);
+            //     }
+            // }
 
-            // All coordinates are at most 4 / Restrict solution size (C01)
-            for (int i = 0; i < nStatements; i++) {
-                model.addConstr(grbStatementCoord[i][0], GRB.LESS_EQUAL, dimensions, "H00_" + i + "_x");
-                model.addConstr(grbStatementCoord[i][1], GRB.LESS_EQUAL, dimensions, "H00_" + i + "_y");
-            }
-            for (int i = 0; i < nEntities; i++) {
-                for (int j = 0; j < 4; j++) {
-                    model.addConstr(grbEntityCoord[i][j], GRB.LESS_EQUAL, dimensions, "H00_e_" + i + "_" + j);
-                }
-            }
+            // // All coordinates are at most 4 / Restrict solution size (C01)
+            // for (int i = 0; i < nStatements; i++) {
+            //     model.addConstr(grbStatementCoord[i][0], GRB.LESS_EQUAL, dimensions, "H00_" + i + "_x");
+            //     model.addConstr(grbStatementCoord[i][1], GRB.LESS_EQUAL, dimensions, "H00_" + i + "_y");
+            // }
+            // for (int i = 0; i < nEntities; i++) {
+            //     for (int j = 0; j < 4; j++) {
+            //         model.addConstr(grbEntityCoord[i][j], GRB.LESS_EQUAL, dimensions, "H00_e_" + i + "_" + j);
+            //     }
+            // }
 
             // Positioning statements inside entities (H1)
             for (int i = 0; i < nEntities; i++) {
@@ -342,6 +342,7 @@ public class StatementEntitySolution {
                 System.out.println("Instance too large.");
 
                 getSplit(instance, sols);
+                System.out.println("why did you not splittttttttttttttt?????????");
             } else {
                 model.optimize();
 
@@ -409,15 +410,16 @@ public class StatementEntitySolution {
         deletedNodes.addAll(splitInst.deletedEntities);
 
         for (StatementEntityInstance inst : split) {
+            inst.print();
             computeILPCoord(inst, sols);
         }
     }
 
     public static void main(String[] args) {
-        String jsonFilePath = "ILP\\data\\structured_dataset.json";
+        String jsonFilePath = "ILP\\data\\optimality_test.json";
         StatementEntityInstance instance = new StatementEntityInstance(jsonFilePath);
         StatementEntitySolution solution = new StatementEntitySolution();
         solution.computeILPCoord(instance, new ArrayList<>());
-        SolutionPositioner.computeCompleteSolution(solution.solutions, "Visualization/Solutions/murder-test.txt");
+        SolutionPositioner.computeCompleteSolution(solution.solutions, "Visualization/Solutions/optimality_test.txt");
     }
 }
