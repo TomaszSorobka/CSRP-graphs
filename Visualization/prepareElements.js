@@ -28,7 +28,6 @@ function initializeElements(colorPalette, entities, statements, entityRects, sta
         let x2 = entities[i].x2;
         let y2 = entities[i].y2;
         let coords = [new Point(x1, y1), new Point(x2, y1), new Point(x2, y2), new Point(x1, y2)];
-        console.log(coords);
         let statements = entities[i].statements;
 
         // Non-singleton entities get their assigned colors

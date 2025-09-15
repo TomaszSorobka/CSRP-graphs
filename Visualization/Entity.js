@@ -11,10 +11,7 @@ class Entity {
         this.computeDimensions();
 
         // Pixel coordinates
-        this.xStart;
-        this.xEnd;
-        this.yStart;
-        this.yEnd;
+        this.pixelCoords = [];
 
         // Margins
         this.marginLeft = 1;
@@ -48,6 +45,9 @@ class Entity {
     }
 
     position() {
+        // Clear any previously calculated pixel dimensions
+        this.pixelCoords = [];
+
         // Sum up all row gaps before the start of the entity
         let cumulativeRowGap = 0;
         for(let i = 0; i <= this.coords[0].x; i++) {
@@ -73,10 +73,6 @@ class Entity {
         // Find cumulative gaps left of and above entity
         let xGap = cumulativeRowGap * backgroundCellSize;
         let yGap = cumulativeColumnGap * backgroundCellSize;
-
-        // Top-left corner pixel coordinates
-        this.xStart = xPos + xGap;
-        this.yStart = yPos + yGap;
 
         // Sum up all row gaps inside the entity
         cumulativeRowGap = 0;
@@ -104,29 +100,36 @@ class Entity {
         let innerXGap = cumulativeRowGap * backgroundCellSize;
         let innerYGap = cumulativeColumnGap * backgroundCellSize;
 
+        // Top-left corner pixel coordinates
+        this.pixelCoords.push(new Point(xPos + xGap, yPos + yGap));
+        // Top-right corner pixel coordinates
+        this.pixelCoords.push(new Point(xSize + innerXGap + backgroundCellSize * this.marginRight, yPos + yGap));
         // Bottom-right corner pixel coordinates
-        this.xEnd = xSize + innerXGap + backgroundCellSize * this.marginRight;
-        this.yEnd = ySize + innerYGap + backgroundCellSize * this.marginBottom;
+        this.pixelCoords.push(new Point(xSize + innerXGap + backgroundCellSize * this.marginRight, ySize + innerYGap + backgroundCellSize * this.marginBottom));
+        // Bottom-left corner pixel coordinates
+        this.pixelCoords.push(new Point(xPos + xGap, ySize + innerYGap + backgroundCellSize * this.marginBottom));
     }
 
     draw() {
         // Only draw non-singleton or copied entities
         if (this.statements.length > 1 || this.deleted.includes(true)) {
+            // Find the entity's region
+            let region = new Path2D();
+            region.moveTo(this.pixelCoords[0].x, this.pixelCoords[0].y);
+            for (let i = 1; i < this.pixelCoords.length; i++) {
+                region.lineTo(this.pixelCoords[i].x, this.pixelCoords[i].y);
+            }
+            region.closePath();
+
             // Draw background
             for (let i = 0; i < this.colors.length; i++) {
                 c.fillStyle = rgbToRgba(this.colors[i], '0.15');
-                c.fillRect(this.xStart, this.yStart, this.xEnd - this.xStart, this.yEnd - this.yStart);
+                c.fill(region);
             }
     
             // Draw borders
             c.strokeStyle = this.colors[this.statements.length > 1 ? 0 : (this.deleted.includes(true) ? this.deleted.indexOf(true) : 0)];
-            c.beginPath();
-            c.moveTo(this.xStart, this.yStart);
-            c.lineTo(this.xEnd, this.yStart);
-            c.lineTo(this.xEnd, this.yEnd);
-            c.lineTo(this.xStart, this.yEnd);
-            c.lineTo(this.xStart, this.yStart);
-            c.stroke();
+            c.stroke(region);
         }
     }
 
@@ -147,25 +150,25 @@ class Entity {
                     if (this.deleted[i]) {
                         // Fill space behind entity name
                         c.fillStyle = backgroundColor;
-                        c.fillRect(this.xStart + 1, this.yStart + 2 * headerIndex * backgroundCellSize + 1, c.measureText(this.displayHeaders[i]).width + 2 * backgroundCellSize, 2 * backgroundCellSize);
+                        c.fillRect(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1, c.measureText(this.displayHeaders[i]).width + 2 * backgroundCellSize, 2 * backgroundCellSize);
 
                         // Draw crosshatching pattern for the rest of the header
                         c.fillStyle = createCrosshatchPattern(backgroundColor);
-                        c.fillRect(this.xStart + 1, this.yStart + 2 * headerIndex * backgroundCellSize + 1, this.xEnd - this.xStart - 2, 2 * backgroundCellSize);
+                        c.fillRect(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1, this.pixelCoords[1].x - this.pixelCoords[0].x - 2, 2 * backgroundCellSize);
 
                         // Draw bottom line of header
                         c.fillStyle = backgroundColor;
-                        c.fillRect(this.xStart + 1, this.yStart + 2 * headerIndex * backgroundCellSize + 1 + 2 * backgroundCellSize, this.xEnd - this.xStart - 2, 1);
+                        c.fillRect(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 2 * backgroundCellSize, this.pixelCoords[1].x - this.pixelCoords[0].x - 2, 2);
                     }
                     // For non-singleton entities draw normal headers
                     else {
                         c.fillStyle = backgroundColor;
-                        c.fillRect(this.xStart + 1, this.yStart + 2 * headerIndex * backgroundCellSize + 1, this.xEnd - this.xStart - 2, 2 * backgroundCellSize);
+                        c.fillRect(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1, this.pixelCoords[1].x - this.pixelCoords[0].x - 2, 2 * backgroundCellSize);
                     }
         
                     // Show header name
                     c.fillStyle = "#fff";
-                    c.fillText(this.displayHeaders[i], this.xStart + backgroundCellSize + 1, this.yStart + 2 * headerIndex * backgroundCellSize + 1.25 * backgroundCellSize + 1);
+                    c.fillText(this.displayHeaders[i], this.pixelCoords[0].x + backgroundCellSize + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1.25 * backgroundCellSize + 1);
 
                     // Increase the drawn header counter
                     headerIndex++;
@@ -176,10 +179,10 @@ class Entity {
 
     // Change header color on click
     changeColor() {
-        if (mouse.x > this.xStart && mouse.x < this.xEnd) {
+        if (mouse.x > this.pixelCoords[0].x && mouse.x < this.pixelCoords[1].x) {
             if (this.statements.length > 1) {
                 for (let i = 0; i < this.headers.length; i++) {
-                    if (mouse.y > this.yStart + 2 * i * backgroundCellSize + 1 && mouse.y < this.yStart + 2 * i * backgroundCellSize + 1 + 2 * backgroundCellSize) {
+                    if (mouse.y > this.pixelCoords[0].y + 2 * i * backgroundCellSize + 1 && mouse.y < this.pixelCoords[0].y + 2 * i * backgroundCellSize + 1 + 2 * backgroundCellSize) {
                         this.colors[i] = hexToRgb(currentColor);
                     }
                 }
@@ -187,7 +190,7 @@ class Entity {
             else {
                 let visHeaders = this.headers.filter(h => this.deleted[this.headers.indexOf(h)]);
                 for (let i = 0; i < visHeaders.length; i++) {
-                    if (mouse.y > this.yStart + 2 * i * backgroundCellSize + 1 && mouse.y < this.yStart + 2 * i * backgroundCellSize + 1 + 2 * backgroundCellSize) {
+                    if (mouse.y > this.pixelCoords[0].y + 2 * i * backgroundCellSize + 1 && mouse.y < this.pixelCoords[0].y + 2 * i * backgroundCellSize + 1 + 2 * backgroundCellSize) {
                         this.colors[this.headers.indexOf(visHeaders[i])] = hexToRgb(currentColor);
                     }
                 }

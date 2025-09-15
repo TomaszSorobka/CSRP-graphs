@@ -164,8 +164,8 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, 
                     if (columnEntities[i][j][1] == "y1" && entityRects[columnEntities[i][j][0]].marginTop > maxMargin) {
 
                         // Check if there is a statement in the previous row that would overlap with the entity if the gap is not increased
-                        let ex1 = entityRects[columnEntities[i][j][0]].x1;
-                        let ex2 = entityRects[columnEntities[i][j][0]].x2;
+                        let ex1 = entityRects[columnEntities[i][j][0]].coords[0].x;
+                        let ex2 = entityRects[columnEntities[i][j][0]].coords[2].x;
                         let sx = statementCells[k].x;
                         let sy = statementCells[k].y;
                         let statementInPreviousRow = (sy == i);
@@ -179,8 +179,8 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, 
                     else if (columnEntities[i][j][1] == "y2" && entityRects[columnEntities[i][j][0]].marginBottom > maxMargin) {
 
                         // Check if there is a statement in the next row that would overlap with the entity if the gap is not increased
-                        let ex1 = entityRects[columnEntities[i][j][0]].x1;
-                        let ex2 = entityRects[columnEntities[i][j][0]].x2;
+                        let ex1 = entityRects[columnEntities[i][j][0]].coords[0].x;
+                        let ex2 = entityRects[columnEntities[i][j][0]].coords[2].x;
                         let sx = statementCells[k].x;
                         let sy = statementCells[k].y;
                         let statementInNextRow = (sy == i);
@@ -235,8 +235,8 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, 
                     if (rowEntities[i][j][1] == "x1" && entityRects[rowEntities[i][j][0]].marginLeft > maxMargin) {
 
                         // Check if there is a statement in the previous column that would overlap with the entity if the gap is not increased
-                        let ey1 = entityRects[rowEntities[i][j][0]].y1;
-                        let ey2 = entityRects[rowEntities[i][j][0]].y2;
+                        let ey1 = entityRects[rowEntities[i][j][0]].coords[0].y;
+                        let ey2 = entityRects[rowEntities[i][j][0]].coords[2].y;
                         let sx = statementCells[k].x;
                         let sy = statementCells[k].y;
                         let statementInPreviousColumn = (sx == i);
@@ -250,8 +250,8 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, 
                     else if (rowEntities[i][j][1] == "x2" && entityRects[rowEntities[i][j][0]].marginRight > maxMargin) {
 
                         // Check if there is a statement in the next column that would overlap with the entity if the gap is not increased
-                        let ey1 = entityRects[rowEntities[i][j][0]].y1;
-                        let ey2 = entityRects[rowEntities[i][j][0]].y2;
+                        let ey1 = entityRects[rowEntities[i][j][0]].coords[0].y;
+                        let ey2 = entityRects[rowEntities[i][j][0]].coords[2].y;
                         let sx = statementCells[k].x;
                         let sy = statementCells[k].y;
                         let statementInNextColumn = (sx == i);

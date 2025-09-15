@@ -36,7 +36,7 @@ function createSVG(svg, svgNS) {
 
 function drawEntities(svg, svgNS) {
     // Draw entities in order of their starting y coordinates
-    entityRects.sort((a, b) => a.yStart - b.yStart);
+    entityRects.sort((a, b) => a.pixelCoords[0].y - b.pixelCoords[0].y);
 
     // Create entity groups
     const entityGroups = new Map();
@@ -58,47 +58,33 @@ function drawEntities(svg, svgNS) {
 function drawEntityRectangle(entity, entityGroup, svgNS) {
     // Only draw non-singleton entities or singleton copies
     if (entity.statements.length > 1 || entity.deleted.includes(true)) {
-        const width = entity.xEnd - entity.xStart;
-        const height = entity.yEnd - entity.yStart;
+        const points = entity.pixelCoords.map(p => `${p.x},${p.y}`).join(" ");
         const color = entity.colors[entity.statements.length > 1 ? 0 : (entity.deleted.includes(true) ? entity.deleted.indexOf(true) : 0)];
-
-        // Translucent background fill
-        const fillRect = document.createElementNS(svgNS, "rect");
-        fillRect.setAttribute("x", entity.xStart);
-        fillRect.setAttribute("y", entity.yStart);
-        fillRect.setAttribute("width", width);
-        fillRect.setAttribute("height", height);
-        fillRect.setAttribute("fill", color);
-        fillRect.setAttribute("fill-opacity", 0.15);
-        entityGroup.appendChild(fillRect);
-
-        // Border
-        const border = document.createElementNS(svgNS, "rect");
-        border.setAttribute("x", entity.xStart);
-        border.setAttribute("y", entity.yStart);
-        border.setAttribute("width", width);
-        border.setAttribute("height", height);
-        border.setAttribute("fill", "none");
-        border.setAttribute("stroke", color);
-        entityGroup.appendChild(border);
+        // Translucent background fill + border
+        const poly = document.createElementNS(svgNS, "polygon");
+        poly.setAttribute("points", points);
+        poly.setAttribute("fill", color);
+        poly.setAttribute("fill-opacity", 0.15);
+        poly.setAttribute("stroke", color);
+        entityGroup.appendChild(poly);
     }
 }
 
 function labelEntity(entity, entityGroup, svg, svgNS) {
     // Only label non-singleton entities or singleton copies
     if (entity.statements.length > 1 || entity.deleted.includes(true)) {
-        const width = entity.xEnd - entity.xStart;
+        const width = entity.pixelCoords[1].x - entity.pixelCoords[0].x;
 
         // Headers
         let headerIndex = 0;
         for (let i = 0; i < entity.headers.length; i++) {
             if (entity.statements.length > 1 || entity.deleted[i]) {
-                const headerY = entity.yStart + 2 * headerIndex * backgroundCellSize;
                 const headerHeight = 2 * backgroundCellSize;
+                const headerY = entity.pixelCoords[0].y + headerIndex * headerHeight;
 
                 // Background rect
                 const headerBg = document.createElementNS(svgNS, "rect");
-                headerBg.setAttribute("x", entity.xStart);
+                headerBg.setAttribute("x", entity.pixelCoords[0].x);
                 headerBg.setAttribute("y", headerY);
                 headerBg.setAttribute("width", width);
                 headerBg.setAttribute("height", headerHeight);
@@ -110,7 +96,7 @@ function labelEntity(entity, entityGroup, svg, svgNS) {
 
                 // Header text
                 const text = document.createElementNS(svgNS, "text");
-                text.setAttribute("x", entity.xStart + backgroundCellSize + 1);
+                text.setAttribute("x", entity.pixelCoords[0].x + backgroundCellSize + 1);
                 text.setAttribute("y", headerY + 1.25 * backgroundCellSize + 1);
                 text.setAttribute("fill", "white");
                 text.textContent = entity.displayHeaders[i];
@@ -263,7 +249,7 @@ function crosshatchHeader(entityGroup, svgNS, entity, i, width, headerY, headerH
     clipPath.setAttribute("id", clipId);
 
     const clipRect = document.createElementNS(svgNS, "rect");
-    clipRect.setAttribute("x", entity.xStart + 3);
+    clipRect.setAttribute("x", entity.pixelCoords[0].x + 3);
     clipRect.setAttribute("y", headerY + 1);
     clipRect.setAttribute("width", width - 4);
     clipRect.setAttribute("height", headerHeight - 2);
@@ -281,9 +267,9 @@ function crosshatchHeader(entityGroup, svgNS, entity, i, width, headerY, headerH
     // Forward-slash lines (/)
     for (let x = -headerHeight; x < width + headerHeight; x += spacing) {
         const line = document.createElementNS(svgNS, "line");
-        line.setAttribute("x1", entity.xStart + x);
+        line.setAttribute("x1", entity.pixelCoords[0].x + x);
         line.setAttribute("y1", headerY);
-        line.setAttribute("x2", entity.xStart + x + headerHeight);
+        line.setAttribute("x2", entity.pixelCoords[0].x + x + headerHeight);
         line.setAttribute("y2", headerY + headerHeight);
         hatchGroup.appendChild(line);
     }
@@ -291,9 +277,9 @@ function crosshatchHeader(entityGroup, svgNS, entity, i, width, headerY, headerH
     // Backslash lines (\)
     for (let x = -headerHeight; x < width + headerHeight; x += spacing) {
         const line = document.createElementNS(svgNS, "line");
-        line.setAttribute("x1", entity.xStart + x + headerHeight);
+        line.setAttribute("x1", entity.pixelCoords[0].x + x + headerHeight);
         line.setAttribute("y1", headerY);
-        line.setAttribute("x2", entity.xStart + x);
+        line.setAttribute("x2", entity.pixelCoords[0].x + x);
         line.setAttribute("y2", headerY + headerHeight);
         hatchGroup.appendChild(line);
     }
@@ -302,7 +288,7 @@ function crosshatchHeader(entityGroup, svgNS, entity, i, width, headerY, headerH
 
     // Bottom line
     const bottomLine = document.createElementNS(svgNS, "rect");
-    bottomLine.setAttribute("x", entity.xStart);
+    bottomLine.setAttribute("x", entity.pixelCoords[0].x);
     bottomLine.setAttribute("y", headerY + 2 * backgroundCellSize);
     bottomLine.setAttribute("width", width);
     bottomLine.setAttribute("height", 1);
@@ -312,7 +298,7 @@ function crosshatchHeader(entityGroup, svgNS, entity, i, width, headerY, headerH
     // Solid rect behind entity name
     const textWidth = c.measureText(entity.displayHeaders[i]).width;
     const solidBg = document.createElementNS(svgNS, "rect");
-    solidBg.setAttribute("x", entity.xStart);
+    solidBg.setAttribute("x", entity.pixelCoords[0].x);
     solidBg.setAttribute("y", headerY);
     solidBg.setAttribute("width", textWidth + 2 * backgroundCellSize);
     solidBg.setAttribute("height", headerHeight);
