@@ -83,7 +83,7 @@ public final class VarsFactory {
         for (int i = 0; i < nEntities; i++) {
             // For each row in the entity, a variable determining if it is used
             GRBVar[] rowBinaries = new GRBVar[coordUpperBound];
-            // For each row in the entity: start_x, start_y, end_x, end_y of the cell
+            // For each row in the entity: start_x, end_x
             GRBVar[][] rowCoordinates = new GRBVar[coordUpperBound][4];
             for (int j = 0; j < coordUpperBound; j++) {
                 rowBinaries[j] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "e_" + i + "_" + j + "_active_row");
@@ -91,11 +91,7 @@ public final class VarsFactory {
                 rowCoordinates[j][0] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER,
                         "e" + i + "_row_" + j + "start_x");
                 rowCoordinates[j][1] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER,
-                        "e" + i + "_row_" + j + "start_y");
-                rowCoordinates[j][2] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER,
                         "e" + i + "_row_" + j + "end_x");
-                rowCoordinates[j][3] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER,
-                        "e" + i + "_row_" + j + "end_y");
             }
             v.entities[i] = new GurobiEntity(rowBinaries, rowCoordinates);
         }
