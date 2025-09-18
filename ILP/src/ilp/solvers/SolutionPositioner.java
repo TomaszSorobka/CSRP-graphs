@@ -1,3 +1,5 @@
+package ilp.solvers;
+
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,11 +13,14 @@ import com.gurobi.gurobi.GRBLinExpr;
 import com.gurobi.gurobi.GRBModel;
 import com.gurobi.gurobi.GRBVar;
 
+import model.PositionedSolution;
+import model.Solution;
+
 public class SolutionPositioner {
     static final int GRID_WIDTH = 30;
     static final int GRID_HEIGHT = 30;
 
-    public static void computeCompleteSolution(ArrayList<Solution> components, String filename) {
+    public static PositionedSolution computeCompleteSolution(ArrayList<Solution> components) {
         final int nSolutions = components.size();
         int[][] solutionCoordinates = new int[nSolutions][2];
 
@@ -60,7 +65,8 @@ public class SolutionPositioner {
                 for (int ox = 0; ox < GRID_WIDTH; ox++) {
                     for (int oy = 0; oy < GRID_HEIGHT; oy++) {
                         String key = "place_" + s + "_" + ox + "_" + oy;
-                        if (!placementVars.containsKey(key)) continue;
+                        if (!placementVars.containsKey(key))
+                            continue;
 
                         GRBVar placeVar = placementVars.get(key);
                         for (Point p : sol.cells) {
@@ -68,7 +74,7 @@ public class SolutionPositioner {
                             int gy = oy + p.y;
                             if (gx >= 0 && gx < GRID_WIDTH && gy >= 0 && gy < GRID_HEIGHT) {
                                 String cellKey = gx + "," + gy;
-                                cellCoveringPlacements.computeIfAbsent(cellKey, k -> new ArrayList<>()).add(placeVar);
+                                cellCoveringPlacements.computeIfAbsent(cellKey, _ -> new ArrayList<>()).add(placeVar);
                             }
                         }
                     }
@@ -97,17 +103,17 @@ public class SolutionPositioner {
                 String[] parts = entry.getKey().split(",");
                 int gx = Integer.parseInt(parts[0]);
                 int gy = Integer.parseInt(parts[1]);
-            
+
                 for (GRBVar var : entry.getValue()) {
                     GRBLinExpr exprW = new GRBLinExpr();
                     exprW.addTerm(gx, var);
                     model.addConstr(W, GRB.GREATER_EQUAL, exprW, "boundW_" + gx + "_" + gy);
-            
+
                     GRBLinExpr exprH = new GRBLinExpr();
                     exprH.addTerm(gy, var);
                     model.addConstr(H, GRB.GREATER_EQUAL, exprH, "boundH_" + gx + "_" + gy);
                 }
-            }            
+            }
 
             // Objective: Minimize W + H
             GRBLinExpr totalSize = new GRBLinExpr();
@@ -135,15 +141,13 @@ public class SolutionPositioner {
 
             System.out.println("Bounding Box: " + W.get(GRB.DoubleAttr.X) + " x " + H.get(GRB.DoubleAttr.X));
 
-            // Generate solution file
-            Solution.combineSolutionsIntoFile((int) W.get(GRB.DoubleAttr.X), (int) H.get(GRB.DoubleAttr.X), components, filename);
-
-            model.dispose();
-            env.dispose();
+            return new PositionedSolution(components, (int) W.get(GRB.DoubleAttr.X), (int) H.get(GRB.DoubleAttr.X));
 
         } catch (GRBException e) {
             System.out.println("Error code: " + e.getErrorCode() + ". " + e.getMessage());
-        }
+        } 
+
+        return null;
     }
 
     // Check if a component can be placed in this grid position
@@ -151,12 +155,14 @@ public class SolutionPositioner {
         for (Point p : sol.cells) {
             int x = offsetX + p.x;
             int y = offsetY + p.y;
-            if (x < 0 || x >= GRID_WIDTH || y < 0 || y >= GRID_HEIGHT) return false;
+            if (x < 0 || x >= GRID_WIDTH || y < 0 || y >= GRID_HEIGHT)
+                return false;
         }
         return true;
     }
 
-    // Shift coordinates of all component cells based on that component's position in the grid
+    // Shift coordinates of all component cells based on that component's position
+    // in the grid
     private static void offsetCoords(ArrayList<Solution> components, int[][] offsets) {
         for (int s = 0; s < components.size(); s++) {
             int x = offsets[s][0];

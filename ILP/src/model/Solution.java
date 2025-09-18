@@ -1,3 +1,4 @@
+package model;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -5,13 +6,13 @@ import java.util.ArrayList;
 import java.awt.Point;
 
 public class Solution {
-    StatementEntityInstance instance;
-    int w;
-    int h;
+    public StatementEntityInstance instance;
+    public int w;
+    public int h;
     ArrayList<Integer> entityIds;
-    int[][] entityCoordinates;
-    int[][] statementCoordinates;
-    ArrayList<Point> cells;
+    public int[][] entityCoordinates;
+    public int[][] statementCoordinates;
+    public ArrayList<Point> cells;
 
     public Solution(StatementEntityInstance inst, int w, int h, ArrayList<Integer> eIds, int[][] eCoords, int[][] sCoords) {
         this.instance = inst;

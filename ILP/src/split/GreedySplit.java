@@ -1,11 +1,15 @@
+package split;
+
 import java.util.ArrayList;
 import java.util.Collections;
+
+import model.StatementEntityInstance;
 
 public class GreedySplit {
     StatementEntityInstance instance;
     int nEntities;
     int nStatements;
-    ArrayList<Integer> deletedEntities;
+    public ArrayList<Integer> deletedEntities;
 
     public GreedySplit(StatementEntityInstance instance) {
         this.instance = instance;
@@ -42,7 +46,8 @@ public class GreedySplit {
 
             split.addDeletedNodes();
 
-            ArrayList<StatementEntityInstance> instances = new SplitIntanceFactory(instance, bestSplit).createInstances();
+            ArrayList<StatementEntityInstance> instances = new SplitIntanceFactory(instance, bestSplit)
+                    .createInstances();
 
             // Evaluate the cost of the split
             double cost = cost(instances, split, alpha, initSize);
@@ -54,8 +59,8 @@ public class GreedySplit {
             }
         }
 
-        getDeletedEntities(bestSplit);   
-    
+        getDeletedEntities(bestSplit);
+
         // Return a set of instances for the components of the best split
         return new SplitIntanceFactory(instance, bestSplit).createInstances();
     }
@@ -110,7 +115,8 @@ public class GreedySplit {
 
         // Add size difference between the biggest and smallest component
         Collections.sort(graph.components, (o1, o2) -> (Integer.compare(o1.size(), o2.size())));
-        cost += ((double) graph.components.get(graph.components.size() - 1).size() / (double) graph.components.get(0).size());
+        cost += ((double) graph.components.get(graph.components.size() - 1).size()
+                / (double) graph.components.get(0).size());
 
         return cost;
     }
