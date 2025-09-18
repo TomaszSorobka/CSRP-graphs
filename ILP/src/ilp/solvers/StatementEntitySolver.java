@@ -17,6 +17,7 @@ public class StatementEntitySolver {
     private final int maxSizeSum = 8;
     private final double wTopLeft = 0.5;
     private final double wMaxExtents = 2.0;
+    private final int solutionType;
 
     // Build the constraint set once
     private final List<ConstraintModule> constraints;
@@ -24,7 +25,7 @@ public class StatementEntitySolver {
     private final ObjectiveModule objective = new CompactSquareTopLeft();
 
     // Constructor with default constraints (all of them)
-    public StatementEntitySolver(int dimensions) {
+    public StatementEntitySolver(int dimensions, int solutionType) {
         this.dimensions = dimensions;
         this.constraints = List.of(
                 new C00NonNegativity(),
@@ -37,12 +38,14 @@ public class StatementEntitySolver {
                 new H8MaxWidth(),
                 new H9MaxHeight(),
                 new H10Squareness());
+        this.solutionType = solutionType;
     }
 
     // Constructor that allows you to define your own list of constraints
-    public StatementEntitySolver(int dimensions, List<ConstraintModule> constraints) {
+    public StatementEntitySolver(int dimensions, List<ConstraintModule> constraints, int solutionType) {
         this.dimensions = dimensions;
         this.constraints = constraints;
+        this.solutionType = solutionType;
     }
 
     /**
@@ -57,7 +60,7 @@ public class StatementEntitySolver {
             return null;
         }
 
-        try (ModelContext ctx = new ModelContext(inst, dimensions, gridMin, maxSizeSum, wTopLeft, wMaxExtents)) {
+        try (ModelContext ctx = new ModelContext(inst, dimensions, gridMin, maxSizeSum, wTopLeft, wMaxExtents, solutionType)) {
             // Add constraints
             for (ConstraintModule c : constraints)
                 c.add(ctx);

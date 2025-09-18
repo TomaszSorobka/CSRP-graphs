@@ -6,21 +6,41 @@ import com.gurobi.gurobi.GRBModel;
 import com.gurobi.gurobi.GRBVar;
 
 public final class VarsFactory {
-    private VarsFactory() {}
+    private VarsFactory() {
+    }
 
-    /** Creates all variables */
     public static Vars create(GRBModel model,
-                              int nEntities,
-                              int nStatements,
-                              int coordLowerBound,
-                              int coordUpperBound) throws GRBException {
-        Vars v = new Vars();
+            int nEntities,
+            int nStatements,
+            int coordLowerBound,
+            int coordUpperBound, int modelType) throws GRBException {
+
+        switch (modelType) {
+            case 0:
+                return createRectangleVars(model, nEntities, nStatements, coordLowerBound, coordUpperBound);
+            case 1:
+                return createPolygonVars(model, nEntities, nStatements, coordLowerBound, coordUpperBound);
+            default:
+                System.out.println("Unidentified model type");
+                return createRectangleVars(model, nEntities, nStatements, coordLowerBound, coordUpperBound);
+        }
+    }
+
+    /** Creates all variables for an ILP using rectangles for Entities */
+    public static VarsRectangles createRectangleVars(GRBModel model,
+            int nEntities,
+            int nStatements,
+            int coordLowerBound,
+            int coordUpperBound) throws GRBException {
+        VarsRectangles v = new VarsRectangles();
 
         // statement coordinates: statementCoordinates[i][x/y]
         v.statementCoordinates = new GRBVar[nStatements][2];
         for (int i = 0; i < nStatements; i++) {
-            v.statementCoordinates[i][0] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER, "s" + i + "_x");
-            v.statementCoordinates[i][1] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER, "s" + i + "_y");
+            v.statementCoordinates[i][0] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER,
+                    "s" + i + "_x");
+            v.statementCoordinates[i][1] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER,
+                    "s" + i + "_y");
         }
 
         // entity coordinates: entityCoordinates[i][x1,y1,x2,y2]
@@ -32,11 +52,57 @@ public final class VarsFactory {
             }
         }
 
-        // extra vars: TODO: upper bound does not need to be integer max value
-        v.useYAlignment = model.addVar(0, 1, 0.0, GRB.BINARY, "useYAlignment");
-        v.maxWidth      = model.addVar(0.0, Integer.MAX_VALUE, 0.0, GRB.INTEGER, "maxWidth");
-        v.maxHeight     = model.addVar(0.0, Integer.MAX_VALUE, 0.0, GRB.INTEGER, "maxHeight");
-        v.diff          = model.addVar(0.0, Integer.MAX_VALUE, 0.0, GRB.INTEGER, "diff");
+        // extra vars
+        v.maxWidth = model.addVar(0.0, coordUpperBound, 0.0, GRB.INTEGER, "maxWidth");
+        v.maxHeight = model.addVar(0.0, coordUpperBound, 0.0, GRB.INTEGER, "maxHeight");
+        v.diff = model.addVar(0.0, coordUpperBound, 0.0, GRB.INTEGER, "diff");
+
+        return v;
+    }
+
+    /** Creates all variables for an ILP using polygons for Entities */
+    public static VarsPolygons createPolygonVars(GRBModel model,
+            int nEntities,
+            int nStatements,
+            int coordLowerBound,
+            int coordUpperBound) throws GRBException {
+        VarsPolygons v = new VarsPolygons();
+
+        // statement coordinates: statementCoordinates[i][x/y]
+        v.statementCoordinates = new GRBVar[nStatements][2];
+        for (int i = 0; i < nStatements; i++) {
+            v.statementCoordinates[i][0] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER,
+                    "s" + i + "_x");
+            v.statementCoordinates[i][1] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER,
+                    "s" + i + "_y");
+        }
+
+        // Entities
+        v.entities = new GurobiEntity[nEntities];
+        for (int i = 0; i < nEntities; i++) {
+            // For each row in the entity, a variable determining if it is used
+            GRBVar[] rowBinaries = new GRBVar[coordUpperBound];
+            // For each row in the entity: start_x, start_y, end_x, end_y of the cell
+            GRBVar[][] rowCoordinates = new GRBVar[coordUpperBound][4];
+            for (int j = 0; j < coordUpperBound; j++) {
+                rowBinaries[j] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "e_" + i + "_" + j + "_active_row");
+
+                rowCoordinates[j][0] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER,
+                        "e" + i + "_row_" + j + "start_x");
+                rowCoordinates[j][1] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER,
+                        "e" + i + "_row_" + j + "start_y");
+                rowCoordinates[j][2] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER,
+                        "e" + i + "_row_" + j + "end_x");
+                rowCoordinates[j][3] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER,
+                        "e" + i + "_row_" + j + "end_y");
+            }
+            v.entities[i] = new GurobiEntity(rowBinaries, rowCoordinates);
+        }
+
+        // extra vars
+        v.maxWidth = model.addVar(0.0, coordUpperBound, 0.0, GRB.INTEGER, "maxWidth");
+        v.maxHeight = model.addVar(0.0, coordUpperBound, 0.0, GRB.INTEGER, "maxHeight");
+        v.diff = model.addVar(0.0, coordUpperBound, 0.0, GRB.INTEGER, "diff");
 
         return v;
     }

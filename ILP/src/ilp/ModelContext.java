@@ -3,6 +3,7 @@ import com.gurobi.gurobi.GRBEnv;
 import com.gurobi.gurobi.GRBException;
 import com.gurobi.gurobi.GRBModel;
 
+import ilp.variables.VarsRectangles;
 import ilp.variables.Vars;
 import ilp.variables.VarsFactory;
 import model.StatementEntityInstance;
@@ -33,12 +34,14 @@ public final class ModelContext implements AutoCloseable {
   public final double wTopLeft;
   public final double wMaxExtents;
 
+  // Model Type: - 0 for rectangles
+  //             - 1 for convex polygons
   public ModelContext(StatementEntityInstance inst,
                       int dimensions,
                       int gridMin,
                       int maxSizeSum,
                       double wTopLeft,
-                      double wMaxExtents) throws GRBException {
+                      double wMaxExtents, int modelType) throws GRBException {
     this.inst = inst;
     this.dimensions = dimensions;
     this.gridMin = gridMin;
@@ -60,7 +63,7 @@ public final class ModelContext implements AutoCloseable {
     this.env = new GRBEnv();
     this.model = new GRBModel(env);
 
-    this.v = VarsFactory.create(model, entityIds.size(), statementIds.size(), gridMin, gridMax);
+    this.v = VarsFactory.create(model, entityIds.size(), statementIds.size(), gridMin, gridMax, modelType);
   }
 
   @Override public void close() throws GRBException {

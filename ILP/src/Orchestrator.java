@@ -56,7 +56,7 @@ public class Orchestrator {
     public static void main(String[] args) {
         // Somewhere in your app:
         int dimensions = 4;
-        StatementEntitySolver solver = new StatementEntitySolver(dimensions);
+        StatementEntitySolver solver = new StatementEntitySolver(dimensions, 0);
         Orchestrator orchestrator = new Orchestrator(solver, 5, 1.0 / 3);
         String inputFolder = "data/";
         String outputFolder = "solutions/";
