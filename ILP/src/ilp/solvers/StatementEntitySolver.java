@@ -1,9 +1,6 @@
 package ilp.solvers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.gurobi.gurobi.*;
 
@@ -26,22 +23,24 @@ public class StatementEntitySolver {
 
     private final ObjectiveModule objective = new CompactSquareTopLeft();
 
+    // Constructor with default constraints (all of them)
     public StatementEntitySolver(int dimensions) {
         this.dimensions = dimensions;
         this.constraints = List.of(
-            new C00NonNegativity(),
-            new C01UpperBound(),
-            new H1StatementsInsideEntities(),
-            new H2OutsideNonMembers(),
-            new H6DisjointEntitiesDoNotOverlap(),
-            new C1StatementsDistinctCoordinates(),
-            new C2SingleCellEntities(),
-            new H8MaxWidth(),
-            new H9MaxHeight(),
-            new H10Squareness());
+                new C00NonNegativity(),
+                new C01UpperBound(),
+                new H1StatementsInsideEntities(),
+                new H2OutsideNonMembers(),
+                new H6DisjointEntitiesDoNotOverlap(),
+                new C1StatementsDistinctCoordinates(),
+                new C2SingleCellEntities(),
+                new H8MaxWidth(),
+                new H9MaxHeight(),
+                new H10Squareness());
     }
 
-        public StatementEntitySolver(int dimensions, List<ConstraintModule> constraints) {
+    // Constructor that allows you to define your own list of constraints
+    public StatementEntitySolver(int dimensions, List<ConstraintModule> constraints) {
         this.dimensions = dimensions;
         this.constraints = constraints;
     }

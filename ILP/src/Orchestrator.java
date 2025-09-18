@@ -14,8 +14,9 @@ import split.GreedySplit;
 public class Orchestrator {
 
     private final StatementEntitySolver solver;
-    private final int splitK; // e.g., 5
-    private final double splitRatio; // e.g., 1.0/3
+    private final int splitK; // Maximum number of nodes to be deleted (usually 5)
+    private final double splitRatio; // Coefficient that determines how wide is the range of acceptable components'
+                                     // sizes produced from the split
 
     public final List<Solution> solutions = new ArrayList<>();
     public final Set<Integer> deletedNodes = new HashSet<>();
@@ -33,7 +34,6 @@ public class Orchestrator {
 
         while (!queue.isEmpty()) {
             StatementEntityInstance inst = queue.removeFirst();
-
             Solution sol = solver.solve(inst);
             if (sol != null) {
                 solutions.add(sol);
@@ -58,22 +58,28 @@ public class Orchestrator {
         int dimensions = 4;
         StatementEntitySolver solver = new StatementEntitySolver(dimensions);
         Orchestrator orchestrator = new Orchestrator(solver, 5, 1.0 / 3);
+        String inputFolder = "data/";
+        String outputFolder = "solutions/";
+        ArrayList<String> instances = new ArrayList<String>(List.of("robbery"));
 
-        try {
-            StatementEntityInstance instance = StatementEntityReader.readFromFile("data/small_world_4.json");
-            List<Solution> sols;
-            sols = orchestrator.solveWithSplits(instance);
-            PositionedSolution finalLayout = SolutionPositioner.computeCompleteSolution((ArrayList<Solution>) sols);
+        for (String inst : instances) {
+            try {
+                StatementEntityInstance instance = StatementEntityReader.readFromFile(inputFolder + inst + ".json");
+                List<Solution> sols;
+                sols = orchestrator.solveWithSplits(instance);
+                PositionedSolution finalLayout = SolutionPositioner.computeCompleteSolution((ArrayList<Solution>) sols);
 
-            // Write result to file
-            SolutionWriter.saveMultipleToFile(
-                    finalLayout.solutions,
-                    finalLayout.width,
-                    finalLayout.height,
-                    "solutions/small_world_test.txt");
+                // Write result to file
+                SolutionWriter.saveMultipleToFile(
+                        finalLayout.solutions,
+                        finalLayout.width,
+                        finalLayout.height,
+                        outputFolder + inst + ".txt");
 
-        } catch (GRBException | IOException e) {
-            e.printStackTrace();
+            } catch (GRBException | IOException e) {
+                e.printStackTrace();
+            }
+
         }
 
     }
