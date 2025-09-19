@@ -71,11 +71,16 @@ public final class VarsFactory {
 
         // statement coordinates: statementCoordinates[i][x/y]
         v.statementCoordinates = new GRBVar[nStatements][2];
+        v.statementIsOnRow = new GRBVar[nStatements][coordUpperBound+1];
         for (int i = 0; i < nStatements; i++) {
             v.statementCoordinates[i][0] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER,
                     "s" + i + "_x");
             v.statementCoordinates[i][1] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER,
                     "s" + i + "_y");
+
+            for (int j = 0; j <= coordUpperBound; j++) {
+                v.statementIsOnRow[i][j] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "statement_" + i + "_is_on_row_" + j);
+            }
         }
 
         // Entities

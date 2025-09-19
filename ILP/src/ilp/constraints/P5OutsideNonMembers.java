@@ -41,12 +41,6 @@ public class P5OutsideNonMembers implements ConstraintModule {
                         ctx.model.addGenConstrIndicator(b2, 1, right_of_ent,
                                 GRB.LESS_EQUAL, -1.0, "e_" + i + "_row_" + j + "_b2=1_implies_rightOfEntity");
 
-                        GRBVar isOnRow_j = ctx.model.addVar(0, 1, 0, GRB.BINARY, "isOnRow_j_" + st);
-                        // If isOnRow_j == 1 then s_y == j
-                        GRBLinExpr s_y = new GRBLinExpr();
-                        s_y.addTerm(1.0, ctx.v.statementCoordinates[st][1]);
-                        ctx.model.addGenConstrIndicator(isOnRow_j, 1, s_y, GRB.EQUAL, j, "row_match_" + st);
-
                         // If s is on row j, then either the entity is not on that row, or the statement
                         // is left or right of the entity
                         // if s_y = j then (e_j=0 or s_x < e_j0 or s_x > e_j1)
@@ -54,7 +48,7 @@ public class P5OutsideNonMembers implements ConstraintModule {
                         orExpr.addTerm(1.0, b1);
                         orExpr.addTerm(1.0, b2);
                         orExpr.addTerm(-1.0, ctx.v.entities[i].activeRows[j]);
-                        ctx.model.addGenConstrIndicator(isOnRow_j, 1, orExpr, GRB.GREATER_EQUAL, 0, "row_match_" + st);
+                        ctx.model.addGenConstrIndicator(ctx.v.statementIsOnRow[st][j], 1, orExpr, GRB.GREATER_EQUAL, 0, "row_match_" + st);
 
                     }
 
