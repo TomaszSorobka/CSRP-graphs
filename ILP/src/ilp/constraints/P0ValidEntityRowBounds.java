@@ -2,7 +2,6 @@ package ilp.constraints;
 
 import com.gurobi.gurobi.GRB;
 import com.gurobi.gurobi.GRBException;
-import com.gurobi.gurobi.GRBExpr;
 import com.gurobi.gurobi.GRBLinExpr;
 
 import ilp.ModelContext;
@@ -25,5 +24,4 @@ public class P0ValidEntityRowBounds implements ConstraintModule {
             }
         }
     }
-
 }

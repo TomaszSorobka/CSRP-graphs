@@ -3,7 +3,6 @@ import com.gurobi.gurobi.GRBEnv;
 import com.gurobi.gurobi.GRBException;
 import com.gurobi.gurobi.GRBModel;
 
-import ilp.variables.VarsRectangles;
 import ilp.variables.Vars;
 import ilp.variables.VarsFactory;
 import model.StatementEntityInstance;
