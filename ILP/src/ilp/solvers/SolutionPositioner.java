@@ -74,7 +74,7 @@ public class SolutionPositioner {
                             int gy = oy + p.y;
                             if (gx >= 0 && gx < GRID_WIDTH && gy >= 0 && gy < GRID_HEIGHT) {
                                 String cellKey = gx + "," + gy;
-                                cellCoveringPlacements.computeIfAbsent(cellKey, _ -> new ArrayList<>()).add(placeVar);
+                                cellCoveringPlacements.computeIfAbsent(cellKey, k -> new ArrayList<>()).add(placeVar);
                             }
                         }
                     }

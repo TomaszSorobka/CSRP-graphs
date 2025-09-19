@@ -7,6 +7,7 @@ import com.gurobi.gurobi.*;
 import ilp.ModelContext;
 import ilp.constraints.*;
 import ilp.objective.*;
+import ilp.variables.VarsRectangles;
 import model.Solution;
 import model.StatementEntityInstance;
 
@@ -53,14 +54,15 @@ public class StatementEntitySolver {
      * 
      * @return Solution if optimal, else null (caller decides to split).
      */
-    public Solution solve(StatementEntityInstance inst) throws GRBException {
+    public Solution solve(StatementEntityInstance inst) throws Exception, GRBException {
         int maxCells = (dimensions + 1) * (dimensions + 1);
         if (inst.numberOfStatements > maxCells) {
             System.out.println("Instance too large");
             return null;
         }
 
-        try (ModelContext ctx = new ModelContext(inst, dimensions, gridMin, maxSizeSum, wTopLeft, wMaxExtents, solutionType)) {
+        try (ModelContext ctx = new ModelContext(inst, dimensions, gridMin, maxSizeSum, wTopLeft, wMaxExtents,
+                solutionType)) {
             // Add constraints
             for (ConstraintModule c : constraints)
                 c.add(ctx);
@@ -76,36 +78,40 @@ public class StatementEntitySolver {
             }
 
             // Extract and return
-            return extractSolution(ctx);
+            return extractRectangleSolution(ctx);
         }
     }
 
-    private Solution extractSolution(ModelContext ctx) throws GRBException {
+    private Solution extractRectangleSolution(ModelContext ctx) throws Exception, GRBException {
+        if ((ctx.v instanceof VarsRectangles v)) { // only extracts rectangle solutions
+            int nEntities = ctx.entityIds.size();
+            int nStatements = ctx.statementIds.size();
+            // Extract solution
+            int w = (int) v.maxWidth.get(GRB.DoubleAttr.X);
+            int h = (int) v.maxHeight.get(GRB.DoubleAttr.X);
 
-        int nEntities = ctx.entityIds.size();
-        int nStatements = ctx.statementIds.size();
-        // Extract solution
-        int w = (int) ctx.v.maxWidth.get(GRB.DoubleAttr.X);
-        int h = (int) ctx.v.maxHeight.get(GRB.DoubleAttr.X);
+            int[][] entityCoordinates = new int[nEntities][4];
+            int[][] statementCoordinates = new int[nStatements][2];
 
-        int[][] entityCoordinates = new int[nEntities][4];
-        int[][] statementCoordinates = new int[nStatements][2];
+            for (int i = 0; i < nEntities; i++) {
+                entityCoordinates[i][0] = (int) v.entityCoordinates[i][0].get(GRB.DoubleAttr.X);
+                entityCoordinates[i][1] = (int) v.entityCoordinates[i][1].get(GRB.DoubleAttr.X);
+                entityCoordinates[i][2] = (int) v.entityCoordinates[i][2].get(GRB.DoubleAttr.X);
+                entityCoordinates[i][3] = (int) v.entityCoordinates[i][3].get(GRB.DoubleAttr.X);
+            }
 
-        for (int i = 0; i < nEntities; i++) {
-            entityCoordinates[i][0] = (int) ctx.v.entityCoordinates[i][0].get(GRB.DoubleAttr.X);
-            entityCoordinates[i][1] = (int) ctx.v.entityCoordinates[i][1].get(GRB.DoubleAttr.X);
-            entityCoordinates[i][2] = (int) ctx.v.entityCoordinates[i][2].get(GRB.DoubleAttr.X);
-            entityCoordinates[i][3] = (int) ctx.v.entityCoordinates[i][3].get(GRB.DoubleAttr.X);
+            for (int i = 0; i < nStatements; i++) {
+                statementCoordinates[i][0] = (int) v.statementCoordinates[i][0].get(GRB.DoubleAttr.X);
+                statementCoordinates[i][1] = (int) v.statementCoordinates[i][1].get(GRB.DoubleAttr.X);
+            }
+
+            // Add solution to global list of solutions
+            Solution newSolution = new Solution(ctx.inst, w, h, ctx.entityIds, entityCoordinates, statementCoordinates);
+
+            return newSolution;
         }
-
-        for (int i = 0; i < nStatements; i++) {
-            statementCoordinates[i][0] = (int) ctx.v.statementCoordinates[i][0].get(GRB.DoubleAttr.X);
-            statementCoordinates[i][1] = (int) ctx.v.statementCoordinates[i][1].get(GRB.DoubleAttr.X);
+        else {
+            throw new Exception("Incorrect solution type");
         }
-
-        // Add solution to global list of solutions
-        Solution newSolution = new Solution(ctx.inst, w, h, ctx.entityIds, entityCoordinates, statementCoordinates);
-
-        return newSolution;
     }
 }

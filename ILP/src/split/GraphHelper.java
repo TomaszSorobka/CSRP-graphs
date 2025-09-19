@@ -53,11 +53,11 @@ public class GraphHelper {
 
                 // If the entity has been deleted, add it to the deleted map
                 if (deletedNodes.stream().anyMatch(o -> entity == o.id)) {
-                    invertedDeleted.computeIfAbsent(id, _ -> new ArrayList<>()).add(entity);
+                    invertedDeleted.computeIfAbsent(id, k -> new ArrayList<>()).add(entity);
                 }
                 // Otherwise add it to the non-deleted map
                 else {
-                    invertedNonDeleted.computeIfAbsent(id, _ -> new ArrayList<>()).add(entity);
+                    invertedNonDeleted.computeIfAbsent(id, k -> new ArrayList<>()).add(entity);
                 }
             }
         }

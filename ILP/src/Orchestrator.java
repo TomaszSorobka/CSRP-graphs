@@ -1,4 +1,3 @@
-import java.io.IOException;
 import java.util.*;
 import com.gurobi.gurobi.GRBException;
 
@@ -28,7 +27,7 @@ public class Orchestrator {
         this.splitRatio = splitRatio;
     }
 
-    public List<Solution> solveWithSplits(StatementEntityInstance root) throws GRBException {
+    public List<Solution> solveWithSplits(StatementEntityInstance root) throws Exception, GRBException {
         Deque<StatementEntityInstance> queue = new ArrayDeque<>();
         queue.add(root);
 
@@ -58,8 +57,8 @@ public class Orchestrator {
         int dimensions = 4;
         StatementEntitySolver solver = new StatementEntitySolver(dimensions, 0);
         Orchestrator orchestrator = new Orchestrator(solver, 5, 1.0 / 3);
-        String inputFolder = "data/";
-        String outputFolder = "solutions/";
+        String inputFolder = "ILP/data/";
+        String outputFolder = "Visualization/Solutions/";
         ArrayList<String> instances = new ArrayList<String>(List.of("structured_dataset"));
 
         for (String inst : instances) {
@@ -76,11 +75,9 @@ public class Orchestrator {
                         finalLayout.height,
                         outputFolder + inst + ".txt");
 
-            } catch (GRBException | IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
-
     }
 }
