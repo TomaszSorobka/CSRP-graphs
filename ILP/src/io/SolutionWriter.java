@@ -152,6 +152,47 @@ public class SolutionWriter {
         }
     }
 
+    // A method that saves the solution in a way that Vesko can read and draw it
+    // (P.S. This is does not output the required by the Visualization format.)
+    public static void saveSimplePolygonSolutionToFile(PolygonSolution s, String filename) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            writer.write("w: " + s.getW() + "\n");
+            writer.write("h: " + s.getH() + "\n");
+
+            extractSimplePolygonEntities(s, writer);
+
+            int j = 0;
+            for (Integer statement : s.getInstance().statements.keySet()) {
+                writer.write("Statement " + s.getInstance().statements.get(statement) + ": (" +
+                        s.statementCoordinates[j][0] + ", " +
+                        s.statementCoordinates[j][1] + ")\n");
+                j++;
+            }
+
+            System.out.println("Polygon solution saved to " + filename);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void extractSimplePolygonEntities(PolygonSolution s, BufferedWriter writer) throws IOException {
+        int nEntities = s.entities.length;
+        int nRows = s.entities[0].length; // assumes all entities have same row count
+
+        for (int i = 0; i < nEntities; i++) {
+            Integer entityId = s.getEntityIds().get(i);
+            writer.write("Entity " + s.getInstance().entities.get(entityId) + ":\n");
+
+            for (int y = 0; y < nRows; y++) {
+                if (s.entities[i][y][0] == 1) {
+                    int xStart = s.entities[i][y][1];
+                    int xEnd = s.entities[i][y][2];
+                    writer.write("    Row " + y + ": (" + xStart + ", " + xEnd + ")\n");
+                }
+            }
+        }
+    }
+
     private static void removeDuplicates(ArrayList<Point> points) {
         Set<String> seen = new HashSet<>();
         Iterator<Point> it = points.iterator();
@@ -170,8 +211,7 @@ public class SolutionWriter {
     public void saveToFile(String filename) {
         if (this.solution instanceof RectangleSolution s) {
             saveRectangleSolutionToFile(s, filename);
-        }
-        else if (this.solution instanceof PolygonSolution s) {
+        } else if (this.solution instanceof PolygonSolution s) {
             savePolygonSolutionToFile(s, filename);
         }
     }
@@ -185,9 +225,8 @@ public class SolutionWriter {
             for (Solution solution : solutions) {
                 if (solution instanceof RectangleSolution s) {
                     extractRectangleEntities(s, writer);
-                }
-                else if (solution instanceof PolygonSolution s) {
-                    extractPolygonEntities(s, writer);
+                } else if (solution instanceof PolygonSolution s) {
+                    extractSimplePolygonEntities(s, writer); // TODO::
                 }
             }
 
@@ -200,8 +239,7 @@ public class SolutionWriter {
                                 s.statementCoordinates[j][1] + ")\n");
                         j++;
                     }
-                }
-                else if (solution instanceof PolygonSolution s) {
+                } else if (solution instanceof PolygonSolution s) {
                     int j = 0;
                     for (Integer statement : s.getInstance().statements.keySet()) {
                         writer.write("Statement " + solution.getInstance().statements.get(statement) + ": (" +
