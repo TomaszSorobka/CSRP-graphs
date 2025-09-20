@@ -13,7 +13,9 @@ import com.gurobi.gurobi.GRBLinExpr;
 import com.gurobi.gurobi.GRBModel;
 import com.gurobi.gurobi.GRBVar;
 
+import model.PolygonSolution;
 import model.PositionedSolution;
+import model.RectangleSolution;
 import model.Solution;
 
 public class SolutionPositioner {
@@ -69,7 +71,7 @@ public class SolutionPositioner {
                             continue;
 
                         GRBVar placeVar = placementVars.get(key);
-                        for (Point p : sol.cells) {
+                        for (Point p : sol.getCells()) {
                             int gx = ox + p.x;
                             int gy = oy + p.y;
                             if (gx >= 0 && gx < GRID_WIDTH && gy >= 0 && gy < GRID_HEIGHT) {
@@ -152,7 +154,7 @@ public class SolutionPositioner {
 
     // Check if a component can be placed in this grid position
     private static boolean fits(Solution sol, int offsetX, int offsetY) {
-        for (Point p : sol.cells) {
+        for (Point p : sol.getCells()) {
             int x = offsetX + p.x;
             int y = offsetY + p.y;
             if (x < 0 || x >= GRID_WIDTH || y < 0 || y >= GRID_HEIGHT)
@@ -168,16 +170,55 @@ public class SolutionPositioner {
             int x = offsets[s][0];
             int y = offsets[s][1];
 
-            for (int[] entity : components.get(s).entityCoordinates) {
+            if (components.get(s) instanceof RectangleSolution rs) {
+                for (int[] entity : rs.entityCoordinates) {
                 entity[0] += x;
                 entity[1] += y;
                 entity[2] += x;
                 entity[3] += y;
-            }
+                }
 
-            for (int[] statement : components.get(s).statementCoordinates) {
-                statement[0] += x;
-                statement[1] += y;
+                for (int[] statement : rs.statementCoordinates) {
+                    statement[0] += x;
+                    statement[1] += y;
+                }
+            }
+            else if (components.get(s) instanceof PolygonSolution ps) {
+                for (int[][] entity : ps.entities) {
+                    // Shift x coordinates
+                    for (int i = 0; i < entity.length; i++) {
+                        entity[i][1] += x;
+                        entity[i][2] += x;
+                    }
+
+                    // Find the first and last active rows
+                    int firstActiveRow = 0;
+                    int lastActiveRow = entity.length - 1;
+
+                    for (int i = 0; i < entity.length; i++) {
+                        if (entity[i][0] == 1) {
+                            firstActiveRow = i;
+                            break;
+                        }
+                    }
+
+                    for (int i = 0; i < entity.length; i++) {
+                        if (entity[i][0] == 1) {
+                            lastActiveRow = i;
+                        }
+                    }
+
+                    // TODO figure out if this works
+                    // Replace the active row booleans with integers storing the y coordinate of the row in the overall solution
+                    for (int i = firstActiveRow; i <= lastActiveRow; i++) {
+                        entity[i][0] = i + y;
+                    }
+                }
+
+                for (int[] statement : ps.statementCoordinates) {
+                    statement[0] += x;
+                    statement[1] += y;
+                }
             }
         }
     }

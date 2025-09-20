@@ -71,7 +71,7 @@ public final class VarsFactory {
 
         // statement coordinates: statementCoordinates[i][x/y]
         v.statementCoordinates = new GRBVar[nStatements][2];
-        v.statementIsOnRow = new GRBVar[nStatements][coordUpperBound+1];
+        v.statementIsOnRow = new GRBVar[nStatements][coordUpperBound + 1];
         for (int i = 0; i < nStatements; i++) {
             v.statementCoordinates[i][0] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER,
                     "s" + i + "_x");
@@ -87,10 +87,10 @@ public final class VarsFactory {
         v.entities = new GurobiEntity[nEntities];
         for (int i = 0; i < nEntities; i++) {
             // For each row in the entity, a variable determining if it is used
-            GRBVar[] rowBinaries = new GRBVar[coordUpperBound];
+            GRBVar[] rowBinaries = new GRBVar[coordUpperBound + 1];
             // For each row in the entity: start_x, end_x
-            GRBVar[][] rowCoordinates = new GRBVar[coordUpperBound][4];
-            for (int j = 0; j < coordUpperBound; j++) {
+            GRBVar[][] rowCoordinates = new GRBVar[coordUpperBound + 1][2];
+            for (int j = 0; j <= coordUpperBound; j++) {
                 rowBinaries[j] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "e_" + i + "_" + j + "_active_row");
 
                 rowCoordinates[j][0] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER,
