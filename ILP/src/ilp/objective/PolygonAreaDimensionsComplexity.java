@@ -46,6 +46,7 @@ public class PolygonAreaDimensionsComplexity implements ObjectiveModule {
                                         objective.addTerm(1.0, span_j);
                                 }
                         }
+                        ctx.model.setObjective(objective, GRB.MINIMIZE);
                 }
         }
 
