@@ -17,14 +17,18 @@ public class P1ConsecutiveEntityRows implements ConstraintModule {
             // if rows j-1 and j+1 are active, then row j should also be active
             // e_j >= e_(j-1) + e_(j+1) - 1
             for (int i = 0; i < nEntities; i++) {
-                for (int j = 1; j < ctx.dimensions; j++) {
-                    GRBLinExpr rhs = new GRBLinExpr();
-                    rhs.addTerm(1.0, v.entities[i].activeRows[j - 1]);
-                    rhs.addTerm(1.0, v.entities[i].activeRows[j + 1]);
-                    rhs.addConstant(-1.0);
+                for (int s = 0; s < ctx.dimensions - 1; s++) {
+                    for (int f = s + 2; f <= ctx.dimensions; f++) {
+                        for (int k = s + 1; k < f; k++) {
+                            GRBLinExpr rhs = new GRBLinExpr();
+                            rhs.addTerm(1.0, v.entities[i].activeRows[s]);
+                            rhs.addTerm(1.0, v.entities[i].activeRows[f]);
+                            rhs.addConstant(-1.0);
 
-                    ctx.model.addConstr(v.entities[i].activeRows[j], GRB.GREATER_EQUAL, rhs,
-                            "e_" + i + "nonempty_row_" + j);
+                            ctx.model.addConstr(v.entities[i].activeRows[k], GRB.GREATER_EQUAL, rhs,
+                                    "e_" + i + "nonempty_row_" + k);
+                        }
+                    }
                 }
             }
         }

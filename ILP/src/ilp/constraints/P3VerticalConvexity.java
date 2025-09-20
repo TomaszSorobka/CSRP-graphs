@@ -15,53 +15,63 @@ public class P3VerticalConvexity implements ConstraintModule {
         if ((ctx.v instanceof VarsPolygons v)) { // only add this constraint for polygon solutions
             int nEntities = ctx.entityIds.size();
             for (int i = 0; i < nEntities; i++) {
-                for (int j = 1; j < ctx.dimensions; j++) {
+                for (int s = 0; s < ctx.dimensions - 1; s++) {
+                    for (int f = s + 2; f <= ctx.dimensions; f++) {
+                        for (int j = s + 1; j < f; j++) {
+                            GRBVar zStart = ctx.model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "middleStartsBeforeFirstOrLast");
+                            // xStart[k] ≤ xStart[i] + M*(1 - z + (3 - active[i] - active[k] - active[j]))
+                            GRBLinExpr middleStartsBeforeFirst = new GRBLinExpr();
+                            middleStartsBeforeFirst.addTerm(1.0, v.entities[i].rowBounds[s][0]);
+                            middleStartsBeforeFirst.addTerm(-1.0, v.entities[i].rowBounds[j][0]);
+                            middleStartsBeforeFirst.addConstant(ctx.bigM);
+                            middleStartsBeforeFirst.addTerm(-ctx.bigM, zStart);
+                            middleStartsBeforeFirst.addConstant(3 * ctx.bigM);
+                            middleStartsBeforeFirst.addTerm(-ctx.bigM, v.entities[i].activeRows[s]);
+                            middleStartsBeforeFirst.addTerm(-ctx.bigM, v.entities[i].activeRows[j]);
+                            middleStartsBeforeFirst.addTerm(-ctx.bigM, v.entities[i].activeRows[f]);
 
-                    // ------------------------ left side ------------------------ //
+                            ctx.model.addConstr(middleStartsBeforeFirst, GRB.GREATER_EQUAL, 0, "middleCanStartBeforeFirst");
 
-                    GRBVar b1 = ctx.model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "convex_left_nextrow_b1");
-                    GRBLinExpr expr = new GRBLinExpr();
-                    expr.addTerm(1.0, v.entities[i].rowBounds[j + 1][0]);
-                    expr.addTerm(-1.0, v.entities[i].rowBounds[j][0]);
+                            // xStart[k] ≤ xStart[j] + M*(z + (3 - active[i] - active[k] - active[j]))
+                            GRBLinExpr middleStartsBeforeLast = new GRBLinExpr();
+                            middleStartsBeforeLast.addTerm(1.0, v.entities[i].rowBounds[f][0]);
+                            middleStartsBeforeLast.addTerm(-1.0, v.entities[i].rowBounds[j][0]);
+                            middleStartsBeforeLast.addTerm(ctx.bigM, zStart);
+                            middleStartsBeforeLast.addConstant(3 * ctx.bigM);
+                            middleStartsBeforeLast.addTerm(-ctx.bigM, v.entities[i].activeRows[s]);
+                            middleStartsBeforeLast.addTerm(-ctx.bigM, v.entities[i].activeRows[j]);
+                            middleStartsBeforeLast.addTerm(-ctx.bigM, v.entities[i].activeRows[f]);
 
-                    ctx.model.addGenConstrIndicator(b1, 1, expr,
-                            GRB.GREATER_EQUAL, 0.0, "e_" + i + "_row_" + j + "_b1=1_implies_nextRowStartsLater");
+                            ctx.model.addConstr(middleStartsBeforeLast, GRB.GREATER_EQUAL, 0, "middleCanStartBeforeLast");
 
-                    GRBVar b2 = ctx.model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "convex_left_nextrow_b2");
-                    GRBLinExpr expr2 = new GRBLinExpr();
-                    expr2.addTerm(1.0, v.entities[i].rowBounds[j - 1][0]);
-                    expr2.addTerm(-1.0, v.entities[i].rowBounds[j][0]);
+                            GRBVar zEnd = ctx.model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "middleEndsAfterFirstOrLast");
 
-                    ctx.model.addGenConstrIndicator(b2, 1, expr2,
-                            GRB.GREATER_EQUAL, 0.0, "e_" + i + "_row_" + j + "b1=1_implies_prevRowStartsLater");
+                            // xEnd[k] ≥ xEnd[i] - M*(1 - z + (3 - active[i] - active[k] - active[j]))
+                            GRBLinExpr middleEndsAfterFirst = new GRBLinExpr();
+                            middleEndsAfterFirst.addTerm(1.0, v.entities[i].rowBounds[s][1]);
+                            middleEndsAfterFirst.addTerm(-1.0, v.entities[i].rowBounds[j][1]);
+                            middleEndsAfterFirst.addConstant(-ctx.bigM);
+                            middleEndsAfterFirst.addTerm(ctx.bigM, zEnd);
+                            middleEndsAfterFirst.addConstant(-(3 * ctx.bigM));
+                            middleEndsAfterFirst.addTerm(ctx.bigM, v.entities[i].activeRows[s]);
+                            middleEndsAfterFirst.addTerm(ctx.bigM, v.entities[i].activeRows[j]);
+                            middleEndsAfterFirst.addTerm(ctx.bigM, v.entities[i].activeRows[f]);
 
-                    GRBLinExpr orExpr = new GRBLinExpr();
-                    orExpr.addTerm(1.0, b1);
-                    orExpr.addTerm(1.0, b2);
-                    ctx.model.addConstr(orExpr, GRB.GREATER_EQUAL, 1, "either_previous_or_next_row_start_later");
+                            ctx.model.addConstr(middleEndsAfterFirst, GRB.LESS_EQUAL, 0, "middleCanEndAfterFirst");
 
-                    // ------------------------ right side ------------------------ //
+                            // xEnd[k] ≥ xEnd[j] - M*(z + (3 - active[i] - active[k] - active[j]))
+                            GRBLinExpr middleEndsAfterLast = new GRBLinExpr();
+                            middleEndsAfterLast.addTerm(1.0, v.entities[i].rowBounds[f][1]);
+                            middleEndsAfterLast.addTerm(-1.0, v.entities[i].rowBounds[j][1]);
+                            middleEndsAfterLast.addTerm(-ctx.bigM, zEnd);
+                            middleEndsAfterLast.addConstant(-(3 * ctx.bigM));
+                            middleEndsAfterLast.addTerm(ctx.bigM, v.entities[i].activeRows[s]);
+                            middleEndsAfterLast.addTerm(ctx.bigM, v.entities[i].activeRows[j]);
+                            middleEndsAfterLast.addTerm(ctx.bigM, v.entities[i].activeRows[f]);
 
-                    GRBVar b3 = ctx.model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "convex_left_nextrow_b1");
-                    GRBLinExpr expr3 = new GRBLinExpr();
-                    expr3.addTerm(1.0, v.entities[i].rowBounds[j + 1][1]);
-                    expr3.addTerm(-1.0, v.entities[i].rowBounds[j][1]);
-
-                    ctx.model.addGenConstrIndicator(b3, 1, expr3,
-                            GRB.LESS_EQUAL, 0.0, "e_" + i + "_row_" + j + "_b3=1_implies_nextRowEndsEarlier");
-
-                    GRBVar b4 = ctx.model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "convex_left_nextrow_b2");
-                    GRBLinExpr expr4 = new GRBLinExpr();
-                    expr4.addTerm(1.0, v.entities[i].rowBounds[j - 1][1]);
-                    expr4.addTerm(-1.0, v.entities[i].rowBounds[j][1]);
-
-                    ctx.model.addGenConstrIndicator(b4, 1, expr4,
-                            GRB.LESS_EQUAL, 0.0, "e_" + i + "_row_" + j + "b4=1_implies_prevRowEndsEarlier");
-
-                    GRBLinExpr orExpr2 = new GRBLinExpr();
-                    orExpr2.addTerm(1.0, b3);
-                    orExpr2.addTerm(1.0, b4);
-                    ctx.model.addConstr(orExpr2, GRB.GREATER_EQUAL, 1, "either_previous_or_next_row_start_later");
+                            ctx.model.addConstr(middleEndsAfterLast, GRB.LESS_EQUAL, 0, "middleCanEndAfterLast");
+                        }
+                    }
                 }
             }
         }

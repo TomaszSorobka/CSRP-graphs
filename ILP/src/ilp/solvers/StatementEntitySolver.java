@@ -7,7 +7,6 @@ import com.gurobi.gurobi.*;
 import ilp.ModelContext;
 import ilp.constraints.*;
 import ilp.objective.*;
-import ilp.variables.VarsFactory;
 import ilp.variables.VarsPolygons;
 import ilp.variables.VarsRectangles;
 import model.PolygonSolution;

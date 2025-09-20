@@ -1,6 +1,21 @@
 import java.util.*;
 import com.gurobi.gurobi.GRBException;
 
+import ilp.constraints.C1StatementsDistinctCoordinates;
+import ilp.constraints.ConstraintModule;
+import ilp.constraints.P0ValidEntityRowBounds;
+import ilp.constraints.P10StatementIsOnRowBooleans;
+import ilp.constraints.P1ConsecutiveEntityRows;
+import ilp.constraints.P2ConnectedEntityRows;
+import ilp.constraints.P3VerticalConvexity;
+import ilp.constraints.P4StatementsInsideEntities;
+import ilp.constraints.P5OutsideNonMembers;
+import ilp.constraints.P6DisjointEntitiesDoNotOverlap;
+import ilp.constraints.P7SingleCellEntities;
+import ilp.constraints.P8MaxWidth;
+import ilp.constraints.P9MaxHeight;
+import ilp.objective.ObjectiveModule;
+import ilp.objective.PolygonAreaDimensionsComplexity;
 import ilp.solvers.SolutionPositioner;
 import ilp.solvers.StatementEntitySolver;
 import io.SolutionWriter;
@@ -53,13 +68,30 @@ public class Orchestrator {
     }
 
     public static void main(String[] args) {
-        // Somewhere in your app:
+        // Solution parameters
         int dimensions = 4;
-        StatementEntitySolver solver = new StatementEntitySolver(dimensions, 0);
+
+        List<ConstraintModule> constraints = List.of(
+                new P0ValidEntityRowBounds(),
+                new P1ConsecutiveEntityRows(),
+                new P2ConnectedEntityRows(),
+                new P3VerticalConvexity(),
+                new P4StatementsInsideEntities(),
+                new P5OutsideNonMembers(),
+                new P6DisjointEntitiesDoNotOverlap(),
+                new P7SingleCellEntities(),
+                new P8MaxWidth(),
+                new P9MaxHeight(),
+                new P10StatementIsOnRowBooleans(),
+                new C1StatementsDistinctCoordinates());
+
+        ObjectiveModule objective = new PolygonAreaDimensionsComplexity();
+
+        StatementEntitySolver solver = new StatementEntitySolver(dimensions, constraints, objective, 1);
         Orchestrator orchestrator = new Orchestrator(solver, 5, 1.0 / 3);
         String inputFolder = "ILP/data/";
         String outputFolder = "Visualization/Solutions/";
-        ArrayList<String> instances = new ArrayList<String>(List.of("structured_dataset"));
+        ArrayList<String> instances = new ArrayList<String>(List.of("structured_dataset_small"));
 
         for (String inst : instances) {
             try {

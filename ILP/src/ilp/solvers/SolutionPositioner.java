@@ -190,28 +190,13 @@ public class SolutionPositioner {
                         entity[i][1] += x;
                         entity[i][2] += x;
                     }
-
-                    // Find the first and last active rows
-                    int firstActiveRow = 0;
-                    int lastActiveRow = entity.length - 1;
-
-                    for (int i = 0; i < entity.length; i++) {
-                        if (entity[i][0] == 1) {
-                            firstActiveRow = i;
-                            break;
-                        }
-                    }
-
-                    for (int i = 0; i < entity.length; i++) {
-                        if (entity[i][0] == 1) {
-                            lastActiveRow = i;
-                        }
-                    }
-
                     // TODO figure out if this works
                     // Replace the active row booleans with integers storing the y coordinate of the row in the overall solution
-                    for (int i = firstActiveRow; i <= lastActiveRow; i++) {
-                        entity[i][0] = i + y;
+                    // Note: y coordinates are artificially increased by 1 to differentiate them from inactive rows
+                    for (int i = 0; i < entity.length; i++) {
+                        if (entity[i][0] == 1) {
+                            entity[i][0] = i + y + 1;
+                        }
                     }
                 }
 
