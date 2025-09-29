@@ -24,6 +24,8 @@ public class SolutionWriter {
 
     public static void saveRectangleSolutionToFile(RectangleSolution s, String filename) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            writer.write("type: rectangles");
+
             writer.write("w: " + s.getW() + "\n");
             writer.write("h: " + s.getH() + "\n");
 
@@ -57,6 +59,8 @@ public class SolutionWriter {
 
     public static void savePolygonSolutionToFile(PolygonSolution s, String filename) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            writer.write("type: polygons");
+
             writer.write("w: " + s.getW() + "\n");
             writer.write("h: " + s.getH() + "\n");
 
@@ -79,65 +83,15 @@ public class SolutionWriter {
     private static void extractPolygonEntities(PolygonSolution s, BufferedWriter writer) throws IOException {
         int i = 0;
         for (Integer entity : s.getInstance().entities.keySet()) {
-            // Add entity corners starting from the beginning of the first row and going
-            // clockwise
             String entityString = "Entity " + s.getInstance().entities.get(entity) + ": ";
             ArrayList<Point> entityCorners = new ArrayList<>();
 
-            int firstActiveRow = 0;
-            int lastActiveRow = s.entities[i].length - 1;
-
-            // Add the beginning and end of the first row
             for (int j = 0; j < s.entities[i].length; j++) {
                 if (s.entities[i][j][0] > 0) {
-                    firstActiveRow = j;
-
-                    entityCorners.add(new Point(s.entities[i][j][1], j));
-                    entityCorners.add(new Point(s.entities[i][j][2], j));
-
-                    break;
+                    entityCorners.add(new Point(s.entities[i][j][1], s.entities[i][j][0] - 1));
+                    entityCorners.add(new Point(s.entities[i][j][2], s.entities[i][j][0] - 1));
                 }
             }
-
-            // Add points on the right side
-            for (int j = firstActiveRow + 1; j < s.entities[i].length; j++) {
-                if (s.entities[i][j][0] > 0) {
-                    lastActiveRow = j;
-
-                    // row ends after the previous one (|_)
-                    if (s.entities[i][j - 1][2] < s.entities[i][j][2]) {
-                        entityCorners.add(new Point(s.entities[i][j - 1][2], j));
-                        entityCorners.add(new Point(s.entities[i][j][2], j));
-                    }
-                    // row ends before the previous one (‾|)
-                    else if (s.entities[i][j - 1][2] > s.entities[i][j][2]) {
-                        entityCorners.add(new Point(s.entities[i][j - 1][2], j - 1));
-                        entityCorners.add(new Point(s.entities[i][j][2], j - 1));
-                    }
-                }
-            }
-
-            // Add the beginning of the last active row
-            entityCorners.add(new Point(s.entities[i][lastActiveRow][1], lastActiveRow));
-
-            // Add points on the left side
-            for (int j = lastActiveRow - 1; j >= firstActiveRow; j--) {
-                if (s.entities[i][j][0] > 0) {
-                    // row starts after the previous one (_|)
-                    if (s.entities[i][j + 1][1] < s.entities[i][j][1]) {
-                        entityCorners.add(new Point(s.entities[i][j + 1][1], j + 1));
-                        entityCorners.add(new Point(s.entities[i][j][1], j + 1));
-                    }
-                    // row starts before the previous one (|‾)
-                    else if (s.entities[i][j + 1][1] > s.entities[i][j][1]) {
-                        entityCorners.add(new Point(s.entities[i][j + 1][1], j));
-                        entityCorners.add(new Point(s.entities[i][j][1], j));
-                    }
-                }
-            }
-
-            // If some cells were added twice remove the second copy
-            removeDuplicates(entityCorners);
 
             // Combine points into a string
             String corners = entityCorners.stream()
@@ -184,10 +138,10 @@ public class SolutionWriter {
             writer.write("Entity " + s.getInstance().entities.get(entityId) + ":\n");
 
             for (int y = 0; y < nRows; y++) {
-                if (s.entities[i][y][0] == 1) {
+                if (s.entities[i][y][0] > 0) {
                     int xStart = s.entities[i][y][1];
                     int xEnd = s.entities[i][y][2];
-                    writer.write("    Row " + y + ": (" + xStart + ", " + xEnd + ")\n");
+                    writer.write("    Row " + (s.entities[i][y][0] - 1) + ": (" + xStart + ", " + xEnd + ")\n");
                 }
             }
         }
@@ -219,6 +173,11 @@ public class SolutionWriter {
     // Optional: static utility method to write multiple solutions together
     public static void saveMultipleToFile(ArrayList<Solution> solutions, int w, int h, String filename) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            if (solutions.get(0) instanceof RectangleSolution) {
+                writer.write("type: rectangles\n");
+            } else if (solutions.get(0) instanceof PolygonSolution) {
+                writer.write("type: polygons\n");
+            }
             writer.write("w: " + w + "\n");
             writer.write("h: " + h + "\n");
 
@@ -226,7 +185,7 @@ public class SolutionWriter {
                 if (solution instanceof RectangleSolution s) {
                     extractRectangleEntities(s, writer);
                 } else if (solution instanceof PolygonSolution s) {
-                    extractSimplePolygonEntities(s, writer); // TODO::
+                    extractPolygonEntities(s, writer);
                 }
             }
 

@@ -5,12 +5,12 @@ function doEntitiesOverlap(e1, e2) {
 
 // Check only for a vertical rectangle overlap
 function doEntitiesOverlapVertically(e1, e2) {
-    return (e1.coords[0].y >= e2.coords[0].y && e1.coords[0].y <= e2.coords[2].y) || (e2.coords[0].y >= e1.coords[0].y && e2.coords[0].y <= e1.coords[2].y);
+    return (e1.coords[0].y >= e2.coords[0].y && e1.coords[0].y <= e2.coords[e2.coords.length - 1].y) || (e2.coords[0].y >= e1.coords[0].y && e2.coords[0].y <= e1.coords[e1.coords.length - 1].y);
 }
 
 // Check only for a horizontal rectangle overlap
 function doEntitiesOverlapHorizontally(e1, e2) {
-    return (e1.coords[0].x >= e2.coords[0].x && e1.coords[0].x <= e2.coords[2].x) || (e2.coords[0].x >= e1.coords[0].x && e2.coords[0].x <= e1.coords[2].x);
+    return (e1.coords[0].x >= e2.coords[0].x && e1.coords[0].x <= e2.coords[e2.coords.length - 1].x) || (e2.coords[0].x >= e1.coords[0].x && e2.coords[0].x <= e1.coords[e1.coords.length - 1].x);
 }
 
 // Build an overlap graph: graph[i] is an array of indices of entities overlapping with entity i
@@ -46,9 +46,9 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, 
     // Record on which rows and columns entities start and end
     for (let i = 0; i < entityRects.length; i++) {
         let x1 = entityRects[i].coords[0].x;
-        let x2 = entityRects[i].coords[2].x;
+        let x2 = entityRects[i].coords[entityRects[i].coords.length - 1].x;
         let y1 = entityRects[i].coords[0].y;
-        let y2 = entityRects[i].coords[2].y;
+        let y2 = entityRects[i].coords[entityRects[i].coords.length - 1].y;
 
         rowEntities[x1].push([i, "x1"]);
         rowEntities[x2 + 1].push([i, "x2"]);
@@ -165,7 +165,7 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, 
 
                         // Check if there is a statement in the previous row that would overlap with the entity if the gap is not increased
                         let ex1 = entityRects[columnEntities[i][j][0]].coords[0].x;
-                        let ex2 = entityRects[columnEntities[i][j][0]].coords[2].x;
+                        let ex2 = entityRects[columnEntities[i][j][0]].coords[entityRects[columnEntities[i][j][0]].coords.length - 1].x;
                         let sx = statementCells[k].x;
                         let sy = statementCells[k].y;
                         let statementInPreviousRow = (sy == i);
@@ -180,7 +180,7 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, 
 
                         // Check if there is a statement in the next row that would overlap with the entity if the gap is not increased
                         let ex1 = entityRects[columnEntities[i][j][0]].coords[0].x;
-                        let ex2 = entityRects[columnEntities[i][j][0]].coords[2].x;
+                        let ex2 = entityRects[columnEntities[i][j][0]].coords[entityRects[columnEntities[i][j][0]].coords.length - 1].x;
                         let sx = statementCells[k].x;
                         let sy = statementCells[k].y;
                         let statementInNextRow = (sy == i);
@@ -236,7 +236,7 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, 
 
                         // Check if there is a statement in the previous column that would overlap with the entity if the gap is not increased
                         let ey1 = entityRects[rowEntities[i][j][0]].coords[0].y;
-                        let ey2 = entityRects[rowEntities[i][j][0]].coords[2].y;
+                        let ey2 = entityRects[rowEntities[i][j][0]].coords[entityRects[rowEntities[i][j][0]].coords.length - 1].y;
                         let sx = statementCells[k].x;
                         let sy = statementCells[k].y;
                         let statementInPreviousColumn = (sx == i);
@@ -251,7 +251,7 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, 
 
                         // Check if there is a statement in the next column that would overlap with the entity if the gap is not increased
                         let ey1 = entityRects[rowEntities[i][j][0]].coords[0].y;
-                        let ey2 = entityRects[rowEntities[i][j][0]].coords[2].y;
+                        let ey2 = entityRects[rowEntities[i][j][0]].coords[entityRects[rowEntities[i][j][0]].coords.length - 1].y;
                         let sx = statementCells[k].x;
                         let sy = statementCells[k].y;
                         let statementInNextColumn = (sx == i);
