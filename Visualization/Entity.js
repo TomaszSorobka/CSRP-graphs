@@ -10,6 +10,10 @@ class Entity {
         // Cell dimensions
         this.computeDimensions();
 
+        // Intervals for each side
+        this.intervals = { top: [], right: [], bottom: [], left: [] };
+        this.computeIntervals();
+
         // Pixel coordinates
         this.pixelCoords = [];
 
@@ -42,6 +46,105 @@ class Entity {
         tempCoords.sort((a, b) => a.y - b.y);
         // Find the largest difference
         this.height = tempCoords[tempCoords.length - 1].y - tempCoords[0].y;
+    }
+
+    computeIntervals() {
+        // Calculate top and bottom intervals
+        let topIntervals = [new Interval(this.coords[0].x, this.coords[1].x, this.coords[0].y, 'top', this)];
+        let bottomIntervals = [new Interval(this.coords[this.coords.length - 2].x, this.coords[this.coords.length - 1].x, this.coords[this.coords.length - 2].y, 'bottom', this)];
+
+        let globalStart, globalEnd;
+
+        // Top intervals
+        globalStart = topIntervals[0].start;
+        globalEnd = topIntervals[0].end;
+        for (let i = 2; i < this.coords.length; i += 2) {
+            // Check if this row starts before the earliest recorded start so far
+            if (this.coords[i].x < globalStart) {
+                let start = this.coords[i].x;
+                let end = globalStart;
+                topIntervals.push(new Interval(start, end, this.coords[i].y, 'top', this));
+                globalStart = start;
+            }
+
+            // Check if this row ends after the latest recorded end so far
+            if (this.coords[i + 1].x > globalEnd) {
+                let start = globalEnd;
+                let end = this.coords[i + 1].x;
+                topIntervals.push(new Interval(start, end, this.coords[i + 1].y, 'top', this));
+                globalEnd = end;
+            }
+        }
+
+        // Bottom intervals
+        globalStart = bottomIntervals[0].start;
+        globalEnd = bottomIntervals[0].end;
+        for (let i = this.coords.length - 4; i >= 0; i -= 2) {
+            // Check if this row starts before the earliest recorded start so far
+            if (this.coords[i].x < globalStart) {
+                let start = this.coords[i].x;
+                let end = globalStart;
+                bottomIntervals.push(new Interval(start, end, this.coords[i].y, 'bottom', this));
+                globalStart = start;
+            }
+            // Check if this row ends after the latest recorded end so far
+            if (this.coords[i + 1].x > globalEnd) {
+                let start = globalEnd;
+                let end = this.coords[i + 1].x;
+                bottomIntervals.push(new Interval(start, end, this.coords[i + 1].y, 'bottom', this));
+                globalEnd = end;
+            }
+        }
+
+        // Add calculated top and bottom intervals to the entity
+        this.intervals.top = topIntervals;
+        this.intervals.bottom = bottomIntervals;
+
+        // Calculate left and right intervals
+        let start, end, x;
+
+        // Left intervals
+        start = this.coords[0].y;
+        x = this.coords[0].x;
+        for (let i = 2; i < this.coords.length; i += 2) {
+            // Check if the next row starts at a different x coordinate
+            if (this.coords[i].x != x) {
+                end = this.coords[i - 2].y;
+                this.intervals.left.push(new Interval(start, end, x, 'left', this));
+                start = this.coords[i].y;
+                x = this.coords[i].x;
+            }
+        }
+
+        // Add the last left interval
+        end = this.coords[this.coords.length - 1].y;
+        this.intervals.left.push(new Interval(start, end, x, 'left', this));
+
+        // Right intervals
+        start = this.coords[1].y;
+        x = this.coords[1].x;
+        for (let i = 3; i < this.coords.length; i += 2) {
+            // Check if the next row starts at a different x coordinate
+            if (this.coords[i].x != x) {
+                end = this.coords[i - 2].y;
+                this.intervals.right.push(new Interval(start, end, x, 'right', this));
+                start = this.coords[i].y;
+                x = this.coords[i].x;
+            }
+        }
+        // Add the last right interval
+        end = this.coords[this.coords.length - 1].y;
+        this.intervals.right.push(new Interval(start, end, x, 'right', this));
+
+        // Add calculated right intervals to the entity
+        this.intervals.right = this.intervals.right;
+        this.intervals.left = this.intervals.left;
+
+        // Sort intervals on each side by their starting coordinate
+        this.intervals.top.sort((a, b) => a.start - b.start);
+        this.intervals.right.sort((a, b) => a.start - b.start);
+        this.intervals.bottom.sort((a, b) => a.start - b.start);
+        this.intervals.left.sort((a, b) => a.start - b.start);
     }
 
     position() {
