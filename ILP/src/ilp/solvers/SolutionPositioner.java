@@ -195,7 +195,7 @@ public class SolutionPositioner {
                     // Note: y coordinates are artificially increased by 1 to differentiate them from inactive rows
                     for (int i = 0; i < entity.length; i++) {
                         if (entity[i][0] == 1) {
-                            entity[i][0] = i + y + 1;
+                            entity[i][0] += i + y;
                         }
                     }
                 }

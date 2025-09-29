@@ -23,11 +23,7 @@ function initializeElements(colorPalette, entities, statements, entityRects, sta
     for (var i = 0; i < entities.length; i++) {
         let id = entities[i].id;
         let name = entities[i].name;
-        let x1 = entities[i].x1;
-        let y1 = entities[i].y1;
-        let x2 = entities[i].x2;
-        let y2 = entities[i].y2;
-        let coords = [new Point(x1, y1), new Point(x2, y1), new Point(x2, y2), new Point(x1, y2)];
+        let coords = entities[i].coords;
         let statements = entities[i].statements;
 
         // Non-singleton entities get their assigned colors

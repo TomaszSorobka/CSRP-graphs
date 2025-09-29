@@ -91,7 +91,7 @@ public class Orchestrator {
         Orchestrator orchestrator = new Orchestrator(solver, 5, 1.0 / 3);
         String inputFolder = "ILP/data/";
         String outputFolder = "Visualization/Solutions/";
-        ArrayList<String> instances = new ArrayList<String>(List.of("structured_dataset_small"));
+        ArrayList<String> instances = new ArrayList<String>(List.of("structured_dataset"));
 
         for (String inst : instances) {
             try {

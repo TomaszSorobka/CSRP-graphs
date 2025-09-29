@@ -68,7 +68,15 @@ document.getElementById('fileInput').addEventListener('change', function (event)
 });
 
 function parseData(fileContent) {
-    // Extract width and height
+    // --- Extract type ---
+    const typeRegex = /type:\s*(\w+)/;
+    const typeMatch = fileContent.match(typeRegex);
+    let type = null;
+    if (typeMatch) {
+        type = typeMatch[1].trim();
+    }
+
+    // --- Extract width and height ---
     const sizeRegex = /w:\s*(\d+)\s*\n\s*h:\s*(\d+)/;
     const sizeMatch = fileContent.match(sizeRegex);
 
@@ -77,34 +85,71 @@ function parseData(fileContent) {
         solutionHeight = parseInt(sizeMatch[2], 10) + 1;
     }
 
-    initializeGapAndEntityArrays(solutionWidth, solutionHeight, rowGaps, columnGaps, rowEntities, columnEntities);
+    initializeGapAndEntityArrays(
+        solutionWidth,
+        solutionHeight,
+        rowGaps,
+        columnGaps,
+        rowEntities,
+        columnEntities
+    );
 
-    // Regex to capture entity data (including names and coordinates)
-    const entityRegex = /Entity (.+?): \((\-?\d+), (\-?\d+)\) - \((\-?\d+), (\-?\d+)\)/g;
-    // Regex to capture statement data (including text and single coordinates)
+    // --- Regex to capture entity lines ---
+    // Rectangles: "Entity Name: (x1, y1) - (x2, y2)"
+    const rectEntityRegex = /Entity (.+?): \((\-?\d+), (\-?\d+)\) - \((\-?\d+), (\-?\d+)\)/g;
+
+    // Polygons: "Entity Name: (x, y) - (x, y) - (x, y)..."
+    const polyEntityRegex = /Entity (.+?): ((?:\(\-?\d+, \-?\d+\)(?:\s*-\s*\(\-?\d+, \-?\d+\))*)+)/g;
+
+    // Statements (same across both types)
     const statementRegex = /Statement (.+?): \((\-?\d+), (\-?\d+)\)/g;
 
     let match;
 
-    // Extract entities
-    while ((match = entityRegex.exec(fileContent)) !== null) {
-        let [_, name, x1, y1, x2, y2] = match;
-        const id = entities.length; // Assigning a unique ID based on the current length of the array
-        entities.push({
-            id,
-            name,
-            x1: Number(x1),
-            y1: Number(y1),
-            x2: Number(x2),
-            y2: Number(y2),
-            statements: [] // Initialize empty statements array for each entity
-        });
+    // --- Extract entities ---
+    if (type === "rectangles") {
+        while ((match = rectEntityRegex.exec(fileContent)) !== null) {
+            let [_, name, x1, y1, x2, y2] = match;
+            const id = entities.length;
+            const coords = [
+                new Point(Number(x1), Number(y1)),
+                new Point(Number(x2), Number(y1)),
+                new Point(Number(x1), Number(y2)),
+                new Point(Number(x2), Number(y2)),
+            ];
+            entities.push({
+                id,
+                name,
+                coords,
+                statements: []
+            });
+        }
+    } else if (type === "polygons") {
+        while ((match = polyEntityRegex.exec(fileContent)) !== null) {
+            let [_, name, coordString] = match;
+            const id = entities.length;
+
+            // Parse all (x,y) pairs in the list
+            const coordRegex = /\((\-?\d+), (\-?\d+)\)/g;
+            let coords = [];
+            let cMatch;
+            while ((cMatch = coordRegex.exec(coordString)) !== null) {
+                coords.push(new Point(Number(cMatch[1]), Number(cMatch[2])));
+            }
+
+            entities.push({
+                id,
+                name,
+                coords,
+                statements: []
+            });
+        }
     }
 
-    // Extract statements and associate them with entities
+    // --- Extract statements ---
     while ((match = statementRegex.exec(fileContent)) !== null) {
         let [_, text, x, y] = match;
-        const statementId = statements.length; // Assigning a unique ID based on the current length of the array
+        const statementId = statements.length;
         const statement = {
             id: statementId,
             text,
@@ -116,14 +161,19 @@ function parseData(fileContent) {
 
         // Now associate this statement with entities whose coordinates match
         entities.forEach(entity => {
-            if ((x >= entity.x1 && x <= entity.x2) && (y >= entity.y1 && y <= entity.y2)) {
-                entity.statements.push(statementId); // Add statement ID to the entity's list of statements
+            if (y >= entity.coords[0].y && y <= entity.coords[entity.coords.length - 1].y) {
+                for (let i = 0; i < entity.coords.length - 1; i++) {
+                    if (y == entity.coords[i].y && x >= entity.coords[i].x && x <= entity.coords[i + 1].x) {
+                        entity.statements.push(statementId); // Add statement ID to the entity's list of statements
+                        break;
+                    }
+                }
             }
         });
     }
 
     // Sort entities by size
-    entities.sort((a, b) => ((a.x2 - a.x1) + (a.y2 - a.y1)) - ((b.x2 - b.x1) + (b.y2 - b.y1)));
+    // entities.sort((a, b) => ((a.x2 - a.x1) + (a.y2 - a.y1)) - ((b.x2 - b.x1) + (b.y2 - b.y1)));
 
     // Find the names of all entities with multiple copies
     copiedEntityNames = getCopiedEntities(entities);
@@ -131,7 +181,7 @@ function parseData(fileContent) {
     // Assign a unique color for each deleted entity
     let nrDeleted = copiedEntityNames.length;
     copiedEntityColors = getReadyPalette(colorPalette, nrDeleted, true);
-    
+
     // Remove assigned colors from the palette
     colorPalette.splice(0, nrDeleted);
 }
@@ -172,7 +222,7 @@ function setup() {
     initializeElements(colorPalette, entities, statements, entityRects, statementCells);
 
     // Prepare entity rectangles to be drawn
-    mergeEntityRectsWithSameStatements(entityRects);
+    // mergeEntityRectsWithSameStatements(entityRects);
     mapEntityRectsToStatements(entityRects, statements);
     processEntityRectHeaders(entityRects, copiedEntityNames);
 
@@ -181,6 +231,7 @@ function setup() {
     calculateCellHeights(cellHeights, statementCells, solutionHeight);
     setCanvasDimensions(rowGaps, columnGaps, cellHeights);
 
+    drawBackgroundGrid();
     drawElements(entityRects, statementCells);
 
     // Make the Export button functional
@@ -191,6 +242,6 @@ function setup() {
 function visualize() {
     c.clearRect(0, 0, canvas.width, canvas.height);
 
-    // drawBackgroundGrid();
+    drawBackgroundGrid();
     drawElements(entityRects, statementCells);
 }

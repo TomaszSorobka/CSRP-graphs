@@ -48,66 +48,97 @@ class Entity {
         // Clear any previously calculated pixel dimensions
         this.pixelCoords = [];
 
-        // Sum up all row gaps before the start of the entity
-        let cumulativeRowGap = 0;
-        for(let i = 0; i <= this.coords[0].x; i++) {
-            cumulativeRowGap += rowGaps[i];
+        // Only the ends of rows
+        for (let i = 1; i < this.coords.length; i+=2) {
+            // Find the x
+
+            // Find pixel x coordinate without gaps
+            let x = (this.coords[i].x + 1) * backgroundCellSize * cellWidth + backgroundCellSize * this.marginRight;
+
+            // Sum up all column gaps before this column
+            let cumulativeColumnGap = 0;
+            for(let j = 0; j <= this.coords[i].x; j++) {
+                cumulativeColumnGap += rowGaps[j];
+            }
+
+            // Add gaps
+            x += cumulativeColumnGap * backgroundCellSize;
+
+            // Find the y
+
+            // Sum up the cell heights of every row above the entity
+            let combinedPreviousCellHeight = 0;
+            for (let j = 0; j < this.coords[i].y; j++) {
+                combinedPreviousCellHeight += cellHeights[j];
+            }
+
+            // Find pixel upper y coordinate without gaps
+            let y = backgroundCellSize * combinedPreviousCellHeight;
+
+            // Sum up all row gaps before this row (exclusive)
+            let cumulativeRowGap = 0;
+            for(let j = 0; j <= this.coords[i].y; j++) {
+                cumulativeRowGap += columnGaps[j];
+            }
+
+            let upperY = y + cumulativeRowGap * backgroundCellSize;
+            let lowerY = upperY + cellHeights[this.coords[i].y] * backgroundCellSize; // For the lower corner add the cell height of this row
+
+            this.pixelCoords.push(new Point(x, upperY));
+            this.pixelCoords.push(new Point(x, lowerY));
         }
 
-        // Sum up all column gaps before the start of the entity
-        let cumulativeColumnGap = 0;
-        for(let i = 0; i <= this.coords[0].y; i++) {
-            cumulativeColumnGap += columnGaps[i];
+        // Only the beginnings of rows
+        for (let i = this.coords.length - 2; i >= 0; i-=2) {
+            // Find the x
+
+            // Find pixel x coordinate without gaps
+            let x = this.coords[i].x * backgroundCellSize * cellWidth - backgroundCellSize * this.marginLeft;
+
+            // Sum up all column gaps before this column
+            let cumulativeColumnGap = 0;
+            for(let j = 0; j <= this.coords[i].x; j++) {
+                cumulativeColumnGap += rowGaps[j];
+            }
+
+            // Add gaps
+            x += cumulativeColumnGap * backgroundCellSize;
+
+            // Find the y
+
+            // Sum up the cell heights of every row above the entity
+            let combinedPreviousCellHeight = 0;
+            for (let j = 0; j < this.coords[i].y; j++) {
+                combinedPreviousCellHeight += cellHeights[j];
+            }
+
+            // Find pixel upper y coordinate without gaps
+            let y = backgroundCellSize * combinedPreviousCellHeight;
+
+            // Sum up all row gaps before this row (exclusive)
+            let cumulativeRowGap = 0;
+            for(let j = 0; j <= this.coords[i].y; j++) {
+                cumulativeRowGap += columnGaps[j];
+            }
+
+            let upperY = y + cumulativeRowGap * backgroundCellSize;
+            let lowerY = upperY + cellHeights[this.coords[i].y] * backgroundCellSize; // For the lower corner add the cell height of this row
+
+            this.pixelCoords.push(new Point(x, lowerY));
+            this.pixelCoords.push(new Point(x, upperY));
         }
 
-        // Sum up the cell heights of every row above the entity
-        let combinedPreviousCellHeight = 0;
-        for (let i = 0; i < this.coords[0].y; i++) {
-            combinedPreviousCellHeight += cellHeights[i];
-        }
+        // Add the bottom margin to the last row
+        this.pixelCoords[this.pixelCoords.length / 2 - 1].y += this.marginBottom * backgroundCellSize;
+        this.pixelCoords[this.pixelCoords.length / 2].y += this.marginBottom * backgroundCellSize;
 
-        // Find pixel coordinates of top-left corner without gaps
-        let xPos = this.coords[0].x * backgroundCellSize * cellWidth - backgroundCellSize * this.marginLeft;
-        let yPos = backgroundCellSize * combinedPreviousCellHeight - backgroundCellSize * this.marginTop;
+        // Shift top-left corner point from the end to the beginning of the list
+        let topLeft = this.pixelCoords.pop();
+        this.pixelCoords.unshift(topLeft);
 
-        // Find cumulative gaps left of and above entity
-        let xGap = cumulativeRowGap * backgroundCellSize;
-        let yGap = cumulativeColumnGap * backgroundCellSize;
-
-        // Sum up all row gaps inside the entity
-        cumulativeRowGap = 0;
-        for(let i = 0; i <= this.coords[0].x + this.width; i++) {
-            cumulativeRowGap += rowGaps[i];
-        }
-
-        // Sum up all column gaps inside the entity
-        cumulativeColumnGap = 0;
-        for(let i = 0; i <= this.coords[0].y + this.height; i++) {
-            cumulativeColumnGap += columnGaps[i];
-        }
-
-        // Sum up the cell heights of every row inside the entity
-        let combinedCellHeight = 0;
-        for (let i = this.coords[0].y; i <= this.coords[0].y + this.height; i++) {
-            combinedCellHeight += cellHeights[i];
-        }
-
-        // Find pixel coordinates of bottom-right corner without gaps
-        let xSize = (this.coords[0].x + this.width + 1) * backgroundCellSize * cellWidth;
-        let ySize = backgroundCellSize * (combinedPreviousCellHeight + combinedCellHeight);
-
-        // Find cumulative gaps inside the entity
-        let innerXGap = cumulativeRowGap * backgroundCellSize;
-        let innerYGap = cumulativeColumnGap * backgroundCellSize;
-
-        // Top-left corner pixel coordinates
-        this.pixelCoords.push(new Point(xPos + xGap, yPos + yGap));
-        // Top-right corner pixel coordinates
-        this.pixelCoords.push(new Point(xSize + innerXGap + backgroundCellSize * this.marginRight, yPos + yGap));
-        // Bottom-right corner pixel coordinates
-        this.pixelCoords.push(new Point(xSize + innerXGap + backgroundCellSize * this.marginRight, ySize + innerYGap + backgroundCellSize * this.marginBottom));
-        // Bottom-left corner pixel coordinates
-        this.pixelCoords.push(new Point(xPos + xGap, ySize + innerYGap + backgroundCellSize * this.marginBottom));
+        // Add the top margin to the first row
+        this.pixelCoords[0].y -= this.marginTop * backgroundCellSize;
+        this.pixelCoords[1].y -= this.marginTop * backgroundCellSize;
     }
 
     draw() {
