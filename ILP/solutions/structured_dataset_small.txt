@@ -1,0 +1,32 @@
+w: 4
+h: 4
+Entity Mr. Kelley:
+    Row 0: (3, 3)
+Entity Mr. Scott:
+    Row 0: (3, 4)
+Entity Miss Smith:
+Entity Elevator Operator/Man:
+    Row 0: (3, 4)
+Entity Mr. Kelley's Wife:
+    Row 0: (4, 4)
+Entity Police:
+Entity Knife:
+Entity Apartment Building:
+Entity Mr. Scott's Apartment/Room:
+    Row 0: (3, 4)
+Entity Miss Smith's Yard:
+Entity Lobby of the Apartment Building:
+Entity The Murder:
+Entity 11:30 p.m.:
+    Row 0: (4, 4)
+Entity 12:25 a.m.:
+    Row 0: (3, 3)
+Entity 12:30 a.m.:
+Statement The knife found in Miss Smith's yard had Mr. Scott's fingerprints on it.: (0, 4)
+Statement The elevator man saw Mr. Kelley's wife go to Mr. Scott's apartment at 11:30 p.m.: (4, 0)
+Statement The elevator operator said that Mr. Kelley's wife frequently left the building with Mr. Scott.: (4, 1)
+Statement The elevator man saw Mr. Kelley go to Mr. Scott's room at 12:25 a.m.: (3, 0)
+Statement The elevator man went off duty at 12:30 a.m.: (0, 3)
+Statement Mr. Kelley's wife disappeared after the murder.: (4, 2)
+Statement Police were unable to locate Mr. Scott after the murder.: (1, 4)
+Statement The elevator man said that Miss Smith was in the lobby of the apartment building when he went off duty.: (0, 2)
