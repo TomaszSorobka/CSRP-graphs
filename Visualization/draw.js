@@ -11,7 +11,7 @@ function drawElements(entityRects, statementCells) {
     // Draw entities
     for (let i = 0; i < entityRects.length; i++) {
         entityRects[i].draw();
-        entityRects[i].label();
+        // entityRects[i].label();
     }
 
     // Draw statements

@@ -1,0 +1,12 @@
+type: polygons
+w: 3
+h: 1
+Entity Mr. Scott: (0, 0) - (2, 0) - (1, 1) - (2, 1)
+Statement The knife found in Miss Smith's yard had Mr. Scott's fingerprints on it.: (3, 1)
+Statement The elevator man saw Mr. Kelley's wife go to Mr. Scott's apartment at 11:30 p.m.: (2, 0)
+Statement The elevator operator said that Mr. Kelley's wife frequently left the building with Mr. Scott.: (1, 0)
+Statement The elevator man saw Mr. Kelley go to Mr. Scott's room at 12:25 a.m.: (3, 0)
+Statement The elevator man went off duty at 12:30 a.m.: (0, 0)
+Statement Mr. Kelley's wife disappeared after the murder.: (1, 1)
+Statement Police were unable to locate Mr. Scott after the murder.: (2, 1)
+Statement The elevator man said that Miss Smith was in the lobby of the apartment building when he went off duty.: (0, 1)

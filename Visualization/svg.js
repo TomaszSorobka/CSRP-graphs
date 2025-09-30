@@ -51,7 +51,7 @@ function drawEntities(svg, svgNS) {
     // Draw each entity
     entityRects.forEach(entity => {
         drawEntityRectangle(entity, entityGroups.get(entity.id), svgNS);
-        labelEntity(entity, entityGroups.get(entity.id), svg, svgNS);
+        // labelEntity(entity, entityGroups.get(entity.id), svg, svgNS);
     });
 }
 

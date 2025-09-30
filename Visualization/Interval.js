@@ -4,6 +4,7 @@ class Interval {
         this.end = end;     // End coordinate (x or y depending on side)
         this.otherCoord = other; // The fixed coordinate (y for top/bottom, x for left/right)
         this.side = side; // 'top', 'right', 'bottom', 'left'
+        this.margin = 1; // Margin to apply when positioning entities
         this.entity = entity; // Reference to the entity this interval belongs to
     }
 
@@ -24,6 +25,16 @@ class Interval {
         ) {
             return false;
         }
-        return this.start < other.end && this.end > other.start;
+        return this.start <= other.end && this.end >= other.start;
+    }
+
+    // Get the length of the interval
+    length() {
+        return this.end - this.start;
+    }
+
+    // Set the other coordinate of the interval on the canvas
+    setOther(value) {
+        this.otherPixel = value;
     }
 }

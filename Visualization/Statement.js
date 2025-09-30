@@ -55,13 +55,13 @@ class Statement {
     position() {
         // Sum up all row gaps before the statement
         let cumulativeRowGap = 0;
-        for(let i = 0; i <= this.x; i++) {
+        for(let i = 0; i <= this.y; i++) {
             cumulativeRowGap += rowGaps[i];
         }
 
         // Sum up all column gaps before the statement
         let cumulativeColumnGap = 0;
-        for(let i = 0; i <= this.y; i++) {
+        for(let i = 0; i <= this.x; i++) {
             cumulativeColumnGap += columnGaps[i];
         }
         // Sum up the cell heights of every row above the statement
@@ -75,8 +75,8 @@ class Statement {
         let yPos = backgroundCellSize * combinedPreviousCellHeight;
 
         // Find cumulative gaps left of and above statement
-        let xGap = cumulativeRowGap * backgroundCellSize;
-        let yGap = cumulativeColumnGap * backgroundCellSize;
+        let xGap = cumulativeColumnGap * backgroundCellSize;
+        let yGap = cumulativeRowGap * backgroundCellSize;
 
         // Top-left corner pixel coordinates
         this.xStart = xPos + xGap;

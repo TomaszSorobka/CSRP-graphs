@@ -29,8 +29,8 @@ let rowGaps = [];
 let columnGaps = [];
 
 // Entities which start or end at each row and column
-let rowEntities = [];
-let columnEntities = [];
+let rowSegments = [];
+let columnSegments = [];
 
 // All available colors
 const colors = [
@@ -62,7 +62,8 @@ document.getElementById('fileInput').addEventListener('change', function (event)
         parseData(fileContent); // Ensure data is processed first
 
         setup(); // Compute visualization
-        setInterval(visualize, 0.1); // Show the solution
+        setInterval(visualize, 10); // Show the solution
+        // visualize();
     };
     reader.readAsText(file);
 });
@@ -230,9 +231,6 @@ function setup() {
     calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, columnEntities);
     calculateCellHeights(cellHeights, statementCells, solutionHeight);
     setCanvasDimensions(rowGaps, columnGaps, cellHeights);
-
-    drawBackgroundGrid();
-    drawElements(entityRects, statementCells);
 
     // Make the Export button functional
     document.getElementById("export").addEventListener("click", () => exportToSVG());
