@@ -50,14 +50,14 @@ function drawEntities(svg, svgNS) {
 
     // Draw each entity
     entityRects.forEach(entity => {
-        drawEntityRectangle(entity, entityGroups.get(entity.id), svgNS);
+        drawEntityRectangle(entity, entityGroups.get(entity.id), svg, svgNS);
         // labelEntity(entity, entityGroups.get(entity.id), svg, svgNS);
     });
 }
 
-function drawEntityRectangle(entity, entityGroup, svgNS) {
+function drawEntityRectangle(entity, entityGroup, svg, svgNS) {
     // Only draw non-singleton entities or singleton copies
-    if (entity.statements.length > 1 || entity.deleted.includes(true)) {
+    if (!entity.singleton) {
         const points = entity.pixelCoords.map(p => `${p.x},${p.y}`).join(" ");
         const color = entity.colors[entity.statements.length > 1 ? 0 : (entity.deleted.includes(true) ? entity.deleted.indexOf(true) : 0)];
         // Translucent background fill + border
@@ -68,11 +68,14 @@ function drawEntityRectangle(entity, entityGroup, svgNS) {
         poly.setAttribute("stroke", color);
         entityGroup.appendChild(poly);
     }
+
+    // REMOVE THIS IF YOU USE THE LABEL FUNCTION
+    svg.appendChild(entityGroup);
 }
 
 function labelEntity(entity, entityGroup, svg, svgNS) {
     // Only label non-singleton entities or singleton copies
-    if (entity.statements.length > 1 || entity.deleted.includes(true)) {
+    if (!entity.singleton) {
         const width = entity.pixelCoords[1].x - entity.pixelCoords[0].x;
 
         // Headers

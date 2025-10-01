@@ -26,6 +26,9 @@ class Entity {
 
         // Boolean array showing which headers are for copied entities
         this.deleted = [];
+
+        // Boolean specifying if an entity rectangle should be drawn
+        this.singleton = this.statements.length <= 1;
     }
 
     computeDimensions() {
@@ -594,7 +597,7 @@ class Entity {
 
     draw() {
         // Only draw non-singleton or copied entities
-        if (this.statements.length > 1 || this.deleted.includes(true)) {
+        if (!this.singleton) {
             // Find the entity's region
             let region = new Path2D();
             region.moveTo(this.pixelCoords[0].x, this.pixelCoords[0].y);
@@ -617,7 +620,7 @@ class Entity {
 
     label() {
         // Only label non-singleton or copied entities
-        if (this.statements.length > 1 || this.deleted.includes(true)) {
+        if (!this.singleton) {
 
             // Track how many headers have been drawn
             let headerIndex = 0;

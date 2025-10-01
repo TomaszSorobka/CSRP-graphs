@@ -63,7 +63,6 @@ document.getElementById('fileInput').addEventListener('change', function (event)
 
         setup(); // Compute visualization
         setInterval(visualize, 10); // Show the solution
-        // visualize();
     };
     reader.readAsText(file);
 });
@@ -172,9 +171,6 @@ function parseData(fileContent) {
             }
         });
     }
-
-    // Sort entities by size
-    // entities.sort((a, b) => ((a.x2 - a.x1) + (a.y2 - a.y1)) - ((b.x2 - b.x1) + (b.y2 - b.y1)));
 
     // Find the names of all entities with multiple copies
     copiedEntityNames = getCopiedEntities(entities);

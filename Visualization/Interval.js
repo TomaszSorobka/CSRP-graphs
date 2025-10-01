@@ -10,6 +10,8 @@ class Interval {
 
     // Check if this interval overlaps with another
     overlaps(other) {
+        if (this.entity.singleton || other.entity.singleton) return false;
+
         // Allow left-right and top-bottom overlaps as well as same-side
         const oppositeSides = {
             left: 'right',

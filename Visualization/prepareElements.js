@@ -36,6 +36,8 @@ function initializeElements(colorPalette, entities, statements, entityRects, sta
             entityRects[i] = new Entity(id, name, coords, 'rgb(255, 255, 255)', statements);
         }
     }
+    // Sort entity rectangles by size
+    entityRects.sort((a, b) => ((a.width * a.height) - (b.width * b.height)));
 
     // Initialize statement cells
     for (var i = 0; i < statements.length; i++) {
@@ -125,5 +127,12 @@ function processEntityRectHeaders(entityRects, repeated) {
     // Update top margins based on how many of the entity's headers are visible
     entityRects.forEach(e => {
         e.marginTop = e.visibleHeaders * 2 + 1;
+    });
+
+    // Mark entities as singleton if they have at most one statement and are not copies
+    entityRects.forEach(e => {
+        if (!e.deleted.includes(true) && e.statements.length <= 1) {
+            e.singleton = true;
+        }
     });
 }

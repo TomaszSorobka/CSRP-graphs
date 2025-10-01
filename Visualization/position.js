@@ -124,7 +124,7 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
                         //     }
                         // }
                         if (s1.side == s2.side && s1.margin == s2.margin) {
-                            if (s2.entity.statements.length > 1) s2.margin = s1.margin + 1;
+                            s2.margin = s1.margin + 1;
                         }
                     }
                 }
@@ -143,7 +143,7 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
 
                         // Increase the bigger entity's margin
                         if (s1.side == s2.side && s1.margin == s2.margin) {
-                            if (s2.entity.statements.length > 1) s2.margin = s1.margin + 1;
+                            s2.margin = s1.margin + 1;
                         }
                     }
                 }
@@ -174,7 +174,7 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
             for (let j = 0; j < rowSegments[i].length; j++) {
                 for (let k = 0; k < statementCells.length; k++) {
                     let segment = rowSegments[i][j];
-                    if (segment.side == "top" && segment.margin > maxMargin) {
+                    if (segment.margin > maxMargin) {
 
                         // Check if there is a statement in the previous row that would overlap with the segment if the gap is not increased
                         let sx = statementCells[k].x;
@@ -184,19 +184,6 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
 
                         // Increase the gap for the first and last row or if such a statement was found
                         if ((i == 0 || i == rowSegments.length - 1 || (statementInPreviousRow && statementAndEntityOverlap))) {
-                            maxMargin = segment.margin;
-                        }
-                    }
-                    else if (segment.side == "bottom" && segment.margin > maxMargin) {
-
-                        // Check if there is a statement in the next row that would overlap with the segment if the gap is not increased
-                        let sx = statementCells[k].x;
-                        let sy = statementCells[k].y;
-                        let statementInNextRow = (sy == i);
-                        let statementAndEntityOverlap = (sx <= segment.end && sx >= segment.start);
-
-                        // Increase the gap for the first and last row or if such a statement was found
-                        if (i == 0 || i == rowSegments.length - 1 || (statementInNextRow && statementAndEntityOverlap)) {
                             maxMargin = segment.margin;
                         }
                     }
@@ -238,7 +225,7 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
             for (let j = 0; j < columnSegments[i].length; j++) {
                 for (let k = 0; k < statementCells.length; k++) {
                     let segment = columnSegments[i][j];
-                    if (segment.side == "left" && segment.margin > maxMargin) {
+                    if (segment.margin > maxMargin) {
 
                         // Check if there is a statement in the previous column that would overlap with the segment if the gap is not increased
                         let sx = statementCells[k].x;
@@ -248,19 +235,6 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
 
                         // Increase the gap for the first and last column or if such a statement was found
                         if (i == 0 || i == columnSegments.length - 1 || (statementInPreviousColumn && statementAndEntityOverlap)) {
-                            maxMargin = segment.margin;
-                        }
-                    }
-                    else if (segment.side == "right" && segment.margin > maxMargin) {
-
-                        // Check if there is a statement in the next column that would overlap with the segment if the gap is not increased
-                        let sx = statementCells[k].x;
-                        let sy = statementCells[k].y;
-                        let statementInNextColumn = (sx == i);
-                        let statementAndEntityOverlap = (sy <= segment.end && sy >= segment.start);
-
-                        // Increase the gap for the first and last column or if such a statement was found
-                        if (i == 0 || i == columnSegments.length - 1 || (statementInNextColumn && statementAndEntityOverlap)) {
                             maxMargin = segment.margin;
                         }
                     }
