@@ -28,7 +28,7 @@ class Entity {
         this.deleted = [];
 
         // Boolean specifying if an entity rectangle should be drawn
-        this.singleton = this.statements.length <= 1;
+        this.singleton = false;
     }
 
     computeDimensions() {

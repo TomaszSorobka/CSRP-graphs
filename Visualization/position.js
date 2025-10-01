@@ -116,11 +116,15 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
                         if (s1.side == s2.side && s1.side == 'top' && (Math.abs(s2.margin - s1.margin) <= s2.entity.visibleHeaders * 2 + 1 || Math.abs(s2.margin - s1.margin) <= s1.entity.visibleHeaders * 2 + 1)) {
                             // If their headers overlap, increase (preferably) the bigger entity's top margin such that there is enough space for all its headers
                             if (s2.margin >= s1.margin) {
-                                if (s2.isTopLeft) s2.margin = s1.margin + s2.entity.visibleHeaders * 2 + 1;
+                                if (s2.isTopLeft) {
+                                    s2.margin = s1.margin + s2.entity.visibleHeaders * 2 + 1;
+                                }
                             }
                             else {
                                 // If the smaller entity's header is above the bigger entity's header just increase the smaller entity's header as that's a smaller increase
-                                if (s1.isTopLeft) s1.margin = s2.margin + s1.entity.visibleHeaders * 2 + 1;
+                                if (s1.isTopLeft) {
+                                    s1.margin = s2.margin + s1.entity.visibleHeaders * 2 + 1;
+                                }
                             }
                         }
                         if (s1.side == s2.side && s1.margin == s2.margin) {

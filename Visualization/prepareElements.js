@@ -61,9 +61,9 @@ function mergeEntityRectsWithSameStatements(entityRects) {
                 entityRects[i].displayHeaders = entityRects[i].displayHeaders.concat(entityRects[j].displayHeaders);
                 entityRects[i].colors = entityRects[i].colors.concat(entityRects[j].colors);
 
-                // Increase first entity's margin to cover the additional header
                 // Find the top-left segment of the first entity
                 let topLeft = entityRects[i].intervals['top'].filter(interval => interval.isTopLeft)[0];
+                // Increase first entity's margin to cover the additional header
                 topLeft.margin += 2;
                 // Remove second entity's rectangle
                 entityRects.splice(j, 1);
@@ -128,7 +128,10 @@ function processEntityRectHeaders(entityRects, repeated) {
 
     // Update top margins based on how many of the entity's headers are visible
     entityRects.forEach(e => {
-        e.marginTop = e.visibleHeaders * 2 + 1;
+        // Find the top-left segment of the entity
+        let topLeft = e.intervals['top'].filter(interval => interval.isTopLeft)[0];
+        // Update its margin
+        topLeft.margin = e.visibleHeaders * 2 + 1;
     });
 
     // Mark entities as singleton if they have at most one statement and are not copies
