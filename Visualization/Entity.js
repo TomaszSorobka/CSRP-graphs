@@ -133,9 +133,8 @@ class Entity {
         end = this.coords[this.coords.length - 1].y;
         this.intervals.right.push(new Interval(start, end, x, 'right', this));
 
-        // Add calculated right intervals to the entity
-        this.intervals.right = this.intervals.right;
-        this.intervals.left = this.intervals.left;
+        // Set the top-left interval
+        this.intervals.top[0].setTopLeft(true);
 
         // Sort intervals on each side by their starting coordinate
         this.intervals.top.sort((a, b) => a.start - b.start);
@@ -319,12 +318,12 @@ class Entity {
         // Store the pixel coordinates of the polygon
         let orderedPoints = [];
 
-        // Find the top-left corner (minimum x, then minimum y)
+        // Find the top-left corner (minimum y, then minimum x)
         let topLeft = sides.reduce((min, side) => {
             let pt = side.start;
             if (
-                pt.x < min.x ||
-                (pt.x === min.x && pt.y < min.y)
+                pt.y < min.y ||
+                (pt.y === min.y && pt.x < min.x)
             ) {
                 min = pt;
             }

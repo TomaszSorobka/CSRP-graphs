@@ -51,7 +51,8 @@ function drawEntities(svg, svgNS) {
     // Draw each entity
     entityRects.forEach(entity => {
         drawEntityRectangle(entity, entityGroups.get(entity.id), svg, svgNS);
-        // labelEntity(entity, entityGroups.get(entity.id), svg, svgNS);
+        labelEntity(entity, entityGroups.get(entity.id), svg, svgNS);
+        svg.appendChild(entityGroups.get(entity.id));
     });
 }
 
@@ -68,9 +69,6 @@ function drawEntityRectangle(entity, entityGroup, svg, svgNS) {
         poly.setAttribute("stroke", color);
         entityGroup.appendChild(poly);
     }
-
-    // REMOVE THIS IF YOU USE THE LABEL FUNCTION
-    svg.appendChild(entityGroup);
 }
 
 function labelEntity(entity, entityGroup, svg, svgNS) {
@@ -109,8 +107,6 @@ function labelEntity(entity, entityGroup, svg, svgNS) {
             }
         }
     }
-
-    svg.appendChild(entityGroup);
 }
 
 function drawStatements(svg, svgNS) {

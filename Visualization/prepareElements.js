@@ -62,7 +62,9 @@ function mergeEntityRectsWithSameStatements(entityRects) {
                 entityRects[i].colors = entityRects[i].colors.concat(entityRects[j].colors);
 
                 // Increase first entity's margin to cover the additional header
-                entityRects[i].marginTop += 2;
+                // Find the top-left segment of the first entity
+                let topLeft = entityRects[i].intervals['top'].filter(interval => interval.isTopLeft)[0];
+                topLeft.margin += 2;
                 // Remove second entity's rectangle
                 entityRects.splice(j, 1);
             }

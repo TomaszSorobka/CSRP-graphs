@@ -219,7 +219,7 @@ function setup() {
     initializeElements(colorPalette, entities, statements, entityRects, statementCells);
 
     // Prepare entity rectangles to be drawn
-    // mergeEntityRectsWithSameStatements(entityRects);
+    mergeEntityRectsWithSameStatements(entityRects);
     mapEntityRectsToStatements(entityRects, statements);
     processEntityRectHeaders(entityRects, copiedEntityNames);
 

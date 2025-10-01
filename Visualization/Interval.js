@@ -6,6 +6,7 @@ class Interval {
         this.side = side; // 'top', 'right', 'bottom', 'left'
         this.margin = 1; // Margin to apply when positioning entities
         this.entity = entity; // Reference to the entity this interval belongs to
+        this.isTopLeft = false; // Whether this interval is the top-left interval of its entity
     }
 
     // Check if this interval overlaps with another
@@ -38,5 +39,10 @@ class Interval {
     // Set the other coordinate of the interval on the canvas
     setOther(value) {
         this.otherPixel = value;
+    }
+
+    setTopLeft(isTopLeft) {
+        this.isTopLeft = isTopLeft;
+        this.margin += 2;
     }
 }
