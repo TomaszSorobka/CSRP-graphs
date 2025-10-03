@@ -29,8 +29,8 @@ let rowGaps = [];
 let columnGaps = [];
 
 // Entities which start or end at each row and column
-let rowEntities = [];
-let columnEntities = [];
+let rowSegments = [];
+let columnSegments = [];
 
 // All available colors
 const colors = [
@@ -62,7 +62,7 @@ document.getElementById('fileInput').addEventListener('change', function (event)
         parseData(fileContent); // Ensure data is processed first
 
         setup(); // Compute visualization
-        setInterval(visualize, 0.1); // Show the solution
+        setInterval(visualize, 10); // Show the solution
     };
     reader.readAsText(file);
 });
@@ -172,9 +172,6 @@ function parseData(fileContent) {
         });
     }
 
-    // Sort entities by size
-    // entities.sort((a, b) => ((a.x2 - a.x1) + (a.y2 - a.y1)) - ((b.x2 - b.x1) + (b.y2 - b.y1)));
-
     // Find the names of all entities with multiple copies
     copiedEntityNames = getCopiedEntities(entities);
 
@@ -222,7 +219,7 @@ function setup() {
     initializeElements(colorPalette, entities, statements, entityRects, statementCells);
 
     // Prepare entity rectangles to be drawn
-    // mergeEntityRectsWithSameStatements(entityRects);
+    mergeEntityRectsWithSameStatements(entityRects);
     mapEntityRectsToStatements(entityRects, statements);
     processEntityRectHeaders(entityRects, copiedEntityNames);
 
@@ -230,9 +227,6 @@ function setup() {
     calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, columnEntities);
     calculateCellHeights(cellHeights, statementCells, solutionHeight);
     setCanvasDimensions(rowGaps, columnGaps, cellHeights);
-
-    drawBackgroundGrid();
-    drawElements(entityRects, statementCells);
 
     // Make the Export button functional
     document.getElementById("export").addEventListener("click", () => exportToSVG());

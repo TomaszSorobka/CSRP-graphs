@@ -9,9 +9,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SolutionWriter {
@@ -143,21 +140,6 @@ public class SolutionWriter {
                     int xEnd = s.entities[i][y][2];
                     writer.write("    Row " + (s.entities[i][y][0] - 1) + ": (" + xStart + ", " + xEnd + ")\n");
                 }
-            }
-        }
-    }
-
-    private static void removeDuplicates(ArrayList<Point> points) {
-        Set<String> seen = new HashSet<>();
-        Iterator<Point> it = points.iterator();
-
-        while (it.hasNext()) {
-            Point p = it.next();
-            String key = p.x + "," + p.y;
-            if (seen.contains(key)) {
-                it.remove(); // remove later duplicates
-            } else {
-                seen.add(key); // keep first time
             }
         }
     }
