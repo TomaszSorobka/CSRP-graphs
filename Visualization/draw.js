@@ -1,12 +1,12 @@
 // Draw elements on canvas
-function drawElements(entityRects, statementCells) {
+function drawElements(entityRects, statementCells, headersIncluded) {
     // Order entities by their starting y coordinates
     entityRects.sort((a, b) => a.pixelCoords[0].y - b.pixelCoords[0].y);
 
     // Draw entities
     for (let i = 0; i < entityRects.length; i++) {
         entityRects[i].draw();
-        entityRects[i].label();
+        entityRects[i].label(headersIncluded);
     }
 
     // Draw statements

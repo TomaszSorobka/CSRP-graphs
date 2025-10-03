@@ -1,4 +1,4 @@
-function initializeElements(colorPalette, entities, statements, entityRects, statementCells) {
+function initializeElements(colorPalette, entities, statements, entityRects, statementCells, headersIncluded) {
     // Gather all non-singleton entities
     let nonSingletonEntities = [];
     entities.forEach(e => {
@@ -28,12 +28,12 @@ function initializeElements(colorPalette, entities, statements, entityRects, sta
 
         // Non-singleton entities get their assigned colors
         if (nonSingletonEntities.indexOf(id) > -1) {
-            entityRects[i] = new Entity(id, name, coords, assignedColors[nextColor], statements);
+            entityRects[i] = new Entity(id, name, coords, assignedColors[nextColor], statements, headersIncluded);
             nextColor++;
         }
         // Singleton entities are assigned white
         else {
-            entityRects[i] = new Entity(id, name, coords, 'rgb(255, 255, 255)', statements);
+            entityRects[i] = new Entity(id, name, coords, 'rgb(255, 255, 255)', statements, headersIncluded);
         }
     }
     // Sort entity rectangles by size
@@ -50,7 +50,7 @@ function initializeElements(colorPalette, entities, statements, entityRects, sta
     }
 }
 
-function mergeEntityRectsWithSameStatements(entityRects) {
+function mergeEntityRectsWithSameStatements(entityRects, headersIncluded) {
     for (let i = 0; i < entityRects.length; i++) {
         for (let j = entityRects.length - 1; j >= i + 1; j--) {
             // Check if a pair of entities have the same statements
@@ -64,7 +64,7 @@ function mergeEntityRectsWithSameStatements(entityRects) {
                 // Find the top-left segment of the first entity
                 let topLeft = entityRects[i].intervals['top'].filter(interval => interval.isTopLeft)[0];
                 // Increase first entity's margin to cover the additional header
-                topLeft.margin += 2;
+                if (headersIncluded) topLeft.margin += 2;
                 // Remove second entity's rectangle
                 entityRects.splice(j, 1);
             }
@@ -97,7 +97,7 @@ function getCopiedEntities(entities) {
     return repeated;
 }
 
-function processEntityRectHeaders(entityRects, repeated) {
+function processEntityRectHeaders(entityRects, repeated, headersIncluded) {
     // Mark headers as copied or not
     entityRects.forEach(e => {
         e.headers.forEach(h => {
@@ -127,12 +127,14 @@ function processEntityRectHeaders(entityRects, repeated) {
     });
 
     // Update top margins based on how many of the entity's headers are visible
-    entityRects.forEach(e => {
-        // Find the top-left segment of the entity
-        let topLeft = e.intervals['top'].filter(interval => interval.isTopLeft)[0];
-        // Update its margin
-        topLeft.margin = e.visibleHeaders * 2 + 1;
-    });
+    if (headersIncluded) {
+        entityRects.forEach(e => {
+            // Find the top-left segment of the entity
+            let topLeft = e.intervals['top'].filter(interval => interval.isTopLeft)[0];
+            // Update its margin
+            topLeft.margin = e.visibleHeaders * 2 + 1;
+        });
+    }
 
     // Mark entities as singleton if they have at most one statement and are not copies
     entityRects.forEach(e => {

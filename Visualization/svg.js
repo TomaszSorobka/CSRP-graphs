@@ -1,11 +1,11 @@
-function exportToSVG() {
+function exportToSVG(headersIncluded) {
     // Create svg and set parameters
     const svgNS = "http://www.w3.org/2000/svg";
     const svg = document.createElementNS(svgNS, "svg");
     createSVG(svg, svgNS);
 
     // Draw elements
-    drawEntities(svg, svgNS);
+    drawEntities(svg, svgNS, headersIncluded);
     drawStatements(svg, svgNS);
 
     // Serialize and download
@@ -34,7 +34,7 @@ function createSVG(svg, svgNS) {
     svg.appendChild(background);
 }
 
-function drawEntities(svg, svgNS) {
+function drawEntities(svg, svgNS, headersIncluded) {
     // Draw entities in order of their starting y coordinates
     entityRects.sort((a, b) => a.pixelCoords[0].y - b.pixelCoords[0].y);
 
@@ -51,7 +51,7 @@ function drawEntities(svg, svgNS) {
     // Draw each entity
     entityRects.forEach(entity => {
         drawEntityRectangle(entity, entityGroups.get(entity.id), svgNS);
-        labelEntity(entity, entityGroups.get(entity.id), svgNS);
+        if (headersIncluded) labelEntity(entity, entityGroups.get(entity.id), svgNS);
         svg.appendChild(entityGroups.get(entity.id));
     });
 }
