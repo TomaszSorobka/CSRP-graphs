@@ -5,6 +5,10 @@ import ilp.constraints.C1StatementsDistinctCoordinates;
 import ilp.constraints.ConstraintModule;
 import ilp.constraints.P0ValidEntityRowBounds;
 import ilp.constraints.P10StatementIsOnRowBooleans;
+import ilp.constraints.P11EqualRowStart;
+import ilp.constraints.P12aRowEndMonotonicity;
+import ilp.constraints.P12bRowStartMonotonicity;
+import ilp.constraints.P13aRowSpanNonIncreasing;
 import ilp.constraints.P1ConsecutiveEntityRows;
 import ilp.constraints.P2ConnectedEntityRows;
 import ilp.constraints.P3VerticalConvexity;
@@ -83,14 +87,18 @@ public class Orchestrator {
                 new P8MaxWidth(),
                 new P9MaxHeight(),
                 new P10StatementIsOnRowBooleans(),
+                // new P11EqualRowStart(),
+                // new P12aRowEndMonotonicity(),
+                // new P12bRowStartMonotonicity(),
+                new P13aRowSpanNonIncreasing(),
                 new C1StatementsDistinctCoordinates());
 
         ObjectiveModule objective = new PolygonAreaDimensionsComplexity();
 
         StatementEntitySolver solver = new StatementEntitySolver(dimensions, constraints, objective, 1);
         Orchestrator orchestrator = new Orchestrator(solver, 5, 1.0 / 3);
-        String inputFolder = "ILP/data/";
-        String outputFolder = "Visualization/Solutions/";
+        String inputFolder = "data/";
+        String outputFolder = "solutions/";
         ArrayList<String> instances = new ArrayList<String>(List.of("structured_dataset"));
 
         for (String inst : instances) {
@@ -105,7 +113,7 @@ public class Orchestrator {
                         finalLayout.solutions,
                         finalLayout.width,
                         finalLayout.height,
-                        outputFolder + inst + ".txt");
+                        outputFolder + inst + "_poly.txt");
 
             } catch (Exception e) {
                 e.printStackTrace();
