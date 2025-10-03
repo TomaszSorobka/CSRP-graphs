@@ -227,6 +227,7 @@ function setup() {
     calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, columnEntities);
     calculateCellHeights(cellHeights, statementCells, solutionHeight);
     setCanvasDimensions(rowGaps, columnGaps, cellHeights);
+    positionEntityRects(entityRects);
 
     // Make the Export button functional
     document.getElementById("export").addEventListener("click", () => exportToSVG());

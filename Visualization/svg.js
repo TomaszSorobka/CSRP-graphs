@@ -50,13 +50,13 @@ function drawEntities(svg, svgNS) {
 
     // Draw each entity
     entityRects.forEach(entity => {
-        drawEntityRectangle(entity, entityGroups.get(entity.id), svg, svgNS);
-        labelEntity(entity, entityGroups.get(entity.id), svg, svgNS);
+        drawEntityRectangle(entity, entityGroups.get(entity.id), svgNS);
+        labelEntity(entity, entityGroups.get(entity.id), svgNS);
         svg.appendChild(entityGroups.get(entity.id));
     });
 }
 
-function drawEntityRectangle(entity, entityGroup, svg, svgNS) {
+function drawEntityRectangle(entity, entityGroup, svgNS) {
     // Only draw non-singleton entities or singleton copies
     if (!entity.singleton) {
         const points = entity.pixelCoords.map(p => `${p.x},${p.y}`).join(" ");
@@ -71,7 +71,7 @@ function drawEntityRectangle(entity, entityGroup, svg, svgNS) {
     }
 }
 
-function labelEntity(entity, entityGroup, svg, svgNS) {
+function labelEntity(entity, entityGroup, svgNS) {
     // Only label non-singleton entities or singleton copies
     if (!entity.singleton) {
         const width = entity.pixelCoords[1].x - entity.pixelCoords[0].x;

@@ -3,16 +3,6 @@ function doEntitiesOverlap(e1, e2) {
     return !(e1.x1 < e2.x1 || e2.x2 < e1.x1 || e1.y2 < e2.y1 || e2.y2 < e1.y1);
 }
 
-// Check only for a vertical rectangle overlap
-function doEntitiesOverlapVertically(e1, e2) {
-    return (e1.coords[0].y >= e2.coords[0].y && e1.coords[0].y <= e2.coords[e2.coords.length - 1].y) || (e2.coords[0].y >= e1.coords[0].y && e2.coords[0].y <= e1.coords[e1.coords.length - 1].y);
-}
-
-// Check only for a horizontal rectangle overlap
-function doEntitiesOverlapHorizontally(e1, e2) {
-    return (e1.coords[0].x >= e2.coords[0].x && e1.coords[0].x <= e2.coords[e2.coords.length - 1].x) || (e2.coords[0].x >= e1.coords[0].x && e2.coords[0].x <= e1.coords[e1.coords.length - 1].x);
-}
-
 // Build an overlap graph: graph[i] is an array of indices of entities overlapping with entity i
 function buildOverlapGraph(entities) {
     let n = entities.length;
@@ -45,15 +35,6 @@ function initializeGapAndEntityArrays(width, height, rowGaps, columnGaps, rowSeg
 function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, columnSegments) {
     // Record entity segments in each row and column
     for (let i = 0; i < entityRects.length; i++) {
-        // let x1 = entityRects[i].coords[0].x;
-        // let x2 = entityRects[i].coords[entityRects[i].coords.length - 1].x;
-        // let y1 = entityRects[i].coords[0].y;
-        // let y2 = entityRects[i].coords[entityRects[i].coords.length - 1].y;
-
-        // rowSegments[x1].push([i, "x1"]);
-        // rowSegments[x2 + 1].push([i, "x2"]);
-        // columnSegments[y1].push([i, "y1"]);
-        // columnSegments[y2 + 1].push([i, "y2"]);
 
         // Add segments for each side of the entity
         for (const side in entityRects[i].intervals) {
@@ -71,16 +52,6 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
         }
     }
 
-    // Remove default margins from singleton sets
-    for (let i = 0; i < entityRects.length; i++) {
-        if (entityRects[i].statements.length == 1 && !entityRects[i].deleted.includes(true)) {
-            entityRects[i].marginBottom = 0;
-            entityRects[i].marginTop = 0;
-            entityRects[i].marginRight = 0;
-            entityRects[i].marginLeft = 0;
-        }
-    }
-
     // Set entity margins
     calculateMargins();
 
@@ -91,18 +62,20 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
     /* -----------------------------HELPER FUNCTIONS----------------------------- */
 
     function calculateMargins() {
+        // Set horizontal entity margins
         for (let i = 0; i < columnSegments.length; i++) {
-            calculateHorizontalMargins(i);
-            calculateHorizontalMargins(i); // Check and fix any equal margins that resulted from wrong comparison order
+            // Check and fix any equal margins that resulted from wrong comparison order
+            while (calculateHorizontalMargins(i) > 0) continue;
         }
 
         // Set vertical entity margins
         for (let i = 0; i < rowSegments.length; i++) {
-            calculateVerticalMargins(i);
-            calculateVerticalMargins(i); // Check and fix any equal margins that resulted from wrong comparison order
+            // Check and fix any equal margins that resulted from wrong comparison order
+            while (calculateVerticalMargins(i) > 0) continue;
         }
 
         function calculateVerticalMargins(i) {
+            let changes = 0;
             for (let j = 0; j < rowSegments[i].length; j++) {
                 for (let k = j + 1; k < rowSegments[i].length; k++) {
                     // Get segments
@@ -113,29 +86,35 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
                     if (s1.overlaps(s2)) {
 
                         // Increase the bigger entity's margin (and handle headers if both are top intervals)
-                        if (s1.side == s2.side && s1.side == 'top' && (Math.abs(s2.margin - s1.margin) <= s2.entity.visibleHeaders * 2 + 1 || Math.abs(s2.margin - s1.margin) <= s1.entity.visibleHeaders * 2 + 1)) {
+                        if (s1.side == s2.side && s1.side == 'top' && ((Math.abs(s2.margin - s1.margin) < (s2.entity.visibleHeaders * 2 + 1) || Math.abs(s2.margin - s1.margin) < (s1.entity.visibleHeaders * 2 + 1)))) {
                             // If their headers overlap, increase (preferably) the bigger entity's top margin such that there is enough space for all its headers
                             if (s2.margin >= s1.margin) {
                                 if (s2.isTopLeft) {
                                     s2.margin = s1.margin + s2.entity.visibleHeaders * 2 + 1;
+                                    changes++;
                                 }
                             }
                             else {
                                 // If the smaller entity's header is above the bigger entity's header just increase the smaller entity's header as that's a smaller increase
                                 if (s1.isTopLeft) {
                                     s1.margin = s2.margin + s1.entity.visibleHeaders * 2 + 1;
+                                    changes++;
                                 }
                             }
                         }
                         if (s1.side == s2.side && s1.margin == s2.margin) {
                             s2.margin = s1.margin + 1;
+                            changes++;
                         }
                     }
                 }
             }
+
+            return changes;
         }
 
         function calculateHorizontalMargins(i) {
+            let changes = 0;
             for (let j = 0; j < columnSegments[i].length; j++) {
                 for (let k = j + 1; k < columnSegments[i].length; k++) {
                     // Get segments
@@ -148,10 +127,12 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
                         // Increase the bigger entity's margin
                         if (s1.side == s2.side && s1.margin == s2.margin) {
                             s2.margin = s1.margin + 1;
+                            changes++;
                         }
                     }
                 }
             }
+            return changes;
         }
     }
 
@@ -335,5 +316,12 @@ function setCanvasDimensions(rowGaps, columnGaps, cellHeights) {
     else if (rect.top < 30) {
         canvas.style.top = '0px';
         canvas.style.transform = 'translateX(-50%)';
+    }
+}
+
+// Calculate each entity's position
+function positionEntityRects(entityRects) {
+    for (let i = 0; i < entityRects.length; i++) {
+        entityRects[i].position();
     }
 }
