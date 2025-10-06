@@ -30,7 +30,7 @@ public class PolygonAreaDimensionsComplexity implements ObjectiveModule {
                                         GRBLinExpr span_j_expr1 = new GRBLinExpr();
                                         span_j_expr1.addTerm(1.0, span_j);
                                         span_j_expr1.addTerm(-1.0, v.entities[i].rowBounds[j][1]);
-                                        span_j_expr1.addTerm(1.0, v.entities[i].rowBounds[j][1]);
+                                        span_j_expr1.addTerm(1.0, v.entities[i].rowBounds[j][0]);
                                         ctx.model.addGenConstrIndicator(v.entities[i].activeRows[j], 1,
                                                         span_j_expr1, GRB.EQUAL, 1.0,
                                                         "span_if_ej_1");
