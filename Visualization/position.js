@@ -108,7 +108,6 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
                         if (s1.side == s2.side && s1.margin == s2.margin) {
                             s2.margin = s1.margin + 1;
                             changes++;
-                            if (s2.entity.id == 2) console.log(s2.margin);
                         }
                     }
                 }
@@ -322,9 +321,13 @@ function setCanvasDimensions(rowGaps, columnGaps, cellHeights) {
     }
 }
 
-// Calculate each entity's position
-function positionEntityRects(entityRects) {
+// Calculate each entity and statement's position
+function positionElements(entityRects, statementCells) {
     for (let i = 0; i < entityRects.length; i++) {
         entityRects[i].position();
+    }
+
+    for (let i = 0; i < statementCells.length; i++) {
+        statementCells[i].position();
     }
 }

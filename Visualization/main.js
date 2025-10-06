@@ -12,20 +12,21 @@ let copiedEntityColors;
 // Whether or not to draw entity headers
 let headersIncluded;
 
+// Grid sizes
+const backgroundCellSize = 10;
+const cellWidth = 20; // In background cells
+let cellHeights = []; // In background cells
+
 // Canvas
 const canvas = document.getElementById('canvas');
 const c = canvas.getContext('2d');
-c.font = "normal 10px sans-serif";
+const font = `normal ${backgroundCellSize}px sans-serif`;
+const boldFont = `bolder ${backgroundCellSize}px sans-serif`;
 c.globalCompositeOperation = "source-over";
 
 // Canvas elements to be drawn
 let entityRects = [];
 let statementCells = [];
-
-// Grid sizes
-const backgroundCellSize = 10;
-let cellWidth = 20; // In background cells
-let cellHeights = []; // In background cells
 
 // The gaps for each row and column
 let rowGaps = [];
@@ -233,7 +234,7 @@ function setup() {
     calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, columnEntities, headersIncluded);
     calculateCellHeights(cellHeights, statementCells, solutionHeight);
     setCanvasDimensions(rowGaps, columnGaps, cellHeights);
-    positionEntityRects(entityRects);
+    positionElements(entityRects, statementCells);
 
     // Make the Export button functional
     document.getElementById("export").addEventListener("click", () => exportToSVG(headersIncluded));
@@ -243,6 +244,6 @@ function setup() {
 function visualize() {
     c.clearRect(0, 0, canvas.width, canvas.height);
 
-    drawBackgroundGrid();
+    // drawBackgroundGrid();
     drawElements(entityRects, statementCells, headersIncluded);
 }

@@ -1,5 +1,8 @@
 // Split text into lines to fit into a statement cell
 function splitTextIntoLines(text, lineLength) {
+    // Ensure the correct font is used when measuring the text width
+    c.font = font;
+
     let lines = [];
 
     let words = text.split(" ");
@@ -73,6 +76,9 @@ function extractEntityNames(input) {
 
 // Convert an entity's name in the data into a version to be displayed in the header
 function preprocessEntityName(input, width) {
+    // Ensure the correct font is used when measuring the text width
+    c.font = font;
+
     // Remove invisible name variations
     let fullDisplayName = input.replace(/\s*\[[^\]]*\]/g, '');
 
