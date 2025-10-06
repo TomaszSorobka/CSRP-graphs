@@ -41,8 +41,8 @@ class Interval {
         this.otherPixel = value;
     }
 
-    setTopLeft(isTopLeft) {
+    setTopLeft(isTopLeft, headersIncluded) {
         this.isTopLeft = isTopLeft;
-        this.margin += 2;
+        if (headersIncluded) this.margin += 2;
     }
 }

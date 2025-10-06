@@ -1,5 +1,5 @@
 class Entity {
-    constructor(id, name, coords, color, statements) {
+    constructor(id, name, coords, color, statements, headersIncluded) {
         // Identifiers
         this.id = id;
         this.statements = statements;
@@ -12,7 +12,7 @@ class Entity {
 
         // Intervals for each side
         this.intervals = { top: [], right: [], bottom: [], left: [] };
-        this.computeIntervals();
+        this.computeIntervals(headersIncluded);
 
         // Pixel coordinates
         this.pixelCoords = [];
@@ -45,7 +45,7 @@ class Entity {
         this.height = tempCoords[tempCoords.length - 1].y - tempCoords[0].y;
     }
 
-    computeIntervals() {
+    computeIntervals(headersIncluded) {
         // Calculate top and bottom intervals
         let topIntervals = [new Interval(this.coords[0].x, this.coords[1].x, this.coords[0].y, 'top', this)];
         let bottomIntervals = [new Interval(this.coords[this.coords.length - 2].x, this.coords[this.coords.length - 1].x, this.coords[this.coords.length - 2].y, 'bottom', this)];
@@ -133,8 +133,8 @@ class Entity {
         end = this.coords[this.coords.length - 1].y;
         this.intervals.right.push(new Interval(start, end, x, 'right', this));
 
-        // Set the top-left interval
-        this.intervals.top[0].setTopLeft(true);
+        // Set the top-left interval if headers are drawn
+        this.intervals.top[0].setTopLeft(true, headersIncluded);
 
         // Sort intervals on each side by their starting coordinate
         this.intervals.top.sort((a, b) => a.start - b.start);
@@ -344,7 +344,7 @@ class Entity {
             // Find the side that starts at the current point
             let nextSide = sides.find(
                 side =>
-                    (side.start.x === currentPoint.x && side.start.y === currentPoint.y)       
+                    (side.start.x === currentPoint.x && side.start.y === currentPoint.y)
             );
             currentPoint.x = nextSide ? nextSide.end.x : currentPoint.x;
             currentPoint.y = nextSide ? nextSide.end.y : currentPoint.y;
@@ -596,67 +596,68 @@ class Entity {
 
     draw() {
         // Only draw non-singleton or copied entities
-        if (!this.singleton) {
-            // Find the entity's region
-            let region = new Path2D();
-            region.moveTo(this.pixelCoords[0].x, this.pixelCoords[0].y);
-            for (let i = 1; i < this.pixelCoords.length; i++) {
-                region.lineTo(this.pixelCoords[i].x, this.pixelCoords[i].y);
-            }
-            region.closePath();
+        if (this.singleton) return;
 
-            // Draw background
-            for (let i = 0; i < this.colors.length; i++) {
-                c.fillStyle = rgbToRgba(this.colors[i], '0.15');
-                c.fill(region);
-            }
-
-            // Draw borders
-            c.strokeStyle = this.colors[this.statements.length > 1 ? 0 : (this.deleted.includes(true) ? this.deleted.indexOf(true) : 0)];
-            c.stroke(region);
+        // Find the entity's region
+        let region = new Path2D();
+        region.moveTo(this.pixelCoords[0].x, this.pixelCoords[0].y);
+        for (let i = 1; i < this.pixelCoords.length; i++) {
+            region.lineTo(this.pixelCoords[i].x, this.pixelCoords[i].y);
         }
+        region.closePath();
+
+        // Draw background
+        for (let i = 0; i < this.colors.length; i++) {
+            c.fillStyle = rgbToRgba(this.colors[i], '0.15');
+            c.fill(region);
+        }
+
+        // Draw borders
+        c.strokeStyle = this.colors[this.statements.length > 1 ? 0 : (this.deleted.includes(true) ? this.deleted.indexOf(true) : 0)];
+        c.stroke(region);
+
     }
 
-    label() {
+    label(headersIncluded) {
         // Only label non-singleton or copied entities
-        if (!this.singleton) {
+        if (!headersIncluded || this.singleton) return;
 
-            // Track how many headers have been drawn
-            let headerIndex = 0;
+        // Track how many headers have been drawn
+        let headerIndex = 0;
 
-            // Go through every header
-            for (let i = 0; i < this.headers.length; i++) {
-                // Only draw headers for non-singleton or copied entities
-                if (this.statements.length > 1 || this.deleted[i]) {
-                    let backgroundColor = this.colors[i];
+        // Go through every header
+        for (let i = 0; i < this.headers.length; i++) {
 
-                    // For copied entities draw crosshatched headers
-                    if (this.deleted[i]) {
-                        // Fill space behind entity name
-                        c.fillStyle = backgroundColor;
-                        c.fillRect(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1, c.measureText(this.displayHeaders[i]).width + 2 * backgroundCellSize, 2 * backgroundCellSize);
+            // Only draw headers for non-singleton or copied entities
+            if (this.statements.length > 1 || this.deleted[i]) {
+                let backgroundColor = this.colors[i];
 
-                        // Draw crosshatching pattern for the rest of the header
-                        c.fillStyle = createCrosshatchPattern(backgroundColor);
-                        c.fillRect(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1, this.pixelCoords[1].x - this.pixelCoords[0].x - 2, 2 * backgroundCellSize);
+                // For copied entities draw crosshatched headers
+                if (this.deleted[i]) {
+                    // Fill space behind entity name
+                    c.fillStyle = backgroundColor;
+                    c.fillRect(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1, c.measureText(this.displayHeaders[i]).width + 2 * backgroundCellSize, 2 * backgroundCellSize);
 
-                        // Draw bottom line of header
-                        c.fillStyle = backgroundColor;
-                        c.fillRect(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 2 * backgroundCellSize, this.pixelCoords[1].x - this.pixelCoords[0].x - 2, 2);
-                    }
-                    // For non-singleton entities draw normal headers
-                    else {
-                        c.fillStyle = backgroundColor;
-                        c.fillRect(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1, this.pixelCoords[1].x - this.pixelCoords[0].x - 2, 2 * backgroundCellSize);
-                    }
+                    // Draw crosshatching pattern for the rest of the header
+                    c.fillStyle = createCrosshatchPattern(backgroundColor);
+                    c.fillRect(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1, this.pixelCoords[1].x - this.pixelCoords[0].x - 2, 2 * backgroundCellSize);
 
-                    // Show header name
-                    c.fillStyle = "#fff";
-                    c.fillText(this.displayHeaders[i], this.pixelCoords[0].x + backgroundCellSize + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1.25 * backgroundCellSize + 1);
-
-                    // Increase the drawn header counter
-                    headerIndex++;
+                    // Draw bottom line of header
+                    c.fillStyle = backgroundColor;
+                    c.fillRect(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 2 * backgroundCellSize, this.pixelCoords[1].x - this.pixelCoords[0].x - 2, 2);
                 }
+                // For non-singleton entities draw normal headers
+                else {
+                    c.fillStyle = backgroundColor;
+                    c.fillRect(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1, this.pixelCoords[1].x - this.pixelCoords[0].x - 2, 2 * backgroundCellSize);
+                }
+
+                // Show header name
+                c.fillStyle = "#fff";
+                c.fillText(this.displayHeaders[i], this.pixelCoords[0].x + backgroundCellSize + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1.25 * backgroundCellSize + 1);
+
+                // Increase the drawn header counter
+                headerIndex++;
             }
         }
     }

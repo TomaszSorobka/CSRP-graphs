@@ -9,6 +9,9 @@ let copiedEntityNames;
 // Colors for copied entities
 let copiedEntityColors;
 
+// Whether or not to draw entity headers
+let headersIncluded;
+
 // Canvas
 const canvas = document.getElementById('canvas');
 const c = canvas.getContext('2d');
@@ -28,7 +31,7 @@ let cellHeights = []; // In background cells
 let rowGaps = [];
 let columnGaps = [];
 
-// Entities which start or end at each row and column
+// Entity border segments which start or end at each row and column
 let rowSegments = [];
 let columnSegments = [];
 
@@ -215,21 +218,25 @@ function reset() {
 
 // Prepare and process data
 function setup() {
+    // Check whether entity headers should be drawn
+    headersIncluded = document.getElementById('headerToggle').checked; 
+
     // Initialize the elements to be drawn on screen from the data
-    initializeElements(colorPalette, entities, statements, entityRects, statementCells);
+    initializeElements(colorPalette, entities, statements, entityRects, statementCells, headersIncluded);
 
     // Prepare entity rectangles to be drawn
-    mergeEntityRectsWithSameStatements(entityRects);
+    mergeEntityRectsWithSameStatements(entityRects, headersIncluded);
     mapEntityRectsToStatements(entityRects, statements);
-    processEntityRectHeaders(entityRects, copiedEntityNames);
+    processEntityRectHeaders(entityRects, copiedEntityNames, headersIncluded);
 
     // Calculate and set pixel dimensions
-    calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, columnEntities);
+    calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, columnEntities, headersIncluded);
     calculateCellHeights(cellHeights, statementCells, solutionHeight);
     setCanvasDimensions(rowGaps, columnGaps, cellHeights);
+    positionEntityRects(entityRects);
 
     // Make the Export button functional
-    document.getElementById("export").addEventListener("click", () => exportToSVG());
+    document.getElementById("export").addEventListener("click", () => exportToSVG(headersIncluded));
 }
 
 // Clear and redraw solution to show changes
@@ -237,5 +244,5 @@ function visualize() {
     c.clearRect(0, 0, canvas.width, canvas.height);
 
     drawBackgroundGrid();
-    drawElements(entityRects, statementCells);
+    drawElements(entityRects, statementCells, headersIncluded);
 }

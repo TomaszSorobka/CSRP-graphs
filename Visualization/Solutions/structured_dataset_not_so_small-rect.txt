@@ -1,0 +1,69 @@
+w: 4
+h: 3
+Entity Mr. Kelley:
+    Row 2: (1, 2)
+    Row 3: (0, 3)
+    Row 4: (0, 4)
+Entity Mr. Jones:
+    Row 1: (2, 2)
+    Row 2: (2, 2)
+    Row 3: (1, 4)
+Entity Mr. Scott:
+    Row 2: (0, 0)
+    Row 3: (0, 0)
+Entity Miss Smith:
+    Row 2: (1, 3)
+Entity Elevator Operator/Man:
+    Row 4: (3, 4)
+Entity Police:
+    Row 4: (1, 1)
+Entity Medical Expert:
+    Row 4: (1, 1)
+Entity Intruder:
+    Row 1: (2, 2)
+Entity Knife:
+    Row 2: (0, 1)
+Entity Gun:
+    Row 3: (3, 4)
+Entity Bullet:
+    Row 3: (3, 4)
+Entity Mr. Kelley's Blood Stains:
+    Row 3: (0, 1)
+Entity Car (Mr. Scott's Car):
+    Row 3: (0, 0)
+Entity Apartment Building:
+    Row 1: (2, 2)
+    Row 2: (2, 3)
+Entity Mr. Jones' Apartment:
+    Row 3: (1, 1)
+Entity Miss Smith's Yard:
+    Row 2: (0, 1)
+Entity Park:
+    Row 4: (2, 2)
+Entity The Murder:
+    Row 3: (2, 2)
+Entity 11:55 p.m.:
+    Row 2: (2, 2)
+Entity 12:00 midnight:
+    Row 1: (2, 2)
+Entity 12:15 a.m.:
+    Row 4: (4, 4)
+Entity 1:30 a.m.:
+    Row 4: (0, 0)
+Entity Between 12:25 a.m. and 12:45 a.m.:
+    Row 2: (3, 3)
+Statement Mr. Jones shot at an intruder in his apartment building at 12:00 midnight.: (2, 0)
+Statement The elevator operator reported to police that he saw Mr. Kelley at 12:15 a.m.: (4, 3)
+Statement The bullet taken from Mr. Kelley's thigh matched the gun owned by Mr. Jones.: (3, 2)
+Statement Only one bullet had been fired from Mr. Jones' gun.: (4, 2)
+Statement When the elevator man saw Mr. Kelley, Mr. Kelley was bleeding slightly, but he did not seem too badly hurt.: (3, 3)
+Statement The knife with Mr. Kelley's blood on it was found in Miss Smith's yard.: (1, 1)
+Statement The knife found in Miss Smith's yard had Mr. Scott's fingerprints on it.: (0, 1)
+Statement Mr. Kelley's body was found in the park.: (2, 3)
+Statement Mr. Kelley's body was found at 1:30 a.m.: (0, 3)
+Statement Mr. Kelley had been dead for one hour when his body was found, according to a medical expert working with police.: (1, 3)
+Statement Miss Smith saw Mr. Kelley go to Mr. Jones' apartment building at 11:55 p.m.: (2, 1)
+Statement Mr. Jones had told Mr. Kelley that he was going to kill him.: (2, 2)
+Statement Miss Smith said that nobody left the apartment building between 12:25 a.m. and 12:45 a.m.: (3, 1)
+Statement Mr. Kelley's blood stains were found in Mr. Scott's car.: (0, 2)
+Statement Mr. Kelley's blood stains were found on the carpet in the hall outside Mr. Jones' apartment.: (1, 2)
