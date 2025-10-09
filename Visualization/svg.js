@@ -43,7 +43,7 @@ function drawEntities(svg, svgNS, headersIncluded) {
     entityRects.forEach(entity => {
         const entityGroup = document.createElementNS(svgNS, "g");
         entityGroup.setAttribute("id", `entity-${entity.id}`);
-        entityGroup.setAttribute("font-size", "10px");
+        entityGroup.setAttribute("font-size", `${backgroundCellSize}px`);
         entityGroup.setAttribute("font-family", "Arial");
         entityGroups.set(entity.id, entityGroup);
     });
@@ -115,7 +115,7 @@ function drawStatements(svg, svgNS) {
         // Group elements in this statement
         const statementGroup = document.createElementNS(svgNS, "g");
         statementGroup.setAttribute("id", `statement-${statement.id || "group"}`);
-        statementGroup.setAttribute("font-size", "10px");
+        statementGroup.setAttribute("font-size", `${backgroundCellSize}px`);
         statementGroup.setAttribute("font-family", "Arial");
 
         const xStart = statement.xStart;

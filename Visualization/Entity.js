@@ -654,6 +654,7 @@ class Entity {
 
                 // Show header name
                 c.fillStyle = "#fff";
+                c.font = font;
                 c.fillText(this.displayHeaders[i], this.pixelCoords[0].x + backgroundCellSize + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1.25 * backgroundCellSize + 1);
 
                 // Increase the drawn header counter

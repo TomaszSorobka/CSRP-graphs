@@ -136,7 +136,7 @@ class Statement {
                 let drawingBold = false;
                 if (c.fillStyle == "#ffffff") {
                     c.fillStyle = "#000";
-                    c.font = "bolder 10px sans-serif";
+                    c.font = boldFont;
                     drawingBold = true;
                 }
 
@@ -150,7 +150,7 @@ class Statement {
 
                 // Reset font if needed
                 if (drawingBold) {
-                    c.font = "normal 10px sans-serif";
+                    c.font = font;
                     c.fillStyle = "#ffffff";
                 }
 

@@ -11,7 +11,6 @@ function drawElements(entityRects, statementCells, headersIncluded) {
 
     // Draw statements
     for (let i = 0; i < statementCells.length; i++) {
-        statementCells[i].position();
         statementCells[i].draw();
     }
 }
