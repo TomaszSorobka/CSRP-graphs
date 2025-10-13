@@ -12,11 +12,11 @@ class Statement {
         // Pixel coordinates
         this.xStart;
         this.yStart;
-        
+
         // Lines of text stored as separate strings
         this.textLines = splitTextIntoLines(this.text, (cellWidth - 2) * backgroundCellSize);
     }
-    
+
     // Get all entity names appearing in the statement text and their corresponding colors
     getEntityNamesAndColors() {
         let names = [];
@@ -55,13 +55,13 @@ class Statement {
     position() {
         // Sum up all row gaps before the statement
         let cumulativeRowGap = 0;
-        for(let i = 0; i <= this.y; i++) {
+        for (let i = 0; i <= this.y; i++) {
             cumulativeRowGap += rowGaps[i];
         }
 
         // Sum up all column gaps before the statement
         let cumulativeColumnGap = 0;
-        for(let i = 0; i <= this.x; i++) {
+        for (let i = 0; i <= this.x; i++) {
             cumulativeColumnGap += columnGaps[i];
         }
         // Sum up the cell heights of every row above the statement
@@ -99,12 +99,9 @@ class Statement {
 
         // Pointers
         let currentIndex = 0;
-        let currentNameLength = 0;
         let drawingName = false;
         let lengthSoFar = 0;
-
-        let cachedLength = 0;
-        let cachedColor = null;
+        let ongoingNameLengthsAndColors = [];
 
         // Draw each character in statement text
         for (let i = 0; i < this.textLines.length; i++) {
@@ -113,20 +110,21 @@ class Statement {
                 // Check if we are at the start of an entity name
                 for (let k = 0; k < nameIndices.length; k++) {
                     for (let l = 0; l < nameIndices[k].length; l++) {
-                        // Switch to entity's color
+                        // A name starts at this index
                         if (currentIndex == nameIndices[k][l]) {
-                            // If we haven't finished drawing a previous name, store info so it can be finished later
-                            if (currentNameLength > 0) {
-                                cachedLength = currentNameLength;
-                                cachedColor = c.fillStyle;
-                            }
-
-                            c.fillStyle = namesAndColors[k][1];
-                            currentNameLength = namesAndColors[k][0].length;
-                            drawingName = true;
-                            break;
+                            // Add name length and color to list of current names
+                            ongoingNameLengthsAndColors.unshift([namesAndColors[k][0].length, namesAndColors[k][1]]);
                         }
                     }
+                }
+
+                // Sort names by (remaining) length
+                ongoingNameLengthsAndColors.sort((a, b) => a[0] - b[0]);
+
+                // If names start at this index draw the shortest (first) one
+                if (ongoingNameLengthsAndColors.length > 0) {
+                    c.fillStyle = ongoingNameLengthsAndColors[0][1];
+                    drawingName = true;
                 }
 
                 // If we are no longer drawing an entity switch back to black
@@ -151,22 +149,23 @@ class Statement {
                 // Reset font if needed
                 if (drawingBold) {
                     c.font = font;
-                    c.fillStyle = "#ffffff";
+                    c.fillStyle = "rgb(255, 255, 255)";
                 }
 
                 // Update pointers
-                if (drawingName) currentNameLength--;
-                if (drawingName && cachedLength > 0) cachedLength--;
-                if (currentNameLength == 0) {
-                    if (cachedLength == 0) {
-                        drawingName = false;
-                        drawingBold = false;
-                    }
-                    else {
-                        currentNameLength = cachedLength;
-                        cachedLength = 0;
-                        c.fillStyle = cachedColor;
-                    }
+                ongoingNameLengthsAndColors.forEach(e => {
+                    e[0]--; // Decrease remaining length of all current names
+                    // Remove names from the list when they are done
+                    if (e[0] == 0) ongoingNameLengthsAndColors.splice(ongoingNameLengthsAndColors.indexOf(e), 1);
+                });
+
+                // No names left to draw at this index
+                if (ongoingNameLengthsAndColors.length == 0) {
+                    drawingName = false;
+                    drawingBold = false;
+                }
+                else {
+                    c.fillStyle = ongoingNameLengthsAndColors[0][1];
                 }
 
                 // Move on to next character

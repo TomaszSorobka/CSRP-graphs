@@ -65,7 +65,7 @@ function drawEntityRectangle(entity, entityGroup, svgNS) {
         // Translucent background fill + border
         const shadowPoly = document.createElementNS(svgNS, "polygon");
         shadowPoly.setAttribute("points", shadowPoints);
-        shadowPoly.setAttribute("fill", "#666");
+        shadowPoly.setAttribute("fill", "rgba(50, 50, 50, 0.5)");
         const poly = document.createElementNS(svgNS, "polygon");
         poly.setAttribute("points", points);
         poly.setAttribute("fill", color);
@@ -145,12 +145,9 @@ function drawStatements(svg, svgNS) {
 
         // Pointers
         let currentIndex = 0;
-        let currentNameLength = 0;
         let drawingName = false;
         let lengthSoFar = 0;
-
-        let cachedLength = 0;
-        let cachedColor = null;
+        let ongoingNameLengthsAndColors = [];
 
         // Draw each character in statement text
         for (let i = 0; i < statement.textLines.length; i++) {
@@ -160,19 +157,19 @@ function drawStatements(svg, svgNS) {
                 for (let k = 0; k < nameIndices.length; k++) {
                     for (let l = 0; l < nameIndices[k].length; l++) {
                         if (currentIndex == nameIndices[k][l]) {
-
-                            // If we haven't finished drawing a previous name, store info so it could be finished later
-                            if (currentNameLength > 0) {
-                                cachedLength = currentNameLength;
-                                cachedColor = fillColor;
-                            }
-
-                            fillColor = namesAndColors[k][1];
-                            currentNameLength = namesAndColors[k][0].length;
-                            drawingName = true;
-                            break;
+                            // Add name length and color to list of current names
+                            ongoingNameLengthsAndColors.unshift([namesAndColors[k][0].length, namesAndColors[k][1]]);
                         }
                     }
+                }
+
+                // Sort names by (remaining) length
+                ongoingNameLengthsAndColors.sort((a, b) => a[0] - b[0]);
+
+                // If names start at this index draw the shortest (first) one
+                if (ongoingNameLengthsAndColors.length > 0) {
+                    fillColor = ongoingNameLengthsAndColors[0][1];
+                    drawingName = true;
                 }
 
                 // If we are not drawing a name, use black
@@ -217,19 +214,19 @@ function drawStatements(svg, svgNS) {
                 }
 
                 // Update pointers
-                if (drawingName) currentNameLength--;
-                if (drawingName && cachedLength > 0) cachedLength--;
+                ongoingNameLengthsAndColors.forEach(e => {
+                    e[0]--; // Decrease remaining length of all current names
+                    // Remove names from the list when they are done
+                    if (e[0] == 0) ongoingNameLengthsAndColors.splice(ongoingNameLengthsAndColors.indexOf(e), 1);
+                });
 
-                if (currentNameLength == 0) {
-                    if (cachedLength == 0) {
-                        drawingName = false;
-                        drawingBold = false;
-                    }
-                    else {
-                        currentNameLength = cachedLength;
-                        cachedLength = 0;
-                        fillColor = cachedColor;
-                    }
+                // No names left to draw at this index
+                if (ongoingNameLengthsAndColors.length == 0) {
+                    drawingName = false;
+                    drawingBold = false;
+                }
+                else {
+                    fillColor = ongoingNameLengthsAndColors[0][1];
                 }
 
                 // Move on to next character
