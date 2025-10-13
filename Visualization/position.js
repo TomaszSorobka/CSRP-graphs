@@ -40,8 +40,8 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
     hardcodedEntityRects.push(entityRects.filter(e => e.id == 20)[0]);
     hardcodedEntityRects.push(entityRects.filter(e => e.id == 25)[0]);
     hardcodedEntityRects.push(entityRects.filter(e => e.id == 27)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 24)[0]);
     hardcodedEntityRects.push(entityRects.filter(e => e.id == 18)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 24)[0]);
     hardcodedEntityRects.push(entityRects.filter(e => e.id == 30)[0]);
     hardcodedEntityRects.push(entityRects.filter(e => e.id == 32)[0]);
     hardcodedEntityRects.push(entityRects.filter(e => e.id == 0)[0]);
@@ -70,7 +70,9 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
 
     for (let i = 0; i < entityRects.length; i++) {
         entityRects[i] = hardcodedEntityRects[i];
+        console.log(entityRects[i].id + ": " + entityRects[i].headers[0])
     }
+
 
     entityRects.reverse();
 
@@ -147,7 +149,7 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
                             }
                         }
                         // Increase the bigger entity's margin
-                        if (s1.side == s2.side && s1.margin == s2.margin) {
+                        if (s1.side == s2.side && s1.margin >= s2.margin) {
                             s2.margin = s1.margin + 1;
                             changes++;
                         }
@@ -168,11 +170,10 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
 
                     // Segments overlap
                     if (s1.overlaps(s2)) {
-
                         // Increase the bigger entity's margin
-                        if (s1.side == s2.side && s1.margin == s2.margin) {
+                        if (s1.side == s2.side && s1.margin >= s2.margin) {
                             s2.margin = s1.margin + 1;
-                            changes++;
+                            changes++; 
                         }
                     }
                 }
