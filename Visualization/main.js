@@ -36,18 +36,28 @@ let columnGaps = [];
 let rowSegments = [];
 let columnSegments = [];
 
-// All available colors
+// Tableau20 palette
 const colors = [
     "#4E79A7",
+    "#A0CBE8",
     "#F28E2B",
-    "#E15759",
-    "#76B7B2",
+    "#FFBE7D",
     "#59A14F",
-    "#EDC948",
+    "#8CD17D",
+    "#B6992D",
+    "#F1CE63",
+    "#499894",
+    "#86BCB6",
+    "#E15759",
+    // "#FF9D9A",
+    "#79706E",
+    "#BAB0AC",
+    "#D37295",
+    // "#FABFD2",
     "#B07AA1",
-    "#FF9DA7",
-    "#9C755F",
-    "#BAB0AC"
+    // "#D4A6C8",
+    "#9D7660",
+    "#D7B5A6"
 ];
 
 // Color palette to be used for the current visualization
