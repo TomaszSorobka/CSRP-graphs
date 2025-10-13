@@ -91,7 +91,7 @@ function preprocessEntityName(input, width) {
         let metrics = c.measureText(testVisible);
 
         // Truncate name if it is too long to fit in the header
-        if (metrics.width >= (cellWidth * (width + 1) - 2) * backgroundCellSize) {
+        if (metrics.width >= width - 2 * backgroundCellSize) {
             visible = visible.substring(0, visible.length - 2) + "...";
             break;
         } else {

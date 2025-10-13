@@ -37,7 +37,7 @@ function initializeElements(colorPalette, entities, statements, entityRects, sta
         }
     }
     // Sort entity rectangles by size
-    entityRects.sort((a, b) => ((a.width * a.height) - (b.width * b.height)));
+    // entityRects.sort((a, b) => ((a.width * a.height) - (b.width * b.height)));
 
     // Initialize statement cells
     for (var i = 0; i < statements.length; i++) {
@@ -58,7 +58,6 @@ function mergeEntityRectsWithSameStatements(entityRects, headersIncluded) {
 
                 // Add second entity's information to first entity
                 entityRects[i].headers = entityRects[i].headers.concat(entityRects[j].headers);
-                entityRects[i].displayHeaders = entityRects[i].displayHeaders.concat(entityRects[j].displayHeaders);
                 entityRects[i].colors = entityRects[i].colors.concat(entityRects[j].colors);
 
                 // Find the top-left segment of the first entity

@@ -33,6 +33,47 @@ function initializeGapAndEntityArrays(width, height, rowGaps, columnGaps, rowSeg
 }
 
 function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, columnSegments, headersIncluded) {
+    // HARDCODED
+    let hardcodedEntityRects = [];
+
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 15)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 20)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 25)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 27)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 24)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 18)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 30)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 32)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 0)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 16)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 23)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 26)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 21)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 28)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 14)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 22)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 3)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 19)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 5)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 2)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 9)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 4)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 7)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 10)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 12)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 8)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 6)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 11)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 1)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 17)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 13)[0]);
+
+    for (let i = 0; i < entityRects.length; i++) {
+        entityRects[i] = hardcodedEntityRects[i];
+    }
+
+    entityRects.reverse();
+
     // Record entity segments in each row and column
     for (let i = 0; i < entityRects.length; i++) {
 
@@ -58,6 +99,7 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
     // Set grid gaps
     calculateGaps();
 
+    entityRects.reverse();
 
     /* -----------------------------HELPER FUNCTIONS----------------------------- */
 

@@ -90,16 +90,16 @@ public class Orchestrator {
                 // new P11EqualRowStart(),
                 // new P12aRowEndMonotonicity(),
                 // new P12bRowStartMonotonicity(),
-                new P13aRowSpanNonIncreasing(),
+                // new P13aRowSpanNonIncreasing(),
                 new C1StatementsDistinctCoordinates());
 
         ObjectiveModule objective = new PolygonAreaDimensionsComplexity();
 
         StatementEntitySolver solver = new StatementEntitySolver(dimensions, constraints, objective, 1);
         Orchestrator orchestrator = new Orchestrator(solver, 5, 1.0 / 3);
-        String inputFolder = "data/";
-        String outputFolder = "solutions/";
-        ArrayList<String> instances = new ArrayList<String>(List.of("structured_dataset"));
+        String inputFolder = "ILP/data/";
+        String outputFolder = "Visualization/Solutions/";
+        ArrayList<String> instances = new ArrayList<String>(List.of("small_world_4"));
 
         for (String inst : instances) {
             try {

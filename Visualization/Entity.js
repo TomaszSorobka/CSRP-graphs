@@ -22,7 +22,7 @@ class Entity {
         this.colors = [color];
 
         // Visible versions for all headers
-        this.displayHeaders = [preprocessEntityName(name, this.width)];
+        this.displayHeaders = [];
 
         // Boolean array showing which headers are for copied entities
         this.deleted = [];
@@ -354,6 +354,11 @@ class Entity {
         }
 
         this.pixelCoords = orderedPoints;
+
+        // Get the display versions of all headers
+        for (let i = 0; i < this.headers.length; i++) {
+            this.displayHeaders.push(preprocessEntityName(this.headers[i], this.pixelCoords[1].x - this.pixelCoords[0].x));
+        }
     }
 
     positionObsolete() {
@@ -598,6 +603,17 @@ class Entity {
         // Only draw non-singleton or copied entities
         if (this.singleton) return;
 
+        // Add shadow
+        let shadowRegion = new Path2D();
+        shadowRegion.moveTo(this.pixelCoords[0].x + 5, this.pixelCoords[0].y + 5);
+        for (let i = 1; i < this.pixelCoords.length; i++) {
+            shadowRegion.lineTo(this.pixelCoords[i].x + 5, this.pixelCoords[i].y + 5);
+        }
+        shadowRegion.closePath();
+
+        c.fillStyle = rgbToRgba("rgb(50, 50, 50)", "0.5");
+        c.fill(shadowRegion);
+
         // Find the entity's region
         let region = new Path2D();
         region.moveTo(this.pixelCoords[0].x, this.pixelCoords[0].y);
@@ -608,7 +624,8 @@ class Entity {
 
         // Draw background
         for (let i = 0; i < this.colors.length; i++) {
-            c.fillStyle = rgbToRgba(this.colors[i], '0.15');
+            // c.fillStyle = rgbToRgba(this.colors[i], '0.15');
+            c.fillStyle = this.colors[i];
             c.fill(region);
         }
 

@@ -36,7 +36,7 @@ function createSVG(svg, svgNS) {
 
 function drawEntities(svg, svgNS, headersIncluded) {
     // Draw entities in order of their starting y coordinates
-    entityRects.sort((a, b) => a.pixelCoords[0].y - b.pixelCoords[0].y);
+    // entityRects.sort((a, b) => a.pixelCoords[0].y - b.pixelCoords[0].y);
 
     // Create entity groups
     const entityGroups = new Map();
@@ -60,13 +60,18 @@ function drawEntityRectangle(entity, entityGroup, svgNS) {
     // Only draw non-singleton entities or singleton copies
     if (!entity.singleton) {
         const points = entity.pixelCoords.map(p => `${p.x},${p.y}`).join(" ");
+        const shadowPoints = entity.pixelCoords.map(p => `${p.x + 5},${p.y + 5}`).join(" ");
         const color = entity.colors[entity.statements.length > 1 ? 0 : (entity.deleted.includes(true) ? entity.deleted.indexOf(true) : 0)];
         // Translucent background fill + border
+        const shadowPoly = document.createElementNS(svgNS, "polygon");
+        shadowPoly.setAttribute("points", shadowPoints);
+        shadowPoly.setAttribute("fill", "#666");
         const poly = document.createElementNS(svgNS, "polygon");
         poly.setAttribute("points", points);
         poly.setAttribute("fill", color);
-        poly.setAttribute("fill-opacity", 0.15);
+        // poly.setAttribute("fill-opacity", 0.15);
         poly.setAttribute("stroke", color);
+        entityGroup.appendChild(shadowPoly);
         entityGroup.appendChild(poly);
     }
 }
