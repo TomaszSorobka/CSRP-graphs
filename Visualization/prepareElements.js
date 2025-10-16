@@ -3,7 +3,7 @@ function initializeElements(colorPalette, entities, statements, entityRects, sta
     let nonSingletonEntities = [];
     entities.forEach(e => {
         if (e.statements.length > 1) {
-            nonSingletonEntities.push(e.id);
+            nonSingletonEntities.push(e);
         }
     });
 
@@ -27,7 +27,7 @@ function initializeElements(colorPalette, entities, statements, entityRects, sta
         let statements = entities[i].statements;
 
         // Non-singleton entities get their assigned colors
-        if (nonSingletonEntities.indexOf(id) > -1) {
+        if (nonSingletonEntities.indexOf(entities[i]) > -1) {
             entityRects[i] = new Entity(id, name, coords, assignedColors[nextColor], statements, headersIncluded);
             nextColor++;
         }

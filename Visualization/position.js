@@ -1,6 +1,32 @@
-// Check if two entities overlap
+// Check if two entities overlap, now working for polygons as well
 function doEntitiesOverlap(e1, e2) {
-    return !(e1.x1 < e2.x1 || e2.x2 < e1.x1 || e1.y2 < e2.y1 || e2.y2 < e1.y1);
+    // collect all Y values
+    const e1Ys = e1.coords.map(c => c.y);
+    const e2Ys = e2.coords.map(c => c.y);
+
+    // find intersection
+    const intersectionYs = e1Ys.filter(y => e2Ys.includes(y));
+
+    // for each intersecting y, find xStart and xEnd in both
+    for (const y of intersectionYs) {
+        // Filter all points at this Y for both entities
+        const pointsE1 = e1.coords.filter(p => p.y === y);
+        const pointsE2 = e2.coords.filter(p => p.y === y);
+
+        // Find min and max X for each entity at this row
+        const xStartE1 = Math.min(...pointsE1.map(p => p.x));
+        const xEndE1 = Math.max(...pointsE1.map(p => p.x));
+
+        const xStartE2 = Math.min(...pointsE2.map(p => p.x));
+        const xEndE2 = Math.max(...pointsE2.map(p => p.x));
+
+        // e1 and e2 overlap on row y
+        if (!(xEndE1 < xStartE2 || xEndE2 < xStartE1)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 // Build an overlap graph: graph[i] is an array of indices of entities overlapping with entity i
@@ -36,42 +62,41 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
     // HARDCODED
     let hardcodedEntityRects = [];
 
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 15)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 20)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 25)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 27)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 18)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 24)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 30)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 32)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 0)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 16)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 23)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 26)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 21)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 28)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 14)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 22)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 3)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 19)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 5)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 2)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 9)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 4)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 7)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 10)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 12)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 8)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 6)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 11)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 1)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 17)[0]);
-    hardcodedEntityRects.push(entityRects.filter(e => e.id == 13)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 15)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 20)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 25)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 27)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 18)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 24)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 30)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 32)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 0)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 16)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 23)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 26)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 21)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 28)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 14)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 22)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 3)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 19)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 5)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 2)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 9)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 4)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 7)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 10)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 12)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 8)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 6)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 11)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 1)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 17)[0]);
+    // hardcodedEntityRects.push(entityRects.filter(e => e.id == 13)[0]);
 
-    for (let i = 0; i < entityRects.length; i++) {
-        entityRects[i] = hardcodedEntityRects[i];
-        console.log(entityRects[i].id + ": " + entityRects[i].headers[0])
-    }
+    // for (let i = 0; i < entityRects.length; i++) {
+    //     entityRects[i] = hardcodedEntityRects[i];
+    // }
 
 
     entityRects.reverse();
@@ -173,7 +198,7 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
                         // Increase the bigger entity's margin
                         if (s1.side == s2.side && s1.margin >= s2.margin) {
                             s2.margin = s1.margin + 1;
-                            changes++; 
+                            changes++;
                         }
                     }
                 }
