@@ -194,7 +194,7 @@ function parseData(fileContent) {
     copiedEntityColors = getReadyPalette(colorPalette, nrDeleted, true);
 
     // Remove assigned colors from the palette
-    colorPalette.splice(0, nrDeleted);
+    colorPalette = colorPalette.filter(c => !copiedEntityColors.includes(hexToRgb(c)))
 }
 
 // Clear previous visualizations

@@ -8,13 +8,13 @@ function initializeElements(colorPalette, entities, statements, entityRects, sta
     });
 
     // Get a ready palette for non-singleton entities
-    let palette = getReadyPalette(colorPalette, nonSingletonEntities.length, false);
+    // let palette = getReadyPalette(colorPalette, nonSingletonEntities.length, false);
 
     // Build the overlap graph for all entities
     let graph = buildOverlapGraph(nonSingletonEntities);
 
     // Reassign colors so that overlapping entities have distinct colors
-    let assignedColors = assignColorsWithOverlap(graph, palette);
+    let assignedColors = assignColorsWithOverlap(graph, colorPalette);
 
     // Keep track of the next color to be assigned to an entity
     let nextColor = 0;

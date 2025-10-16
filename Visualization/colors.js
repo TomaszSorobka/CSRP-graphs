@@ -113,11 +113,10 @@ function assignColorsWithOverlap(graph, palette) {
         } else {
             // Sort available colors by usage, lowest first
             availableColors.sort((a, b) => a.usage - b.usage);
-
             // Select the color with the lowest usage
             const chosenPaletteIdx = availableColors[0].idx;
-            // assignedColors[i] = palette[chosenPaletteIdx];
-            assignedColors[i] = `rgb(${palette[chosenPaletteIdx][0]}, ${palette[chosenPaletteIdx][1]}, ${palette[chosenPaletteIdx][2]})`;
+            assignedColors[i] = palette[chosenPaletteIdx];
+            // assignedColors[i] = `rgb(${palette[chosenPaletteIdx][0]}, ${palette[chosenPaletteIdx][1]}, ${palette[chosenPaletteIdx][2]})`;
             usage[chosenPaletteIdx] += 1;  // Increment usage count
         }
     }
