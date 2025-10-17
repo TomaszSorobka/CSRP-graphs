@@ -6,11 +6,12 @@ function initializeElements(colorPalette, entities, statements, entityRects, sta
             nonSingletonEntities.push(e);
         }
     });
-
+    
     // Get a ready palette for non-singleton entities
     // let palette = getReadyPalette(colorPalette, nonSingletonEntities.length, false);
 
-    // Build the overlap graph for all entities
+    // Build the overlap graph for entities that do not repeat and are not singleton
+    nonSingletonEntities = nonSingletonEntities.filter(c => !getCopiedEntities(nonSingletonEntities).includes(c.name))
     let graph = buildOverlapGraph(nonSingletonEntities);
 
     // Reassign colors so that overlapping entities have distinct colors
