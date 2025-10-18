@@ -1,3 +1,26 @@
+function getSegments(e1) {
+    const segs = [];
+    const { top, right, bottom, left } = e1.intervals;
+
+    // Horizontal sides: top & bottom
+    for (const s of top) {
+        segs.push({ x1: s.start, y1: s.otherCoord, x2: s.end, y2: s.otherCoord });
+    }
+    for (const s of bottom) {
+        segs.push({ x1: s.start, y1: s.otherCoord, x2: s.end, y2: s.otherCoord });
+    }
+
+    // Vertical sides: left & right
+    for (const s of left) {
+        segs.push({ x1: s.otherCoord, y1: s.start, x2: s.otherCoord, y2: s.end });
+    }
+    for (const s of right) {
+        segs.push({ x1: s.otherCoord, y1: s.start, x2: s.otherCoord, y2: s.end });
+    }
+
+    return segs;
+}
+
 function pointSegmentDistance(px, py, x1, y1, x2, y2) {
     const dx = x2 - x1;
     const dy = y2 - y1;
@@ -23,11 +46,15 @@ function segmentDistance(x1, y1, x2, y2, x3, y3, x4, y4) {
     );
 }
 
-function polygonDistance() {
-    if (doEntitiesOverlap(e1, e2)) return 0;
+// TODO: Test the function, print distances between all entities and see if they are accurate
+// Calculate polygon distance between entities.
+// Note: this function uses the intervals of the entities so make sure that these are computed before using it!
+function polygonDistance(e1, e2) {
+    // if they overlap distance is 0, for practical reasons it is 1e-6
+    if (doEntitiesOverlap(e1, e2)) return 1e-6;
 
-    const segs1 = e1.getSegments();
-    const segs2 = e2.getSegments();
+    const segs1 = getSegments(e1);
+    const segs2 = getSegments(e2);
     let minDist = Infinity;
 
     for (const s1 of segs1) {
@@ -39,6 +66,31 @@ function polygonDistance() {
     }
 
     return minDist;
+}
+
+// Compute distance between polygons that of repeating entities
+function repeatingPolygonsDistance(e1, e2, repeatingMap) {
+    distances = []
+    if (!repeatingMap.has(e1.headers[0])) { // then e2 repeates
+        // compute distances between all polygons of e2 and the polygon of e1
+        for (const p2 of repeatingMap.get(e2.headers[0])) {
+            distances.push(polygonDistance(e1, p2));
+        }
+    } else if (!repeatingMap.has(e2.headers[0])) { // then e1 repeats
+        // compute distances between all polygons of e1 and the polygon of e2
+        for (const p1 of repeatingMap.get(e1.headers[0])) {
+            distances.push(polygonDistance(p1, e2));
+        }
+    } else {
+        // both repeat
+        for (const p1 of repeatingMap.get(e1.headers[0])) {
+            for (const p2 of repeatingMap.get(e2.headers[0])) {
+                distances.push(polygonDistance(p1, p2));
+            }
+        }
+    }
+
+    return Math.min(...distances);
 }
 
 // Check if two entities overlap, now working for polygons as well
