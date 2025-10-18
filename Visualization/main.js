@@ -189,12 +189,12 @@ function parseData(fileContent) {
     // Find the names of all entities with multiple copies
     copiedEntityNames = getCopiedEntities(entities);
 
-    // Assign a unique color for each deleted entity
-    let nrDeleted = copiedEntityNames.length;
-    copiedEntityColors = getReadyPalette(colorPalette, nrDeleted, true);
+    // // Assign a unique color for each deleted entity
+    // let nrDeleted = copiedEntityNames.length;
+    // copiedEntityColors = getReadyPalette(colorPalette, nrDeleted, true);
 
-    // Remove assigned colors from the palette
-    colorPalette = colorPalette.filter(c => !copiedEntityColors.includes(hexToRgb(c)))
+    // // Remove assigned colors from the palette
+    // colorPalette = colorPalette.filter(c => !copiedEntityColors.includes(hexToRgb(c)))
 }
 
 // Clear previous visualizations
@@ -233,8 +233,7 @@ function setup() {
     headersIncluded = document.getElementById('headerToggle').checked; 
 
     // Initialize the elements to be drawn on screen from the data
-    initializeElements(colorPalette, entities, statements, entityRects, statementCells, headersIncluded);
-
+    initializeElements(colorPalette, entities, statements, entityRects, statementCells, headersIncluded, copiedEntityColors);
     // Prepare entity rectangles to be drawn
     mergeEntityRectsWithSameStatements(entityRects, headersIncluded);
     mapEntityRectsToStatements(entityRects, statements);

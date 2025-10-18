@@ -1,4 +1,4 @@
-function initializeElements(colorPalette, entities, statements, entityRects, statementCells, headersIncluded) {
+function initializeElements(colorPalette, entities, statements, entityRects, statementCells, headersIncluded, copiedEntitiesColors) {
     // Initialize entity rectangles
     for (var i = 0; i < entities.length; i++) {
         let id = entities[i].id;
@@ -23,12 +23,7 @@ function initializeElements(colorPalette, entities, statements, entityRects, sta
 
 
     // Assign colors to non-singleton entities 
-    let newAssignedColors = assignColorsBasedOnDistance(nonSingletonEntities, groupedMap, colorPalette);
-    nextColor = 0;
-    for (var i = 0; i < nonSingletonEntities.length; i++) {
-        nonSingletonEntities[i].colors = [colorPalette[newAssignedColors[nextColor]]];
-        nextColor++;
-    }
+    assignColorsBasedOnDistance(nonSingletonEntities, groupedMap, colorPalette);
 
     // Assign white color to singleton entities
     singletonEntities = entityRects.filter(e => !(e.statements.length > 1));
@@ -36,6 +31,13 @@ function initializeElements(colorPalette, entities, statements, entityRects, sta
         singletonEntities[i].colors = ['rgb(255, 255, 255)'];
     }
 
+    // Fill in copiedEntitiesColors list that is being used later for some headers magic
+    copiedEntitiesColors = []
+    nonSingletonEntities.forEach(e => {
+        if (groupedMap.has(e.headers[0])) {
+            copiedEntitiesColors.push(e.colors[0]);
+        }
+    });
 
     // Sort entity rectangles by size
     // entityRects.sort((a, b) => ((a.width * a.height) - (b.width * b.height)));
@@ -105,15 +107,16 @@ function processEntityRectHeaders(entityRects, repeated, headersIncluded) {
         });
     });
 
-    // TODO: set copiedEntitiesColors
-    // Set copied header colors
-    entityRects.forEach(e => {
-        for (let i = 0; i < e.headers.length; i++) {
-            if (repeated.includes(e.headers[i])) {
-                e.colors[i] = copiedEntityColors[repeated.indexOf(e.headers[i])];
-            }
-        }
-    });
+    // // TODO: set copiedEntitiesColors
+    // copiedEntityColors = []
+    // // Set copied header colors
+    // entityRects.forEach(e => {
+    //     for (let i = 0; i < e.headers.length; i++) {
+    //         if (repeated.includes(e.headers[i])) {
+    //             e.colors[i] = copiedEntityColors[repeated.indexOf(e.headers[i])];
+    //         }
+    //     }
+    // });
 
     // Set number of visible headers
     entityRects.forEach(e => {

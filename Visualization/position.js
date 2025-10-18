@@ -59,7 +59,7 @@ function polygonDistance(e1, e2) {
 
     for (const s1 of segs1) {
         for (const s2 of segs2) {
-            const d = segmentDistance(s1, s2);
+            const d = segmentDistance(s1.x1, s1.y1, s1.x2, s1.y2, s2.x1, s2.y1, s2.x2, s2.y2);
             if (d < minDist) minDist = d;
             if (minDist === 0) return 0; // early exit
         }
@@ -91,6 +91,28 @@ function repeatingPolygonsDistance(e1, e2, repeatingMap) {
     }
 
     return Math.min(...distances);
+}
+
+// Precompute distances between polygons once and use the spatial matrix for every time they are needed
+function buildSpatialMatrix(entities, repeatingMap) {
+    const n = entities.length;
+    const M = Array.from({ length: n }, () => new Array(n).fill(0));
+
+    for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+            let ds = 0;
+            if (repeatingMap.has(entities[i].headers[0]) || repeatingMap.has(entities[j].headers[0])) {
+                ds = repeatingPolygonsDistance(entities[i], entities[j], repeatingMap);
+            } else {
+                ds = polygonDistance(entities[i], entities[j]);
+            }
+            M[i][j] = ds;
+            M[j][i] = ds; // symmetry
+        }
+    }
+
+
+    return M;
 }
 
 // Check if two entities overlap, now working for polygons as well
