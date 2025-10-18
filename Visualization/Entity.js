@@ -1,5 +1,5 @@
 class Entity {
-    constructor(id, name, coords, color, statements, headersIncluded) {
+    constructor(id, name, coords, statements, headersIncluded) {
         // Identifiers
         this.id = id;
         this.statements = statements;
@@ -19,7 +19,7 @@ class Entity {
 
         // Header names and their colors
         this.headers = [name];
-        this.colors = [color];
+        this.colors = []
 
         // Visible versions for all headers
         this.displayHeaders = [];
@@ -141,29 +141,6 @@ class Entity {
         this.intervals.right.sort((a, b) => a.start - b.start);
         this.intervals.bottom.sort((a, b) => a.start - b.start);
         this.intervals.left.sort((a, b) => a.start - b.start);
-    }
-
-    getSegments() {
-        const segs = [];
-        const { top, right, bottom, left } = this.intervals;
-
-        // Horizontal sides: top & bottom
-        for (const s of top) {
-            segs.push({ x1: s.start, y1: s.otherCoord, x2: s.end, y2: s.otherCoord });
-        }
-        for (const s of bottom) {
-            segs.push({ x1: s.start, y1: s.otherCoord, x2: s.end, y2: s.otherCoord });
-        }
-
-        // Vertical sides: left & right
-        for (const s of left) {
-            segs.push({ x1: s.otherCoord, y1: s.start, x2: s.otherCoord, y2: s.end });
-        }
-        for (const s of right) {
-            segs.push({ x1: s.otherCoord, y1: s.start, x2: s.otherCoord, y2: s.end });
-        }
-
-        return segs;
     }
 
     position() {

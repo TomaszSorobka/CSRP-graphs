@@ -34,7 +34,7 @@ function hexToRgb(hex) {
 }
 
 function getReadyPalette(colorPalette, n, format) {
-    let base = colorPalette.map(hex => format? hexToRgb(hex) : rgbToColorArray(hexToRgb(hex)));
+    let base = colorPalette.map(hex => format ? hexToRgb(hex) : rgbToColorArray(hexToRgb(hex)));
     let palette = [];
     for (let i = 0; i < n; i++) {
         palette.push(base[i % base.length]);
@@ -67,6 +67,114 @@ function createCrosshatchPattern(color) {
 function arraysEqual(a, b) {
     return a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
 }
+
+// sigmaC controls how rapidly the color similarity drops off
+//  - around 10–20 works well for ΔE2000 
+// sigmaS controls spatial decay (depends on your coordinate scale).
+//  - if entities are drawn in pixels, try 200–300.
+function assignColorsBasedOnDistance(nonSingletonEntities, repeatingMap, colors, sigmaC = 20, sigmaS = 200) {
+    const { converter, differenceCiede2000 } = culori;
+    const lab = converter('lab');
+    const deltaE = differenceCiede2000();
+    const seen = new Set();
+    
+    const entitiesToColor = [];
+    // First, add one for all nonSingletonEntities
+    for (const e of nonSingletonEntities) {
+        const name = e.headers[0];
+        if (!seen.has(name)) {
+            seen.add(name);
+            entitiesToColor.push(e);
+        }
+    }
+
+    // Then, add one per *missing* name from the repeatingMap (since there can be repeated entities that are singleton)
+    for (const [name, list] of Object.entries(repeatingMap)) {
+        if (!seen.has(name) && list.length > 0) {
+            seen.add(name);
+            entitiesToColor.push(list[0]); // take first (or apply your own rule)
+        }
+    }
+
+    // 1 = “just noticeable difference”, 100 = “opposite colors”
+    function colorDistance(c1, c2) {
+        return deltaE(lab(c1), lab(c2));
+    }
+
+    function assignmentEnergy(entities, colors, assignment) {
+        let E = 0;
+
+        for (let i = 0; i < entities.length; i++) {
+            for (let j = i + 1; j < entities.length; j++) {
+                const dc = colorDistance(colors[assignment[i]], colors[assignment[j]]);
+                let ds = 0;
+                if (repeatingMap.has(entities[i].headers[0]) || repeatingMap.has(entities[j].headers[0])) {
+                    ds = repeatingPolygonsDistance(entities[i], entities[j], repeatingMap);
+                } else {
+                    ds = polygonDistance(entities[i], entities[j]);
+                }
+                // Exponential penalty: high for close and similar
+                const penalty = Math.exp(-dc / sigmaC) * Math.exp(-ds / sigmaS);
+                E += penalty;
+            }
+        }
+
+        return E;
+    }
+
+    function simulatedAnnealingAssignment(entities, colors, {
+        sigmaC = 20,
+        sigmaS = 200,
+        iterations = 5000,
+        tempStart = 1.0,
+        tempEnd = 0.001
+    } = {}) {
+        const n = entities.length;
+        const assignment = Array.from({ length: n }, (_, i) => i % colors.length);
+        let bestAssign = [...assignment];
+
+        let currentE = assignmentEnergy(entities, colors, assignment);
+        let bestE = currentE;
+
+        for (let iter = 0; iter < iterations; iter++) {
+            const T = tempStart * Math.pow(tempEnd / tempStart, iter / iterations);
+
+            // Randomly pick two entities to swap colors
+            const i = Math.floor(Math.random() * n);
+            const j = Math.floor(Math.random() * n);
+            if (i === j) continue;
+
+            const newAssign = [...assignment];
+            [newAssign[i], newAssign[j]] = [newAssign[j], newAssign[i]];
+
+            const newE = assignmentEnergy(entities, colors, newAssign, sigmaC, sigmaS);
+            const delta = newE - currentE;
+
+            // Accept swap if better or probabilistically worse
+            if (delta < 0 || Math.random() < Math.exp(-delta / T)) {
+                assignment.splice(0, n, ...newAssign);
+                currentE = newE;
+                if (newE < bestE) {
+                    bestE = newE;
+                    bestAssign = [...newAssign];
+                }
+            }
+
+            // occasional logging
+            if (iter % 1000 === 0) {
+                console.log(`Iter ${iter} — E=${bestE.toFixed(3)} T=${T.toFixed(4)}`);
+                console.log(bestAssign)
+            }
+        }
+        console.log(bestAssign)
+        return { bestAssign, bestE };
+    }
+
+    return simulatedAnnealingAssignment(entitiesToColor, colors).bestAssign
+
+    // TODO: Instead of returning the assignment, now color all of the entities here:
+}
+
 
 // Overlap-Aware Color Assignment
 function assignColorsWithOverlap(graph, palette) {
@@ -116,7 +224,6 @@ function assignColorsWithOverlap(graph, palette) {
             // Select the color with the lowest usage
             const chosenPaletteIdx = availableColors[0].idx;
             assignedColors[i] = palette[chosenPaletteIdx];
-            // assignedColors[i] = `rgb(${palette[chosenPaletteIdx][0]}, ${palette[chosenPaletteIdx][1]}, ${palette[chosenPaletteIdx][2]})`;
             usage[chosenPaletteIdx] += 1;  // Increment usage count
         }
     }

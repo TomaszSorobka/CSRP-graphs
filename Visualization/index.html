@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grid RectEuler</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <span>
         <label for="fileInput" id="fileLabel">Select file</label>
@@ -15,10 +17,15 @@
         <label for="headerToggle" id="headerToggleLabel">Include headers:</label>
         <input type="checkbox" id="headerToggle" checked>
         <label for="colorPicker">Select color:</label>
-        <input type="color" id="colorPicker" value="rgb(255, 0, 0)"/>
+        <input type="color" id="colorPicker" value="rgb(255, 0, 0)" />
     </span>
 
     <div><canvas id="canvas"></canvas></div>
+
+    <script type="module">
+        import * as culori from 'https://esm.run/culori@3.3.0';
+        window.culori = culori;
+    </script>
 
     <script src="Point.js"></script>
     <script src="Interval.js"></script>
@@ -33,4 +40,5 @@
     <script src="svg.js"></script>
     <script src="main.js"></script>
 </body>
+
 </html>

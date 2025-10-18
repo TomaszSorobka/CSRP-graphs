@@ -239,7 +239,7 @@ function setup() {
     mergeEntityRectsWithSameStatements(entityRects, headersIncluded);
     mapEntityRectsToStatements(entityRects, statements);
     processEntityRectHeaders(entityRects, copiedEntityNames, headersIncluded);
-
+    
     // Calculate and set pixel dimensions
     calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, columnEntities, headersIncluded);
     calculateCellHeights(cellHeights, statementCells, solutionHeight);
