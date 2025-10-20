@@ -48,7 +48,7 @@ function generateGrayscalePalette(n) {
     const colors = [];
 
     // perceptual lightness range: avoid extremes (3–97) for better contrast on white/black backgrounds
-    const minL = 3;
+    const minL = 7;
     const maxL = 97;
 
     for (let i = 0; i < n; i++) {
@@ -60,42 +60,89 @@ function generateGrayscalePalette(n) {
     return colors;
 }
 
-// sigmaC controls how rapidly the color similarity drops off
-//  - around 10–20 works well for ΔE2000 
-// sigmaS controls spatial decay (depends on distances between polygons).
-//  - looking at oour distances maybe between 2 and 8 will work best?
-function assignColorsBasedOnDistance(nonSingletonEntities, repeatingMap, colors, sigmaC = 5, sigmaS = 3) {
-    const { converter, differenceCiede2000 } = culori;
-    const lab = converter('lab');
-    const deltaE = differenceCiede2000();
+function getEntitiesToColor(entityRects, grayscale) {
+    nonSingletonEntities = entityRects.filter(e => e.statements.length > 1);
+    repeatedEntities = entityRects.filter(e => copiedEntityNames.includes(e.headers[0]));
     const seen = new Set();
-
-
     const entitiesToColor = [];
-    // First, add one for all nonSingletonEntities
-    for (const e of nonSingletonEntities) {
+
+    for (const e of repeatedEntities) {
         const name = e.headers[0];
-        if (!seen.has(name)) {
-            seen.add(name);
-            entitiesToColor.push(e);
+        if (!groupedMap.has(name)) groupedMap.set(name, []);
+        groupedMap.get(name).push(e);
+    }
+
+    if (grayscale) {
+        // First, add one for all nonSingletonEntities
+        for (const e of nonSingletonEntities) {
+            const name = e.headers[0];
+            if (true /* && !seen.has(name) */) {
+                seen.add(name);
+                entitiesToColor.push(e);
+            }
+        }
+    } else {
+        // First, add one for all nonSingletonEntities
+        for (const e of nonSingletonEntities) {
+            const name = e.headers[0];
+            if (!seen.has(name)) {
+                seen.add(name);
+                entitiesToColor.push(e);
+            }
         }
     }
 
-    // Then, add one per *missing* name from the repeatingMap (since there can be repeated entities that are singleton)
-    for (const [name, list] of repeatingMap.entries()) {
+    // Then, add one per *missing* name from the groupedMap (since there can be repeated entities that are singleton)
+    for (const [name, list] of groupedMap.entries()) {
         if (!seen.has(name) && list.length > 0) {
             seen.add(name);
             entitiesToColor.push(list[0]); // take first (or apply your own rule)
         }
     }
+    return entitiesToColor;
+}
 
-    const spatialMatrix = buildSpatialMatrix(entitiesToColor, repeatingMap);
+function assignGrayscaleColors(entityRects) {
+    const entitiesToColor = getEntitiesToColor(entityRects, true);
+    let grayPalette = generateGrayscalePalette(entityRects.length);
+    let colorIdx = 0;
+
+    for (let i = 0; i < entitiesToColor.length; i++) {
+        entitiesToColor[i].colors[0] = grayPalette[i];
+    }
+
+
+    copiedEntityColors = [];
+    for (let i = 0; i < copiedEntityNames.length; i++) {
+        copiedEntityColors.push(groupedMap.get(copiedEntityNames[i])[0].colors[0]);
+    }
+
+    entityRects.forEach(e => {
+        for (let i = 0; i < e.headers.length; i++) {
+            if (copiedEntityNames.includes(e.headers[i])) {
+                e.colors[i] = copiedEntityColors[copiedEntityNames.indexOf(e.headers[i])];
+            }
+        }
+    });
+}
+
+// sigmaC controls how rapidly the color similarity drops off
+//  - around 10–20 works well for ΔE2000 
+// sigmaS controls spatial decay (depends on distances between polygons).
+//  - looking at oour distances maybe between 2 and 8 will work best?
+function assignColorsBasedOnDistance(colors, sigmaC = 5, sigmaS = 3) {
+    const { converter, differenceCiede2000 } = culori;
+    const lab = converter('lab');
+    const deltaE = differenceCiede2000();
+
+    const entitiesToColor = getEntitiesToColor(entityRects, false);
+    const spatialMatrix = buildSpatialMatrix(entitiesToColor, groupedMap);
 
     // 1 = “just noticeable difference”, 100 = “opposite colors”
     function colorDistance(c1, c2) {
         return deltaE(lab(c1), lab(c2));
     }
-    
+
     function assignmentEnergy(entities, colors, assignment) {
         let E = 0;
 
@@ -185,8 +232,8 @@ function assignColorsBasedOnDistance(nonSingletonEntities, repeatingMap, colors,
     // return simulatedAnnealingAssignment(entitiesToColor, colors).bestAssign
     bestAssign = simulatedAnnealingAssignment(entitiesToColor, colors).bestAssign;
     for (let ent = 0; ent < entitiesToColor.length; ent++) {
-        if (repeatingMap.has(entitiesToColor[ent].headers[0])) {
-            let repeatedEnt = repeatingMap.get(entitiesToColor[ent].headers[0]);
+        if (groupedMap.has(entitiesToColor[ent].headers[0])) {
+            let repeatedEnt = groupedMap.get(entitiesToColor[ent].headers[0]);
             repeatedEnt.forEach(e => e.colors = [colors[bestAssign[ent]]]);
         }
         else {
@@ -196,7 +243,7 @@ function assignColorsBasedOnDistance(nonSingletonEntities, repeatingMap, colors,
 
     copiedEntityColors = [];
     for (let i = 0; i < copiedEntityNames.length; i++) {
-        copiedEntityColors.push(repeatingMap.get(copiedEntityNames[i])[0].colors[0]);
+        copiedEntityColors.push(groupedMap.get(copiedEntityNames[i])[0].colors[0]);
     }
 }
 

@@ -28,6 +28,12 @@ c.globalCompositeOperation = "source-over";
 let entityRects = [];
 let statementCells = [];
 
+// Mapping name to a list of Entity objects with the same name
+const groupedMap = new Map();
+
+// grayscale?
+let grayscale = true;
+
 // The gaps for each row and column
 let rowGaps = [];
 let columnGaps = [];
@@ -244,7 +250,10 @@ function setup() {
     calculateCellHeights(cellHeights, statementCells, solutionHeight);
     setCanvasDimensions(rowGaps, columnGaps, cellHeights);
     positionElements(entityRects, statementCells);
-
+    
+    if(grayscale) {
+        assignGrayscaleColors(entityRects);
+    }
     // Make the Export button functional
     document.getElementById("export").addEventListener("click", () => exportToSVG(headersIncluded));
 }
