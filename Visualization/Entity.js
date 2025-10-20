@@ -1,5 +1,5 @@
 class Entity {
-    constructor(id, name, coords, color, statements, headersIncluded) {
+    constructor(id, name, coords, color, statements, VisualizationSettings) {
         // Identifiers
         this.id = id;
         this.statements = statements;
@@ -12,7 +12,7 @@ class Entity {
 
         // Intervals for each side
         this.intervals = { top: [], right: [], bottom: [], left: [] };
-        this.computeIntervals(headersIncluded);
+        this.computeIntervals(VisualizationSettings.headersIncluded);
 
         // Pixel coordinates
         this.pixelCoords = [];
@@ -23,6 +23,10 @@ class Entity {
 
         // Visible versions for all headers
         this.displayHeaders = [];
+
+        // SVG paths for whole headers and names within the headers
+        this.svgHeaderOutlines = [];
+        this.svgNameOutlines = [];
 
         // Boolean array showing which headers are for copied entities
         this.deleted = [];
@@ -361,45 +365,64 @@ class Entity {
         }
     }
 
-    draw() {
+    draw(VisualizationSettings) {
         // Only draw non-singleton or copied entities
         if (this.singleton) return;
 
+        // Find the entity's region (and corresponding svg path data)
+        let region = roundedPolygonPath(this.pixelCoords, VisualizationSettings.cornerRadius, true)[0];
+        this.svgPath = roundedPolygonPath(this.pixelCoords, VisualizationSettings.cornerRadius, true)[1];
+
         // Add shadow
-        let shadowRegion = new Path2D();
-        shadowRegion.moveTo(this.pixelCoords[0].x + 5, this.pixelCoords[0].y + 5);
-        for (let i = 1; i < this.pixelCoords.length; i++) {
-            shadowRegion.lineTo(this.pixelCoords[i].x + 5, this.pixelCoords[i].y + 5);
+        if (VisualizationSettings.enableShadow) {
+            let shadowRegion = roundedPolygonPath(this.pixelCoords.map(p => new Point(p.x + 5, p.y + 5)), VisualizationSettings.cornerRadius, true)[0];
+            this.svgShadowPath = roundedPolygonPath(this.pixelCoords.map(p => new Point(p.x + 5, p.y + 5)), VisualizationSettings.cornerRadius, true)[1];
+            c.fillStyle = "rgb(50, 50, 50, 0.5)";
+            c.fill(shadowRegion);
         }
-        shadowRegion.closePath();
-
-        c.fillStyle = "rgb(50, 50, 50, 0.5)";
-        c.fill(shadowRegion);
-
-        // Find the entity's region
-        let region = new Path2D();
-        region.moveTo(this.pixelCoords[0].x, this.pixelCoords[0].y);
-        for (let i = 1; i < this.pixelCoords.length; i++) {
-            region.lineTo(this.pixelCoords[i].x, this.pixelCoords[i].y);
-        }
-        region.closePath();
 
         // Draw background
-        for (let i = 0; i < this.colors.length; i++) {
-            // c.fillStyle = rgbToRgba(this.colors[i], '0.15');
+        if (VisualizationSettings.entityRender == "stacked") {
             c.fillStyle = this.colors[this.statements.length > 1 ? 0 : (this.deleted.includes(true) ? this.deleted.indexOf(true) : 0)];
             c.fill(region);
         }
+        else if (VisualizationSettings.entityRender == "transparent") {
+            for (let i = 0; i < this.colors.length; i++) {
+                c.fillStyle = rgbToRgba(this.colors[i], '0.15');
+                c.fill(region);
+            }
+
+            c.strokeStyle = this.colors[this.statements.length > 1 ? 0 : (this.deleted.includes(true) ? this.deleted.indexOf(true) : 0)];
+            c.stroke(region);
+        }
 
         // Draw borders
-        c.strokeStyle = this.colors[this.statements.length > 1 ? 0 : (this.deleted.includes(true) ? this.deleted.indexOf(true) : 0)];
-        c.stroke(region);
-
+        if (VisualizationSettings.enableOutline) {
+            if (!this.deleted.includes(true) && VisualizationSettings.outlineNonRepeated) {
+                c.strokeStyle = VisualizationSettings.outlineColor;
+                c.lineWidth = VisualizationSettings.outlineWeight;
+                c.stroke(region);
+            }
+            else if (this.deleted.includes(true) && VisualizationSettings.outlineRepeated) {
+                if (VisualizationSettings.dashRepeated) {
+                    c.setLineDash([5, 5]);
+                    c.strokeStyle = VisualizationSettings.outlineColor;
+                    c.lineWidth = VisualizationSettings.outlineWeight;
+                    c.stroke(region);
+                    c.setLineDash([]);
+                }
+                else {
+                    c.strokeStyle = VisualizationSettings.outlineColor;
+                    c.lineWidth = VisualizationSettings.outlineWeight;
+                    c.stroke(region);
+                }
+            }
+        }
     }
 
-    label(headersIncluded) {
+    label(VisualizationSettings) {
         // Only label non-singleton or copied entities
-        if (!headersIncluded || this.singleton) return;
+        if (!VisualizationSettings.headersIncluded || this.singleton) return;
 
         // Track how many headers have been drawn
         let headerIndex = 0;
@@ -411,24 +434,47 @@ class Entity {
             if (this.statements.length > 1 || this.deleted[i]) {
                 let backgroundColor = this.colors[i];
 
+                let headerCorners = [
+                    new Point(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1),
+                    new Point(this.pixelCoords[1].x - 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1),
+                    new Point(this.pixelCoords[1].x - 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1 + 2 * backgroundCellSize),
+                    new Point(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1 + 2 * backgroundCellSize)
+                ];
+
+                let nameCorners = [
+                    new Point(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1),
+                    new Point(this.pixelCoords[0].x + 1 + c.measureText(this.displayHeaders[i]).width + 2 * backgroundCellSize, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1),
+                    new Point(this.pixelCoords[0].x + 1 + c.measureText(this.displayHeaders[i]).width + 2 * backgroundCellSize, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1 + 2 * backgroundCellSize),
+                    new Point(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1 + 2 * backgroundCellSize)
+                ];
+
+                let headerOutline = roundedPolygonPath(headerCorners, Math.max(VisualizationSettings.cornerRadius - 1, 0), false)[0];
+                this.svgHeaderOutlines.push(roundedPolygonPath(headerCorners, Math.max(VisualizationSettings.cornerRadius - 1, 0), false)[1]);
+                let nameOutline = roundedPolygonPath(nameCorners, Math.max(VisualizationSettings.cornerRadius - 1, 0), false)[0];
+                this.svgNameOutlines.push(roundedPolygonPath(nameCorners, Math.max(VisualizationSettings.cornerRadius - 1, 0), false)[1]);
+
                 // For copied entities draw crosshatched headers
                 if (this.deleted[i]) {
-                    // Fill space behind entity name
-                    c.fillStyle = backgroundColor;
-                    c.fillRect(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1, c.measureText(this.displayHeaders[i]).width + 2 * backgroundCellSize, 2 * backgroundCellSize);
-
                     // Draw crosshatching pattern for the rest of the header
                     c.fillStyle = createCrosshatchPattern(backgroundColor);
-                    c.fillRect(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1, this.pixelCoords[1].x - this.pixelCoords[0].x - 2, 2 * backgroundCellSize);
+                    c.fill(headerOutline);
 
-                    // Draw bottom line of header
+                    // Fill space behind entity name
                     c.fillStyle = backgroundColor;
-                    c.fillRect(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 2 * backgroundCellSize, this.pixelCoords[1].x - this.pixelCoords[0].x - 2, 2);
+                    c.fill(nameOutline);
+
+                    // Draw bottom line of crosshatched headers
+                    c.fillRect(
+                        this.pixelCoords[0].x + VisualizationSettings.cornerRadius,
+                        this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 2 * backgroundCellSize - 1,
+                        this.pixelCoords[1].x - this.pixelCoords[0].x - VisualizationSettings.cornerRadius - 1,
+                        2
+                    );
                 }
                 // For non-singleton entities draw normal headers
                 else {
                     c.fillStyle = backgroundColor;
-                    c.fillRect(this.pixelCoords[0].x + 1, this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 1, this.pixelCoords[1].x - this.pixelCoords[0].x - 2, 2 * backgroundCellSize);
+                    c.fill(headerOutline);
                 }
 
                 // Show header name

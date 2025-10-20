@@ -9,8 +9,20 @@ let copiedEntityNames;
 // Colors for copied entities
 let copiedEntityColors;
 
-// Whether or not to draw entity headers
-let headersIncluded;
+// Customize the look of the solution
+let VisualizationSettings = {
+    entityRender: "stacked", // How to draw entities (stacked or transparent)
+    headersIncluded: document.getElementById("headerToggle").checked, // Whether or not to draw entity headers
+    cornerRadius: 15, // How much to round entity and statement corners (0 = no rounding)
+    enableShadow: document.getElementById("shadowToggle").checked, // Whether or not to draw shadows under entities
+    enableOutline: document.getElementById("outlineToggle").checked, // Whether or not to include entity outlines
+    outlineWeight: 3, // Thickness of the outlines
+    outlineColor: document.getElementById('outlineColorInput').value, // Color of the outlines
+    outlineNonRepeated: document.getElementById("outlineNonRepeatedToggle").checked, // Whether or not to outline non-repeated entities
+    outlineRepeated: document.getElementById("outlineRepeatedToggle").checked, // Whether or not to outline repeated entities
+    dashRepeated: document.getElementById("dashRepeatedToggle").checked // Whether or not to use a dashed outline for repeated entities
+};
+
 
 // Grid sizes
 const backgroundCellSize = 10;
@@ -76,7 +88,8 @@ document.getElementById('fileInput').addEventListener('change', function (event)
         parseData(fileContent); // Ensure data is processed first
 
         setup(); // Compute visualization
-        setInterval(visualize, 10); // Show the solution
+        // setInterval(visualize, 1); // Show the solution
+        visualize();
     };
     reader.readAsText(file);
 });
@@ -206,6 +219,14 @@ function reset() {
     canvas.style.top = '50%';
     canvas.style.transform = 'translate(-50%, -50%)';
 
+    // Get the latest settings
+    VisualizationSettings.headersIncluded = document.getElementById("headerToggle").checked;
+    VisualizationSettings.enableShadow = document.getElementById("shadowToggle").checked;
+    VisualizationSettings.enableOutline = document.getElementById("outlineToggle").checked;
+    VisualizationSettings.outlineNonRepeated = document.getElementById("outlineNonRepeatedToggle").checked;
+    VisualizationSettings.outlineRepeated = document.getElementById("outlineRepeatedToggle").checked;
+    VisualizationSettings.dashRepeated = document.getElementById("dashRepeatedToggle").checked;
+
     // Clear the previous solution
     solutionWidth = undefined;
     solutionHeight = undefined;
@@ -229,25 +250,22 @@ function reset() {
 
 // Prepare and process data
 function setup() {
-    // Check whether entity headers should be drawn
-    headersIncluded = document.getElementById('headerToggle').checked; 
-
     // Initialize the elements to be drawn on screen from the data
-    initializeElements(colorPalette, entities, statements, entityRects, statementCells, headersIncluded);
+    initializeElements(colorPalette, entities, statements, entityRects, statementCells, VisualizationSettings);
 
     // Prepare entity rectangles to be drawn
-    mergeEntityRectsWithSameStatements(entityRects, headersIncluded);
+    mergeEntityRectsWithSameStatements(entityRects, VisualizationSettings);
     mapEntityRectsToStatements(entityRects, statements);
-    processEntityRectHeaders(entityRects, copiedEntityNames, headersIncluded);
+    processEntityRectHeaders(entityRects, copiedEntityNames, VisualizationSettings);
 
     // Calculate and set pixel dimensions
-    calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, columnEntities, headersIncluded);
+    calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, columnEntities, VisualizationSettings);
     calculateCellHeights(cellHeights, statementCells, solutionHeight);
     setCanvasDimensions(rowGaps, columnGaps, cellHeights);
     positionElements(entityRects, statementCells);
 
     // Make the Export button functional
-    document.getElementById("export").addEventListener("click", () => exportToSVG(headersIncluded));
+    document.getElementById("export").addEventListener("click", () => exportToSVG(VisualizationSettings));
 }
 
 // Clear and redraw solution to show changes
@@ -255,5 +273,5 @@ function visualize() {
     c.clearRect(0, 0, canvas.width, canvas.height);
 
     // drawBackgroundGrid();
-    drawElements(entityRects, statementCells, headersIncluded);
+    drawElements(entityRects, statementCells, VisualizationSettings);
 }

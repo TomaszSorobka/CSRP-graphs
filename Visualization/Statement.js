@@ -10,8 +10,7 @@ class Statement {
         this.y = y;
 
         // Pixel coordinates
-        this.xStart;
-        this.yStart;
+        this.pixelCoords = [];
 
         // Lines of text stored as separate strings
         this.textLines = splitTextIntoLines(this.text, (cellWidth - 2) * backgroundCellSize);
@@ -79,14 +78,21 @@ class Statement {
         let yGap = cumulativeRowGap * backgroundCellSize;
 
         // Top-left corner pixel coordinates
-        this.xStart = xPos + xGap;
-        this.yStart = yPos + yGap;
+        let xStart = xPos + xGap;
+        let yStart = yPos + yGap;
+
+        let xEnd = xStart + backgroundCellSize * cellWidth;
+        let yEnd = yStart + backgroundCellSize * cellHeights[this.y];
+
+        this.pixelCoords = [new Point(xStart, yStart), new Point(xEnd, yStart), new Point(xEnd, yEnd), new Point(xStart, yEnd)];
     }
 
-    draw() {
+    draw(VisualizationSettings) {
         // Draw background
+        let background = roundedPolygonPath(this.pixelCoords, VisualizationSettings.cornerRadius, false)[0];
+        this.svgPath = roundedPolygonPath(this.pixelCoords, VisualizationSettings.cornerRadius, false)[1];
         c.fillStyle = "rgb(255, 255, 255)";
-        c.fillRect(this.xStart, this.yStart, backgroundCellSize * cellWidth, backgroundCellSize * cellHeights[this.y]);
+        c.fill(background);
 
         // Get entity names and their colors
         let namesAndColors = this.getEntityNamesAndColors();
@@ -139,11 +145,11 @@ class Statement {
                 }
 
                 // Draw next character
-                c.fillText(this.textLines[i][j], this.xStart + backgroundCellSize + lengthSoFar, this.yStart + (2 + i) * backgroundCellSize);
+                c.fillText(this.textLines[i][j], this.pixelCoords[0].x + backgroundCellSize + lengthSoFar, this.pixelCoords[0].y + (2 + i) * backgroundCellSize);
 
                 // Draw underline
                 if (drawingBold) {
-                    c.fillRect(this.xStart + backgroundCellSize + lengthSoFar, this.yStart + (2 + i) * backgroundCellSize + 1, c.measureText(this.textLines[i][j]).width + 0.3, 1);
+                    c.fillRect(this.pixelCoords[0].x + backgroundCellSize + lengthSoFar, this.pixelCoords[0].y + (2 + i) * backgroundCellSize + 1, c.measureText(this.textLines[i][j]).width + 0.3, 1);
                 }
 
                 // Reset font if needed

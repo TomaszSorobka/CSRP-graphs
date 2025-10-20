@@ -1,17 +1,17 @@
 // Draw elements on canvas
-function drawElements(entityRects, statementCells, headersIncluded) {
+function drawElements(entityRects, statementCells, VisualizationSettings) {
     // Order entities by their starting y coordinates
-    // entityRects.sort((a, b) => a.pixelCoords[0].y - b.pixelCoords[0].y);
+    if (VisualizationSettings.entityRender == "transparent") entityRects.sort((a, b) => a.pixelCoords[0].y - b.pixelCoords[0].y);
 
     // Draw entities
     for (let i = 0; i < entityRects.length; i++) {
-        entityRects[i].draw();
-        entityRects[i].label(headersIncluded);
+        entityRects[i].draw(VisualizationSettings);
+        entityRects[i].label(VisualizationSettings);
     }
 
     // Draw statements
     for (let i = 0; i < statementCells.length; i++) {
-        statementCells[i].draw();
+        statementCells[i].draw(VisualizationSettings);
     }
 }
 

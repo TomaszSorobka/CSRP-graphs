@@ -1,11 +1,11 @@
-function exportToSVG(headersIncluded) {
+function exportToSVG(VisualizationSettings) {
     // Create svg and set parameters
     const svgNS = "http://www.w3.org/2000/svg";
     const svg = document.createElementNS(svgNS, "svg");
     createSVG(svg, svgNS);
 
     // Draw elements
-    drawEntities(svg, svgNS, headersIncluded);
+    drawEntities(svg, svgNS, VisualizationSettings);
     drawStatements(svg, svgNS);
 
     // Serialize and download
@@ -34,9 +34,9 @@ function createSVG(svg, svgNS) {
     svg.appendChild(background);
 }
 
-function drawEntities(svg, svgNS, headersIncluded) {
+function drawEntities(svg, svgNS, VisualizationSettings) {
     // Draw entities in order of their starting y coordinates
-    // entityRects.sort((a, b) => a.pixelCoords[0].y - b.pixelCoords[0].y);
+    if (VisualizationSettings.entityRender == "transparent") entityRects.sort((a, b) => a.pixelCoords[0].y - b.pixelCoords[0].y);
 
     // Create entity groups
     const entityGroups = new Map();
@@ -50,29 +50,67 @@ function drawEntities(svg, svgNS, headersIncluded) {
 
     // Draw each entity
     entityRects.forEach(entity => {
-        drawEntityRectangle(entity, entityGroups.get(entity.id), svgNS);
-        if (headersIncluded) labelEntity(entity, entityGroups.get(entity.id), svgNS);
+        drawEntity(entity, entityGroups.get(entity.id), svgNS, VisualizationSettings);
+        if (VisualizationSettings.headersIncluded) labelEntity(entity, entityGroups.get(entity.id), svgNS);
         svg.appendChild(entityGroups.get(entity.id));
     });
 }
 
-function drawEntityRectangle(entity, entityGroup, svgNS) {
+function drawEntity(entity, entityGroup, svgNS, VisualizationSettings) {
     // Only draw non-singleton entities or singleton copies
     if (!entity.singleton) {
-        const points = entity.pixelCoords.map(p => `${p.x},${p.y}`).join(" ");
-        const shadowPoints = entity.pixelCoords.map(p => `${p.x + 5},${p.y + 5}`).join(" ");
         const color = entity.colors[entity.statements.length > 1 ? 0 : (entity.deleted.includes(true) ? entity.deleted.indexOf(true) : 0)];
-        // Translucent background fill + border
-        const shadowPoly = document.createElementNS(svgNS, "polygon");
-        shadowPoly.setAttribute("points", shadowPoints);
-        shadowPoly.setAttribute("fill", "rgba(50, 50, 50, 0.5)");
-        const poly = document.createElementNS(svgNS, "polygon");
-        poly.setAttribute("points", points);
-        poly.setAttribute("fill", color);
-        // poly.setAttribute("fill-opacity", 0.15);
-        poly.setAttribute("stroke", color);
-        entityGroup.appendChild(shadowPoly);
-        entityGroup.appendChild(poly);
+
+        // Shadow
+        if (VisualizationSettings.enableShadow) {
+            const shadowPath = document.createElementNS(svgNS, "path");
+            shadowPath.setAttribute("d", entity.svgShadowPath);
+            shadowPath.setAttribute("fill", "rgba(50, 50, 50, 0.5)");
+            entityGroup.appendChild(shadowPath);
+        }
+
+        // Polygon
+        const path = document.createElementNS(svgNS, "path");
+        path.setAttribute("d", entity.svgPath);
+        path.setAttribute("fill", color);
+
+        if (VisualizationSettings.entityRender == "transparent") {
+            path.setAttribute("fill-opacity", 0.15);
+            path.setAttribute("stroke", color);
+        }
+
+        // Dashed outline for repeated entities
+        // if (entity.deleted.includes(true)) {
+        //     poly.setAttribute("stroke", "#333"); // outline color
+        //     poly.setAttribute("stroke-dasharray", "5,5"); // dash pattern: 5px dash, 5px gap
+        // }
+
+        // // Draw borders
+        // if (VisualizationSettings.enableOutline) {
+        //     path.setAttribute("stroke", VisualizationSettings.outlineColor);
+        //     path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
+        // }
+
+        // Draw borders
+        if (VisualizationSettings.enableOutline) {
+            if (!entity.deleted.includes(true) && VisualizationSettings.outlineNonRepeated) {
+                path.setAttribute("stroke", VisualizationSettings.outlineColor);
+                path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
+            }
+            else if (entity.deleted.includes(true) && VisualizationSettings.outlineRepeated) {
+                if (VisualizationSettings.dashRepeated) {
+                    path.setAttribute("stroke", VisualizationSettings.outlineColor);
+                    path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
+                    path.setAttribute("stroke-dasharray", "5,5");
+                }
+                else {
+                    path.setAttribute("stroke", VisualizationSettings.outlineColor);
+                    path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
+                }
+            }
+        }
+
+        entityGroup.appendChild(path);
     }
 }
 
@@ -89,16 +127,21 @@ function labelEntity(entity, entityGroup, svgNS) {
                 const headerY = entity.pixelCoords[0].y + headerIndex * headerHeight;
 
                 // Background rect
-                const headerBg = document.createElementNS(svgNS, "rect");
-                headerBg.setAttribute("x", entity.pixelCoords[0].x);
-                headerBg.setAttribute("y", headerY);
-                headerBg.setAttribute("width", width);
-                headerBg.setAttribute("height", headerHeight);
-                headerBg.setAttribute("fill", entity.colors[i]);
-                entityGroup.appendChild(headerBg);
+                const headerBackground = document.createElementNS(svgNS, "path");
+                headerBackground.setAttribute("d", entity.svgHeaderOutlines[i]);
+                headerBackground.setAttribute("fill", entity.colors[i]);
+
+                // Area behind name
+                const nameBackground = document.createElementNS(svgNS, "path");
+                nameBackground.setAttribute("d", entity.svgNameOutlines[i]);
+                nameBackground.setAttribute("fill", entity.colors[i]);
+
+                entityGroup.appendChild(headerBackground);
 
                 // Crosshatch if marked as deleted
                 if (entity.deleted[i]) crosshatchHeader(entityGroup, svgNS, entity, i, width, headerY, headerHeight);
+
+                entityGroup.appendChild(nameBackground);
 
                 // Header text
                 const text = document.createElementNS(svgNS, "text");
@@ -123,17 +166,14 @@ function drawStatements(svg, svgNS) {
         statementGroup.setAttribute("font-size", `${backgroundCellSize}px`);
         statementGroup.setAttribute("font-family", "Arial");
 
-        const xStart = statement.xStart;
-        const yStart = statement.yStart;
+        const xStart = statement.pixelCoords[0].x;
+        const yStart = statement.pixelCoords[0].y;
 
         // Draw background rectangle
-        const bgRect = document.createElementNS(svgNS, "rect");
-        bgRect.setAttribute("x", xStart);
-        bgRect.setAttribute("y", yStart);
-        bgRect.setAttribute("width", backgroundCellSize * cellWidth);
-        bgRect.setAttribute("height", backgroundCellSize * cellHeights[statement.y]);
-        bgRect.setAttribute("fill", "rgb(255, 255, 255)");
-        statementGroup.appendChild(bgRect);
+        const path = document.createElementNS(svgNS, "path");
+        path.setAttribute("d", statement.svgPath);
+        path.setAttribute("fill", "rgb(255, 255, 255)");
+        statementGroup.appendChild(path);
 
         // Get entity names and their positions
         let namesAndColors = statement.getEntityNamesAndColors();
@@ -249,12 +289,14 @@ function crosshatchHeader(entityGroup, svgNS, entity, i, width, headerY, headerH
     const clipPath = document.createElementNS(svgNS, "clipPath");
     clipPath.setAttribute("id", clipId);
 
+    // Define what area to clip
     const clipRect = document.createElementNS(svgNS, "rect");
-    clipRect.setAttribute("x", entity.pixelCoords[0].x + 3);
+    clipRect.setAttribute("x", entity.pixelCoords[0].x + 5);
     clipRect.setAttribute("y", headerY + 1);
-    clipRect.setAttribute("width", width - 4);
-    clipRect.setAttribute("height", headerHeight - 2);
+    clipRect.setAttribute("width", width - 7);
+    clipRect.setAttribute("height", headerHeight - 1);
     clipPath.appendChild(clipRect);
+
     entityGroup.appendChild(clipPath);
 
     // Create the group for hatch lines
@@ -286,23 +328,4 @@ function crosshatchHeader(entityGroup, svgNS, entity, i, width, headerY, headerH
     }
 
     entityGroup.appendChild(hatchGroup);
-
-    // Bottom line
-    const bottomLine = document.createElementNS(svgNS, "rect");
-    bottomLine.setAttribute("x", entity.pixelCoords[0].x);
-    bottomLine.setAttribute("y", headerY + 2 * backgroundCellSize);
-    bottomLine.setAttribute("width", width);
-    bottomLine.setAttribute("height", 1);
-    bottomLine.setAttribute("fill", entity.colors[i]);
-    entityGroup.appendChild(bottomLine);
-
-    // Solid rect behind entity name
-    const textWidth = c.measureText(entity.displayHeaders[i]).width;
-    const solidBg = document.createElementNS(svgNS, "rect");
-    solidBg.setAttribute("x", entity.pixelCoords[0].x);
-    solidBg.setAttribute("y", headerY);
-    solidBg.setAttribute("width", textWidth + 2 * backgroundCellSize);
-    solidBg.setAttribute("height", headerHeight);
-    solidBg.setAttribute("fill", entity.colors[i]);
-    entityGroup.appendChild(solidBg);
 }

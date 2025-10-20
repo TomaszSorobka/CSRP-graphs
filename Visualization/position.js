@@ -32,7 +32,7 @@ function initializeGapAndEntityArrays(width, height, rowGaps, columnGaps, rowSeg
     }
 }
 
-function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, columnSegments, headersIncluded) {
+function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, columnSegments, VisualizationSettings) {
     // HARDCODED
     let hardcodedEntityRects = [];
 
@@ -70,9 +70,7 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
 
     for (let i = 0; i < entityRects.length; i++) {
         entityRects[i] = hardcodedEntityRects[i];
-        console.log(entityRects[i].id + ": " + entityRects[i].headers[0])
     }
-
 
     entityRects.reverse();
 
@@ -96,7 +94,7 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
     }
 
     // Set entity margins
-    calculateMargins(headersIncluded);
+    calculateMargins(VisualizationSettings);
 
     // Set grid gaps
     calculateGaps();
@@ -105,20 +103,20 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
 
     /* -----------------------------HELPER FUNCTIONS----------------------------- */
 
-    function calculateMargins(headersIncluded) {
+    function calculateMargins(VisualizationSettings) {
         // Set horizontal entity margins
         for (let i = 0; i < columnSegments.length; i++) {
             // Check and fix any equal margins that resulted from wrong comparison order
-            while (calculateHorizontalMargins(i) > 0) continue;
+            while (calculateHorizontalMargins(i, VisualizationSettings) > 0) continue;
         }
 
         // Set vertical entity margins
         for (let i = 0; i < rowSegments.length; i++) {
             // Check and fix any equal margins that resulted from wrong comparison order
-            while (calculateVerticalMargins(i, headersIncluded) > 0) continue;
+            while (calculateVerticalMargins(i, VisualizationSettings) > 0) continue;
         }
 
-        function calculateVerticalMargins(i, headersIncluded) {
+        function calculateVerticalMargins(i, VisualizationSettings) {
             let changes = 0;
             for (let j = 0; j < rowSegments[i].length; j++) {
                 for (let k = j + 1; k < rowSegments[i].length; k++) {
@@ -129,9 +127,9 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
                     // Segments overlap
                     if (s1.overlaps(s2)) {
 
-                        if (headersIncluded) {
+                        if (VisualizationSettings.headersIncluded) {
                             // Handle headers if both are top intervals
-                            if (s1.side == s2.side && s1.side == 'top' && ((Math.abs(s2.margin - s1.margin) < (s2.entity.visibleHeaders * 2 + 1) || Math.abs(s2.margin - s1.margin) < (s1.entity.visibleHeaders * 2 + 1)))) {
+                            if (s1.side == s2.side && s1.side == 'top' && ((Math.abs(s2.margin - s1.margin) < (s2.entity.visibleHeaders * 2 + 1)))) {
                                 // If their headers overlap, increase (preferably) the bigger entity's top margin such that there is enough space for all its headers
                                 if (s2.margin >= s1.margin) {
                                     if (s2.isTopLeft) {
@@ -149,7 +147,8 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
                             }
                         }
                         // Increase the bigger entity's margin
-                        if (s1.side == s2.side && s1.margin >= s2.margin) {
+                        if (s1.side == s2.side && ((VisualizationSettings.entityRender == "stacked" && s1.margin >= s2.margin) ||
+                            (VisualizationSettings.entityRender == "transparent" && s1.margin == s2.margin))) {
                             s2.margin = s1.margin + 1;
                             changes++;
                         }
@@ -171,7 +170,8 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
                     // Segments overlap
                     if (s1.overlaps(s2)) {
                         // Increase the bigger entity's margin
-                        if (s1.side == s2.side && s1.margin >= s2.margin) {
+                        if (s1.side == s2.side && ((VisualizationSettings.entityRender == "stacked" && s1.margin >= s2.margin) ||
+                            (VisualizationSettings.entityRender == "transparent" && s1.margin == s2.margin))) {
                             s2.margin = s1.margin + 1;
                             changes++; 
                         }

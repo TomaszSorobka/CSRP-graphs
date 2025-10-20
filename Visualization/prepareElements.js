@@ -1,4 +1,4 @@
-function initializeElements(colorPalette, entities, statements, entityRects, statementCells, headersIncluded) {
+function initializeElements(colorPalette, entities, statements, entityRects, statementCells, VisualizationSettings) {
     // Gather all non-singleton entities
     let nonSingletonEntities = [];
     entities.forEach(e => {
@@ -28,12 +28,12 @@ function initializeElements(colorPalette, entities, statements, entityRects, sta
 
         // Non-singleton entities get their assigned colors
         if (nonSingletonEntities.indexOf(id) > -1) {
-            entityRects[i] = new Entity(id, name, coords, assignedColors[nextColor], statements, headersIncluded);
+            entityRects[i] = new Entity(id, name, coords, assignedColors[nextColor], statements, VisualizationSettings);
             nextColor++;
         }
         // Singleton entities are assigned white
         else {
-            entityRects[i] = new Entity(id, name, coords, 'rgb(255, 255, 255)', statements, headersIncluded);
+            entityRects[i] = new Entity(id, name, coords, 'rgb(255, 255, 255)', statements, VisualizationSettings);
         }
     }
     // Sort entity rectangles by size
@@ -50,7 +50,7 @@ function initializeElements(colorPalette, entities, statements, entityRects, sta
     }
 }
 
-function mergeEntityRectsWithSameStatements(entityRects, headersIncluded) {
+function mergeEntityRectsWithSameStatements(entityRects, VisualizationSettings) {
     for (let i = 0; i < entityRects.length; i++) {
         for (let j = entityRects.length - 1; j >= i + 1; j--) {
             // Check if a pair of entities have the same statements
@@ -63,7 +63,7 @@ function mergeEntityRectsWithSameStatements(entityRects, headersIncluded) {
                 // Find the top-left segment of the first entity
                 let topLeft = entityRects[i].intervals['top'].filter(interval => interval.isTopLeft)[0];
                 // Increase first entity's margin to cover the additional header
-                if (headersIncluded) topLeft.margin += 2;
+                if (VisualizationSettings.headersIncluded) topLeft.margin += 2;
                 // Remove second entity's rectangle
                 entityRects.splice(j, 1);
             }
@@ -96,7 +96,7 @@ function getCopiedEntities(entities) {
     return repeated;
 }
 
-function processEntityRectHeaders(entityRects, repeated, headersIncluded) {
+function processEntityRectHeaders(entityRects, repeated, VisualizationSettings) {
     // Mark headers as copied or not
     entityRects.forEach(e => {
         e.headers.forEach(h => {
@@ -126,7 +126,7 @@ function processEntityRectHeaders(entityRects, repeated, headersIncluded) {
     });
 
     // Update top margins based on how many of the entity's headers are visible
-    if (headersIncluded) {
+    if (VisualizationSettings.headersIncluded) {
         entityRects.forEach(e => {
             // Find the top-left segment of the entity
             let topLeft = e.intervals['top'].filter(interval => interval.isTopLeft)[0];
