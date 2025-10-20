@@ -7,7 +7,7 @@ let statements = [];
 // Names of copied entities
 let copiedEntityNames;
 // Colors for copied entities
-let copiedEntityColors;
+let copiedEntityColors = [];
 
 // Customize the look of the solution
 let VisualizationSettings = {
@@ -39,6 +39,12 @@ c.globalCompositeOperation = "source-over";
 // Canvas elements to be drawn
 let entityRects = [];
 let statementCells = [];
+
+// Mapping name to a list of Entity objects with the same name
+const groupedMap = new Map();
+
+// grayscale?
+let grayscale = true;
 
 // The gaps for each row and column
 let rowGaps = [];
@@ -202,12 +208,12 @@ function parseData(fileContent) {
     // Find the names of all entities with multiple copies
     copiedEntityNames = getCopiedEntities(entities);
 
-    // Assign a unique color for each deleted entity
-    let nrDeleted = copiedEntityNames.length;
-    copiedEntityColors = getReadyPalette(colorPalette, nrDeleted, true);
+    // // Assign a unique color for each deleted entity
+    // let nrDeleted = copiedEntityNames.length;
+    // copiedEntityColors = getReadyPalette(colorPalette, nrDeleted, true);
 
-    // Remove assigned colors from the palette
-    colorPalette.splice(0, nrDeleted);
+    // // Remove assigned colors from the palette
+    // colorPalette = colorPalette.filter(c => !copiedEntityColors.includes(hexToRgb(c)))
 }
 
 // Clear previous visualizations
@@ -263,7 +269,10 @@ function setup() {
     calculateCellHeights(cellHeights, statementCells, solutionHeight);
     setCanvasDimensions(rowGaps, columnGaps, cellHeights);
     positionElements(entityRects, statementCells);
-
+    
+    if(grayscale) {
+        assignGrayscaleColors(entityRects);
+    }
     // Make the Export button functional
     document.getElementById("export").addEventListener("click", () => exportToSVG(VisualizationSettings));
 }

@@ -19,7 +19,7 @@ class Entity {
 
         // Header names and their colors
         this.headers = [name];
-        this.colors = [color];
+        this.colors = []
 
         // Visible versions for all headers
         this.displayHeaders = [];
@@ -258,7 +258,7 @@ class Entity {
 
                     // Set the end x coordinate to match the left/right interval that exists
                     let xEnd = leftInterval[0] != null ? leftInterval[0].otherPixel : rightInterval[0].otherPixel;
-
+                    
                     // Add a new side with the pixel coordinates of this top interval
                     sides.push(new Side(new Point(xStart, interval.otherPixel), new Point(xEnd, interval.otherPixel)));
                 }

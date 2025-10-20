@@ -1,24 +1,4 @@
-function initializeElements(colorPalette, entities, statements, entityRects, statementCells, VisualizationSettings) {
-    // Gather all non-singleton entities
-    let nonSingletonEntities = [];
-    entities.forEach(e => {
-        if (e.statements.length > 1) {
-            nonSingletonEntities.push(e.id);
-        }
-    });
-
-    // Get a ready palette for non-singleton entities
-    let palette = getReadyPalette(colorPalette, nonSingletonEntities.length, false);
-
-    // Build the overlap graph for all entities
-    let graph = buildOverlapGraph(nonSingletonEntities);
-
-    // Reassign colors so that overlapping entities have distinct colors
-    let assignedColors = assignColorsWithOverlap(graph, palette);
-
-    // Keep track of the next color to be assigned to an entity
-    let nextColor = 0;
-
+function initializeElements(colorPalette, entities, statements, entityRects, statementCells, VisualizationSettings, copiedEntitiesColors) {
     // Initialize entity rectangles
     for (var i = 0; i < entities.length; i++) {
         let id = entities[i].id;
@@ -26,16 +6,23 @@ function initializeElements(colorPalette, entities, statements, entityRects, sta
         let coords = entities[i].coords;
         let statements = entities[i].statements;
 
-        // Non-singleton entities get their assigned colors
-        if (nonSingletonEntities.indexOf(id) > -1) {
-            entityRects[i] = new Entity(id, name, coords, assignedColors[nextColor], statements, VisualizationSettings);
-            nextColor++;
-        }
-        // Singleton entities are assigned white
-        else {
-            entityRects[i] = new Entity(id, name, coords, 'rgb(255, 255, 255)', statements, VisualizationSettings);
-        }
+        entityRects[i] = new Entity(id, name, coords, statements, VisualizationSettings);
+
     }
+
+    // Assign colors to non-singleton entities 
+    if (!grayscale) {
+        assignColorsBasedOnDistance(colorPalette);
+    } else {
+        entityRects.forEach(e => e.colors = ['rgb(0,0,0)'])
+    }
+
+    // Assign white color to singleton entities
+    singletonEntities = entityRects.filter(e => !(e.statements.length > 1));
+    for (var i = 0; i < singletonEntities.length; i++) {
+        singletonEntities[i].colors = ['rgb(255, 255, 255)'];
+    }
+
     // Sort entity rectangles by size
     // entityRects.sort((a, b) => ((a.width * a.height) - (b.width * b.height)));
 
@@ -104,15 +91,18 @@ function processEntityRectHeaders(entityRects, repeated, VisualizationSettings) 
         });
     });
 
+    // // TODO: set copiedEntitiesColors
+    // copiedEntityColors = []
     // Set copied header colors
-    entityRects.forEach(e => {
-        for (let i = 0; i < e.headers.length; i++) {
-            if (repeated.includes(e.headers[i])) {
-                e.colors[i] = copiedEntityColors[repeated.indexOf(e.headers[i])];
+    if (!grayscale) {
+        entityRects.forEach(e => {
+            for (let i = 0; i < e.headers.length; i++) {
+                if (repeated.includes(e.headers[i])) {
+                    e.colors[i] = copiedEntityColors[repeated.indexOf(e.headers[i])];
+                }
             }
-        }
-    });
-
+        });
+    }
     // Set number of visible headers
     entityRects.forEach(e => {
         // For non-singleton entities draw all headers
