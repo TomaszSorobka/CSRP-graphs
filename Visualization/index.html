@@ -68,6 +68,12 @@
                     </span>
 
                     <span>
+                        <label class="selectable" for="grayscaleToggle">Grayscale</label>
+                        <input class="selectable" type="checkbox" id="grayscaleToggle">
+                        <label for="grayscaleToggle" class="selectable check"></label>
+                    </span>
+
+                    <span>
                         <label class="selectable" for="headerToggle">Headers</label>
                         <input class="selectable" type="checkbox" id="headerToggle">
                         <label for="headerToggle" class="selectable check"></label>
@@ -95,7 +101,8 @@
                                 <p>Weight</p>
                                 <div class="slider">
                                     <span class="sliderValue"></span>
-                                    <input class="selectable" id="outlineWeight" type="range" min="1" max="10" value="3">
+                                    <input class="selectable" id="outlineWeight" type="range" min="1" max="10"
+                                        value="3">
                                 </div>
                             </li>
                             <li id="outlineColor">
@@ -133,6 +140,11 @@
 
         <div id="canvasWrapper"><canvas id="canvas"></canvas></div>
     </div>
+
+    <script type="module">
+        import * as culori from 'https://esm.run/culori@3.3.0';
+        window.culori = culori;
+    </script>
 
     <script src="Point.js"></script>
     <script src="Interval.js"></script>

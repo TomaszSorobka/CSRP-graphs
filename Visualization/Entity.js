@@ -1,5 +1,5 @@
 class Entity {
-    constructor(id, name, coords, color, statements, VisualizationSettings) {
+    constructor(id, name, coords, statements, VisualizationSettings) {
         // Identifiers
         this.id = id;
         this.statements = statements;

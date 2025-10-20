@@ -11,7 +11,7 @@ function initializeElements(colorPalette, entities, statements, entityRects, sta
     }
 
     // Assign colors to non-singleton entities 
-    if (!grayscale) {
+    if (!VisualizationSettings.grayscale) {
         assignColorsBasedOnDistance(colorPalette);
     } else {
         entityRects.forEach(e => e.colors = ['rgb(0,0,0)'])
@@ -94,7 +94,7 @@ function processEntityRectHeaders(entityRects, repeated, VisualizationSettings) 
     // // TODO: set copiedEntitiesColors
     // copiedEntityColors = []
     // Set copied header colors
-    if (!grayscale) {
+    if (!VisualizationSettings.grayscale) {
         entityRects.forEach(e => {
             for (let i = 0; i < e.headers.length; i++) {
                 if (repeated.includes(e.headers[i])) {

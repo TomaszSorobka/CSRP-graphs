@@ -12,6 +12,7 @@ let copiedEntityColors = [];
 // Customize the look of the solution
 let VisualizationSettings = {
     entityRender: "stacked", // How to draw entities (stacked or transparent)
+    grayscale: document.getElementById("grayscaleToggle").checked, // Whether or not the entity colors should be grayscaled
     headersIncluded: document.getElementById("headerToggle").checked, // Whether or not to draw entity headers
     cornerRadius: 15, // How much to round entity and statement corners (0 = no rounding)
     enableShadow: document.getElementById("shadowToggle").checked, // Whether or not to draw shadows under entities
@@ -42,9 +43,6 @@ let statementCells = [];
 
 // Mapping name to a list of Entity objects with the same name
 const groupedMap = new Map();
-
-// grayscale?
-let grayscale = true;
 
 // The gaps for each row and column
 let rowGaps = [];
@@ -79,7 +77,7 @@ const colors = [
 ];
 
 // Color palette to be used for the current visualization
-let colorPalette = colors.slice();
+let colorPalette = getReadyPalette(colors, colors.length, true);
 
 // Read solution from input
 document.getElementById('fileInput').addEventListener('change', function (event) {
@@ -226,6 +224,7 @@ function reset() {
     canvas.style.transform = 'translate(-50%, -50%)';
 
     // Get the latest settings
+    VisualizationSettings.grayscale = document.getElementById("grayscaleToggle").checked;
     VisualizationSettings.headersIncluded = document.getElementById("headerToggle").checked;
     VisualizationSettings.enableShadow = document.getElementById("shadowToggle").checked;
     VisualizationSettings.enableOutline = document.getElementById("outlineToggle").checked;
@@ -251,13 +250,13 @@ function reset() {
     columnEntities = [];
 
     // Reset the color palette
-    colorPalette = colors.slice();
+    colorPalette = getReadyPalette(colors, colors.length, true);
 }
 
 // Prepare and process data
 function setup() {
     // Initialize the elements to be drawn on screen from the data
-    initializeElements(colorPalette, entities, statements, entityRects, statementCells, VisualizationSettings);
+    initializeElements(colorPalette, entities, statements, entityRects, statementCells, VisualizationSettings, copiedEntityColors);
 
     // Prepare entity rectangles to be drawn
     mergeEntityRectsWithSameStatements(entityRects, VisualizationSettings);
@@ -270,7 +269,7 @@ function setup() {
     setCanvasDimensions(rowGaps, columnGaps, cellHeights);
     positionElements(entityRects, statementCells);
     
-    if(grayscale) {
+    if(VisualizationSettings.grayscale) {
         assignGrayscaleColors(entityRects);
     }
     // Make the Export button functional
