@@ -42,42 +42,35 @@ function getReadyPalette(colorPalette, n, format) {
     return palette;
 }
 
-function createCrosshatchPattern(color) {
-    const patternCanvas = document.createElement('canvas');
-    const size = backgroundCellSize; // Size of one tile
-    patternCanvas.width = size;
-    patternCanvas.height = size;
+// Generates n perceptually spaced grayscale colors
+function generateGrayscalePalette(n) {
+    const { formatRgb } = culori;
+    const colors = [];
 
-    const pc = patternCanvas.getContext('2d');
-    pc.strokeStyle = color; // Hatch line color
-    pc.lineWidth = 1;
+    // perceptual lightness range: avoid extremes (3–97) for better contrast on white/black backgrounds
+    const minL = 3;
+    const maxL = 97;
 
-    // Draw crosshatch
-    pc.beginPath();
-    pc.moveTo(0, 0);
-    pc.lineTo(size, size);
-    pc.moveTo(size, 0);
-    pc.lineTo(0, size);
-    pc.stroke();
+    for (let i = 0; i < n; i++) {
+        const L = minL + (maxL - minL) * (i / (n - 1));
+        const labColor = { mode: 'lab', l: L, a: 0, b: 0 }; // grayscale line (a=b=0)
+        colors.push(formatRgb(labColor)); // convert to RGB string
+    }
 
-    return c.createPattern(patternCanvas, 'repeat');
-}
-
-// Helper function to compare two colors
-function arraysEqual(a, b) {
-    return a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
+    return colors;
 }
 
 // sigmaC controls how rapidly the color similarity drops off
 //  - around 10–20 works well for ΔE2000 
 // sigmaS controls spatial decay (depends on distances between polygons).
 //  - looking at oour distances maybe between 2 and 8 will work best?
-function assignColorsBasedOnDistance(nonSingletonEntities, repeatingMap, colors, sigmaC = 10, sigmaS = 3) {
+function assignColorsBasedOnDistance(nonSingletonEntities, repeatingMap, colors, sigmaC = 5, sigmaS = 3) {
     const { converter, differenceCiede2000 } = culori;
     const lab = converter('lab');
     const deltaE = differenceCiede2000();
     const seen = new Set();
-    
+
+
     const entitiesToColor = [];
     // First, add one for all nonSingletonEntities
     for (const e of nonSingletonEntities) {
@@ -102,7 +95,7 @@ function assignColorsBasedOnDistance(nonSingletonEntities, repeatingMap, colors,
     function colorDistance(c1, c2) {
         return deltaE(lab(c1), lab(c2));
     }
-
+    
     function assignmentEnergy(entities, colors, assignment) {
         let E = 0;
 
@@ -112,7 +105,6 @@ function assignColorsBasedOnDistance(nonSingletonEntities, repeatingMap, colors,
                 let ds = spatialMatrix[i][j];
                 // Exponential penalty: high for close and similar
                 const penalty = Math.exp(-dc / sigmaC) * Math.exp(-ds / sigmaS);
-                // const penalty = 1/dc + 1/ds;
                 E += penalty;
             }
         }
@@ -122,13 +114,19 @@ function assignColorsBasedOnDistance(nonSingletonEntities, repeatingMap, colors,
 
     function simulatedAnnealingAssignment(entities, colors, {
         sigmaC = 5,
-        sigmaS = 4,
+        sigmaS = 3,
         iterations = 10000,
         tempStart = 1.0,
-        tempEnd = 0.001
+        tempEnd = 0.001,
+        changeColorsProb = 0.1
     } = {}) {
         const n = entities.length;
-        const assignment = Array.from({ length: n }, (_, i) => i % colors.length);
+        const indices = colors.map((_, i) => i);
+        const assignment = [];
+        for (let i = 0; i < n; i++) {
+            const randIndex = Math.floor(Math.random() * indices.length);
+            assignment.push(indices.splice(randIndex, 1)[0]);
+        }
         let bestAssign = [...assignment];
 
         let currentE = assignmentEnergy(entities, colors, assignment);
@@ -136,14 +134,30 @@ function assignColorsBasedOnDistance(nonSingletonEntities, repeatingMap, colors,
 
         for (let iter = 0; iter < iterations; iter++) {
             const T = tempStart * Math.pow(tempEnd / tempStart, iter / iterations);
+            let newAssign = [...assignment];
 
-            // Randomly pick two entities to swap colors
-            const i = Math.floor(Math.random() * n);
-            const j = Math.floor(Math.random() * n);
-            if (i === j) continue;
+            // derive unused from current assignment
+            const used = new Set(newAssign);
+            const unused = colors.map((_, idx) => idx).filter(idx => !used.has(idx));
 
-            const newAssign = [...assignment];
-            [newAssign[i], newAssign[j]] = [newAssign[j], newAssign[i]];
+            if (Math.random() < changeColorsProb) { // change the colors in the assignment
+                // Change one entity's color to a new one
+                const i = Math.floor(Math.random() * newAssign.length);
+                const newColorIdx = Math.floor(Math.random() * unused.length);
+                const newColor = unused[newColorIdx];
+
+                unused.push(newAssign[i]);              // old color goes back to unused
+                newAssign[i] = newColor                 // assign new color
+                unused.splice(newColorIdx, 1);          // remove it from unused list
+            } else {
+                // Randomly pick two entities to swap colors
+                const i = Math.floor(Math.random() * n);
+                const j = Math.floor(Math.random() * n);
+                if (i === j) continue;
+                const swap = newAssign[i];
+                newAssign[i] = newAssign[j];
+                newAssign[j] = swap;
+            }
 
             const newE = assignmentEnergy(entities, colors, newAssign, sigmaC, sigmaS);
             const delta = newE - currentE;
@@ -161,7 +175,7 @@ function assignColorsBasedOnDistance(nonSingletonEntities, repeatingMap, colors,
             // // occasional logging
             // if (iter % 1000 === 0) {
             //     console.log(`Iter ${iter} — E=${bestE.toFixed(3)} T=${T.toFixed(4)}`);
-            //     console.log(bestAssign)
+            //     console.log(bestAssign.slice())
             // }
         }
         // console.log(bestAssign)
@@ -170,69 +184,45 @@ function assignColorsBasedOnDistance(nonSingletonEntities, repeatingMap, colors,
 
     // return simulatedAnnealingAssignment(entitiesToColor, colors).bestAssign
     bestAssign = simulatedAnnealingAssignment(entitiesToColor, colors).bestAssign;
-    for(let ent = 0; ent < entitiesToColor.length; ent++) {
+    for (let ent = 0; ent < entitiesToColor.length; ent++) {
         if (repeatingMap.has(entitiesToColor[ent].headers[0])) {
             let repeatedEnt = repeatingMap.get(entitiesToColor[ent].headers[0]);
-            repeatedEnt.forEach(e => e.colors = [colors[bestAssign[ent]]])
+            repeatedEnt.forEach(e => e.colors = [colors[bestAssign[ent]]]);
         }
         else {
             entitiesToColor[ent].colors = [colors[bestAssign[ent]]];
         }
     }
+
+    copiedEntityColors = [];
+    for (let i = 0; i < copiedEntityNames.length; i++) {
+        copiedEntityColors.push(repeatingMap.get(copiedEntityNames[i])[0].colors[0]);
+    }
 }
 
 
-// Overlap-Aware Color Assignment
-function assignColorsWithOverlap(graph, palette) {
-    let n = graph.length;
-    let assignedColors = new Array(n);
-    let usage = new Array(palette.length).fill(0);  // Track global palette usage counts
+function createCrosshatchPattern(color) {
+    const patternCanvas = document.createElement('canvas');
+    const size = backgroundCellSize; // Size of one tile
+    patternCanvas.width = size;
+    patternCanvas.height = size;
 
-    // Sort nodes by descending degree (more constrained nodes first)
-    let nodes = [];
-    for (let i = 0; i < n; i++) {
-        nodes.push({ index: i, degree: graph[i].length });
-    }
-    nodes.sort((a, b) => b.degree - a.degree);
+    const pc = patternCanvas.getContext('2d');
+    pc.strokeStyle = color; // Hatch line color
+    pc.lineWidth = 1;
 
-    for (let node of nodes) {
-        const i = node.index;
+    // Draw crosshatch
+    pc.beginPath();
+    pc.moveTo(0, 0);
+    pc.lineTo(size, size);
+    pc.moveTo(size, 0);
+    pc.lineTo(0, size);
+    pc.stroke();
 
-        // Find colors used by neighbors
-        let usedByNeighbors = new Set();
-        for (let neighborIdx of graph[i]) {
-            const neighborColor = assignedColors[neighborIdx];
-            if (neighborColor) {
-                // Find palette index for neighborColor
-                palette.forEach((color, paletteIdx) => {
-                    if (arraysEqual(color, neighborColor)) {
-                        usedByNeighbors.add(paletteIdx);
-                    }
-                });
-            }
-        }
+    return c.createPattern(patternCanvas, 'repeat');
+}
 
-        // Find palette colors NOT used by neighbors
-        let availableColors = [];
-        for (let paletteIdx = 0; paletteIdx < palette.length; paletteIdx++) {
-            if (!usedByNeighbors.has(paletteIdx)) {
-                availableColors.push({ idx: paletteIdx, usage: usage[paletteIdx] });
-            }
-        }
-
-        // If availableColors empty, assign fallback black
-        if (availableColors.length === 0) {
-            assignedColors[i] = `rgb(0, 0, 0)`;
-            console.warn(`Fallback black assigned at entity ${i} (no available colors)`);
-        } else {
-            // Sort available colors by usage, lowest first
-            availableColors.sort((a, b) => a.usage - b.usage);
-            // Select the color with the lowest usage
-            const chosenPaletteIdx = availableColors[0].idx;
-            assignedColors[i] = palette[chosenPaletteIdx];
-            usage[chosenPaletteIdx] += 1;  // Increment usage count
-        }
-    }
-
-    return assignedColors;
+// Helper function to compare two colors
+function arraysEqual(a, b) {
+    return a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
 }

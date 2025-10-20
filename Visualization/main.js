@@ -7,7 +7,7 @@ let statements = [];
 // Names of copied entities
 let copiedEntityNames;
 // Colors for copied entities
-let copiedEntityColors;
+let copiedEntityColors = [];
 
 // Whether or not to draw entity headers
 let headersIncluded;

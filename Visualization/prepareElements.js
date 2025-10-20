@@ -109,14 +109,14 @@ function processEntityRectHeaders(entityRects, repeated, headersIncluded) {
 
     // // TODO: set copiedEntitiesColors
     // copiedEntityColors = []
-    // // Set copied header colors
-    // entityRects.forEach(e => {
-    //     for (let i = 0; i < e.headers.length; i++) {
-    //         if (repeated.includes(e.headers[i])) {
-    //             e.colors[i] = copiedEntityColors[repeated.indexOf(e.headers[i])];
-    //         }
-    //     }
-    // });
+    // Set copied header colors
+    entityRects.forEach(e => {
+        for (let i = 0; i < e.headers.length; i++) {
+            if (repeated.includes(e.headers[i])) {
+                e.colors[i] = copiedEntityColors[repeated.indexOf(e.headers[i])];
+            }
+        }
+    });
 
     // Set number of visible headers
     entityRects.forEach(e => {

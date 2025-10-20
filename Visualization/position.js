@@ -61,7 +61,7 @@ function polygonDistance(e1, e2) {
         for (const s2 of segs2) {
             const d = segmentDistance(s1.x1, s1.y1, s1.x2, s1.y2, s2.x1, s2.y1, s2.x2, s2.y2);
             if (d < minDist) minDist = d;
-            if (minDist === 0) return 0; // early exit
+            if (minDist === 0) return 1e-6; // early exit
         }
     }
 
@@ -110,8 +110,6 @@ function buildSpatialMatrix(entities, repeatingMap) {
             M[j][i] = ds; // symmetry
         }
     }
-
-
     return M;
 }
 
