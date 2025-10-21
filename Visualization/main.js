@@ -19,6 +19,7 @@ let VisualizationSettings = {
     enableOutline: document.getElementById("outlineToggle").checked, // Whether or not to include entity outlines
     outlineWeight: 3, // Thickness of the outlines
     outlineColor: document.getElementById('outlineColorInput').value, // Color of the outlines
+    outlinesUseEntityColor: document.getElementById("outlinesUseEntityColorToggle").checked, // Whether or not to use a darker version of the entity color for outlines
     outlineNonRepeated: document.getElementById("outlineNonRepeatedToggle").checked, // Whether or not to outline non-repeated entities
     outlineRepeated: document.getElementById("outlineRepeatedToggle").checked, // Whether or not to outline repeated entities
     dashRepeated: document.getElementById("dashRepeatedToggle").checked // Whether or not to use a dashed outline for repeated entities
@@ -228,6 +229,7 @@ function reset() {
     VisualizationSettings.headersIncluded = document.getElementById("headerToggle").checked;
     VisualizationSettings.enableShadow = document.getElementById("shadowToggle").checked;
     VisualizationSettings.enableOutline = document.getElementById("outlineToggle").checked;
+    VisualizationSettings.outlinesUseEntityColor = document.getElementById("outlinesUseEntityColorToggle").checked;
     VisualizationSettings.outlineNonRepeated = document.getElementById("outlineNonRepeatedToggle").checked;
     VisualizationSettings.outlineRepeated = document.getElementById("outlineRepeatedToggle").checked;
     VisualizationSettings.dashRepeated = document.getElementById("dashRepeatedToggle").checked;

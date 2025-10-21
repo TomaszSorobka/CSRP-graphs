@@ -398,21 +398,25 @@ class Entity {
 
         // Draw borders
         if (VisualizationSettings.enableOutline) {
-            if (!this.deleted.includes(true) && VisualizationSettings.outlineNonRepeated) {
+            if (VisualizationSettings.outlinesUseEntityColor) {
+                c.strokeStyle = darkenRGB(this.colors[this.statements.length > 1 ? 0 : (this.deleted.includes(true) ? this.deleted.indexOf(true) : 0)], 0.7);
+            }
+            else {
                 c.strokeStyle = VisualizationSettings.outlineColor;
+            }
+            
+            if (!this.deleted.includes(true) && VisualizationSettings.outlineNonRepeated) {
                 c.lineWidth = VisualizationSettings.outlineWeight;
                 c.stroke(region);
             }
             else if (this.deleted.includes(true) && VisualizationSettings.outlineRepeated) {
                 if (VisualizationSettings.dashRepeated) {
                     c.setLineDash([5, 5]);
-                    c.strokeStyle = VisualizationSettings.outlineColor;
                     c.lineWidth = VisualizationSettings.outlineWeight;
                     c.stroke(region);
                     c.setLineDash([]);
                 }
                 else {
-                    c.strokeStyle = VisualizationSettings.outlineColor;
                     c.lineWidth = VisualizationSettings.outlineWeight;
                     c.stroke(region);
                 }

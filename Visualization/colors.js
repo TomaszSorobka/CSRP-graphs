@@ -33,6 +33,25 @@ function hexToRgb(hex) {
     return `rgb(${r}, ${g}, ${b})`;
 }
 
+function darkenRGB(rgbString, factor = 0.8) {
+  // factor < 1 → darker, e.g. 0.8 = 20% darker
+
+  // Extract numeric values from "rgb(…, …, …)"
+  const match = rgbString.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i);
+  if (!match) {
+    throw new Error("Invalid RGB string format");
+  }
+
+  let [_, r, g, b] = match.map(Number);
+
+  // Scale each channel and clamp to [0, 255]
+  r = Math.max(0, Math.min(255, Math.round(r * factor)));
+  g = Math.max(0, Math.min(255, Math.round(g * factor)));
+  b = Math.max(0, Math.min(255, Math.round(b * factor)));
+
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
 function getReadyPalette(colorPalette, n, format) {
     let base = colorPalette.map(hex => format ? hexToRgb(hex) : rgbToColorArray(hexToRgb(hex)));
     let palette = [];
