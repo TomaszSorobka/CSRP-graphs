@@ -375,8 +375,8 @@ class Entity {
 
         // Add shadow
         if (VisualizationSettings.enableShadow) {
-            let shadowRegion = roundedPolygonPath(this.pixelCoords.map(p => new Point(p.x + 5, p.y + 5)), VisualizationSettings.cornerRadius, true)[0];
-            this.svgShadowPath = roundedPolygonPath(this.pixelCoords.map(p => new Point(p.x + 5, p.y + 5)), VisualizationSettings.cornerRadius, true)[1];
+            let shadowRegion = roundedPolygonPath(this.pixelCoords.map(p => new Point(p.x + 3, p.y + 3)), VisualizationSettings.cornerRadius, true)[0];
+            this.svgShadowPath = roundedPolygonPath(this.pixelCoords.map(p => new Point(p.x + 3, p.y + 3)), VisualizationSettings.cornerRadius, true)[1];
             c.fillStyle = "rgb(50, 50, 50, 0.5)";
             c.fill(shadowRegion);
         }
@@ -402,7 +402,7 @@ class Entity {
                 c.strokeStyle = darkenRGB(this.colors[this.statements.length > 1 ? 0 : (this.deleted.includes(true) ? this.deleted.indexOf(true) : 0)], 0.7);
             }
             else {
-                c.strokeStyle = VisualizationSettings.outlineColor;
+                c.strokeStyle = rgbToRgba(VisualizationSettings.outlineColor, 0.5);
             }
             
             if (!this.deleted.includes(true) && VisualizationSettings.outlineNonRepeated) {
@@ -411,7 +411,7 @@ class Entity {
             }
             else if (this.deleted.includes(true) && VisualizationSettings.outlineRepeated) {
                 if (VisualizationSettings.dashRepeated) {
-                    c.setLineDash([5, 5]);
+                    c.setLineDash([7, 7]);
                     c.lineWidth = VisualizationSettings.outlineWeight;
                     c.stroke(region);
                     c.setLineDash([]);

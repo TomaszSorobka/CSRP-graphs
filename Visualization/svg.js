@@ -79,32 +79,24 @@ function drawEntity(entity, entityGroup, svgNS, VisualizationSettings) {
             path.setAttribute("stroke", color);
         }
 
-        // Dashed outline for repeated entities
-        // if (entity.deleted.includes(true)) {
-        //     poly.setAttribute("stroke", "#333"); // outline color
-        //     poly.setAttribute("stroke-dasharray", "5,5"); // dash pattern: 5px dash, 5px gap
-        // }
-
-        // // Draw borders
-        // if (VisualizationSettings.enableOutline) {
-        //     path.setAttribute("stroke", VisualizationSettings.outlineColor);
-        //     path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
-        // }
-
         // Draw borders
         if (VisualizationSettings.enableOutline) {
+            if (VisualizationSettings.outlinesUseEntityColor) {
+                path.setAttribute("stroke", darkenRGB(entity.colors[entity.statements.length > 1 ? 0 : (entity.deleted.includes(true) ? entity.deleted.indexOf(true) : 0)], 0.7));
+            }
+            else {
+                path.setAttribute("stroke", rgbToRgba(VisualizationSettings.outlineColor, 0.5));
+            }
+
             if (!entity.deleted.includes(true) && VisualizationSettings.outlineNonRepeated) {
-                path.setAttribute("stroke", VisualizationSettings.outlineColor);
                 path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
             }
             else if (entity.deleted.includes(true) && VisualizationSettings.outlineRepeated) {
                 if (VisualizationSettings.dashRepeated) {
-                    path.setAttribute("stroke", VisualizationSettings.outlineColor);
                     path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
                     path.setAttribute("stroke-dasharray", "5,5");
                 }
                 else {
-                    path.setAttribute("stroke", VisualizationSettings.outlineColor);
                     path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
                 }
             }
@@ -172,7 +164,9 @@ function drawStatements(svg, svgNS) {
         // Draw background rectangle
         const path = document.createElementNS(svgNS, "path");
         path.setAttribute("d", statement.svgPath);
-        path.setAttribute("fill", "rgb(255, 255, 255)");
+        path.setAttribute("fill", "rgb(245, 245, 245)");
+        path.setAttribute("stroke", "rgba(130, 130, 130, 0.5)");
+        path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
         statementGroup.appendChild(path);
 
         // Get entity names and their positions

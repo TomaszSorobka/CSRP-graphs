@@ -91,8 +91,10 @@ class Statement {
         // Draw background
         let background = roundedPolygonPath(this.pixelCoords, VisualizationSettings.cornerRadius, false)[0];
         this.svgPath = roundedPolygonPath(this.pixelCoords, VisualizationSettings.cornerRadius, false)[1];
-        c.fillStyle = "rgb(255, 255, 255)";
+        c.fillStyle = "rgb(245, 245, 245)";
         c.fill(background);
+        c.strokeStyle = "rgba(130, 130, 130, 0.5)";
+        c.stroke(background);
 
         // Get entity names and their colors
         let namesAndColors = this.getEntityNamesAndColors();
