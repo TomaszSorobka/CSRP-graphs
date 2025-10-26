@@ -144,7 +144,7 @@ li > input {
     transform: translateY(-50%);
 }
 
-#stackedEntities {
+#stackedEntities, #textHighlighted {
     color: #4e9abc;
 }
 

@@ -22,7 +22,8 @@ let VisualizationSettings = {
     outlinesUseEntityColor: document.getElementById("outlinesUseEntityColorToggle").checked, // Whether or not to use a darker version of the entity color for outlines
     outlineNonRepeated: document.getElementById("outlineNonRepeatedToggle").checked, // Whether or not to outline non-repeated entities
     outlineRepeated: document.getElementById("outlineRepeatedToggle").checked, // Whether or not to outline repeated entities
-    dashRepeated: document.getElementById("dashRepeatedToggle").checked // Whether or not to use a dashed outline for repeated entities
+    dashRepeated: document.getElementById("dashRepeatedToggle").checked, // Whether or not to use a dashed outline for repeated entities
+    textHighlight: "text" // How to highlight entity names in statements (none, text or background)
 };
 
 

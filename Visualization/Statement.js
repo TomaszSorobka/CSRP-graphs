@@ -146,12 +146,42 @@ class Statement {
                     drawingBold = true;
                 }
 
-                // Draw next character
-                c.fillText(this.textLines[i][j], this.pixelCoords[0].x + backgroundCellSize + lengthSoFar, this.pixelCoords[0].y + (2 + i) * backgroundCellSize);
+                if (VisualizationSettings.textHighlight == "text") {
+                    // Draw next character
+                    c.fillText(this.textLines[i][j], this.pixelCoords[0].x + backgroundCellSize + lengthSoFar, this.pixelCoords[0].y + (2 + i) * backgroundCellSize);
 
-                // Draw underline
-                if (drawingBold) {
-                    c.fillRect(this.pixelCoords[0].x + backgroundCellSize + lengthSoFar, this.pixelCoords[0].y + (2 + i) * backgroundCellSize + 1, c.measureText(this.textLines[i][j]).width + 0.3, 1);
+                    // Draw underline
+                    if (drawingBold) {
+                        c.fillRect(Math.round(this.pixelCoords[0].x + backgroundCellSize + lengthSoFar), Math.round(this.pixelCoords[0].y + (2 + i) * backgroundCellSize + 1), Math.round(c.measureText(this.textLines[i][j]).width + 0.3), 1);
+                    }
+                }
+                else if (VisualizationSettings.textHighlight == "background") {
+                    if (drawingBold) {
+                        // Draw next character
+                        c.fillText(this.textLines[i][j], this.pixelCoords[0].x + backgroundCellSize + lengthSoFar, this.pixelCoords[0].y + (2 + i) * backgroundCellSize);
+
+                        // Draw underline
+                        c.fillRect(Math.round(this.pixelCoords[0].x + backgroundCellSize + lengthSoFar), Math.round(this.pixelCoords[0].y + (2 + i) * backgroundCellSize + 1), Math.round(c.measureText(this.textLines[i][j]).width + 0.3), 1);
+                    }
+                    else {
+                        if (drawingName) {
+                            // Draw background rectangle
+                            let height = c.measureText("a").actualBoundingBoxAscent;
+                            c.fillRect(Math.round(this.pixelCoords[0].x + backgroundCellSize + lengthSoFar), Math.round(this.pixelCoords[0].y + (2 + i) * backgroundCellSize - height), Math.round(c.measureText(this.textLines[i][j]).width + 0.3), Math.round(height));
+                        }
+                        
+                        // Draw next character
+                        let current = c.fillStyle;
+                        c.fillStyle = "#000";
+                        c.fillText(this.textLines[i][j], this.pixelCoords[0].x + backgroundCellSize + lengthSoFar, this.pixelCoords[0].y + (2 + i) * backgroundCellSize);
+                        c.fillStyle = current;
+                    }
+                }
+                else if (VisualizationSettings.textHighlight == "none") {
+                    // Draw next character
+                    c.fillStyle = "#000";
+                    c.font = font;
+                    c.fillText(this.textLines[i][j], this.pixelCoords[0].x + backgroundCellSize + lengthSoFar, this.pixelCoords[0].y + (2 + i) * backgroundCellSize);
                 }
 
                 // Reset font if needed

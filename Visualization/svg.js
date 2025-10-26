@@ -6,7 +6,7 @@ function exportToSVG(VisualizationSettings) {
 
     // Draw elements
     drawEntities(svg, svgNS, VisualizationSettings);
-    drawStatements(svg, svgNS);
+    drawStatements(svg, svgNS, VisualizationSettings);
 
     // Serialize and download
     const svgData = new XMLSerializer().serializeToString(svg);
@@ -149,7 +149,7 @@ function labelEntity(entity, entityGroup, svgNS) {
     }
 }
 
-function drawStatements(svg, svgNS) {
+function drawStatements(svg, svgNS, VisualizationSettings) {
     // Draw statements
     statementCells.forEach(statement => {
         // Group elements in this statement
@@ -220,26 +220,66 @@ function drawStatements(svg, svgNS) {
                     fontWeight = "bold";
                 }
 
-                // Draw character as text
+                const width = c.measureText(statement.textLines[i][j]).width + 0.3;
+
+                // Background behind the text
+                const height = c.measureText("a").actualBoundingBoxAscent;
+                const textBackground = document.createElementNS(svgNS, "rect");
+                textBackground.setAttribute("x", xStart + backgroundCellSize + lengthSoFar);
+                textBackground.setAttribute("y", yStart + (2 + i) * backgroundCellSize - height);
+                textBackground.setAttribute("width", width);
+                textBackground.setAttribute("height", height);
+                textBackground.setAttribute("fill", fillColor);
+                textBackground.textContent = statement.textLines[i][j];
+
+                // Text
                 const textElem = document.createElementNS(svgNS, "text");
                 textElem.setAttribute("x", xStart + backgroundCellSize + lengthSoFar);
                 textElem.setAttribute("y", yStart + (2 + i) * backgroundCellSize);
-                textElem.setAttribute("font-weight", fontWeight);
-                textElem.setAttribute("fill", fillColor);
                 textElem.textContent = statement.textLines[i][j];
-                statementGroup.appendChild(textElem);
 
-                // Draw underline
-                if (drawingBold && statement.textLines[i][j] !== " ") {
-                    const underline = document.createElementNS(svgNS, "line");
-                    const width = c.measureText(statement.textLines[i][j]).width + 0.3;
-                    underline.setAttribute("x1", xStart + backgroundCellSize + lengthSoFar);
-                    underline.setAttribute("x2", xStart + backgroundCellSize + lengthSoFar + width);
-                    underline.setAttribute("y1", yStart + (2 + i) * backgroundCellSize + 1);
-                    underline.setAttribute("y2", yStart + (2 + i) * backgroundCellSize + 1);
-                    underline.setAttribute("stroke", "#000");
-                    underline.setAttribute("stroke-width", "1");
-                    statementGroup.appendChild(underline);
+                // Underline
+                const underline = document.createElementNS(svgNS, "line");
+                underline.setAttribute("x1", xStart + backgroundCellSize + lengthSoFar);
+                underline.setAttribute("x2", xStart + backgroundCellSize + lengthSoFar + width);
+                underline.setAttribute("y1", yStart + (2 + i) * backgroundCellSize + 1);
+                underline.setAttribute("y2", yStart + (2 + i) * backgroundCellSize + 1);
+                underline.setAttribute("stroke", "#000");
+                underline.setAttribute("stroke-width", "1");
+
+
+                if (VisualizationSettings.textHighlight == "text") {
+                    // Draw text
+                    textElem.setAttribute("fill", fillColor);
+                    textElem.setAttribute("font-weight", fontWeight);
+                    statementGroup.appendChild(textElem);
+
+                    // Draw underline
+                    if (drawingBold && statement.textLines[i][j] !== " ") {
+                        statementGroup.appendChild(underline);
+                    }
+                }
+                else if (VisualizationSettings.textHighlight == "background") {
+                    if (drawingName && !drawingBold) {
+                        // Draw text background
+                        statementGroup.appendChild(textBackground);
+                    }
+
+                    // Draw text
+                    textElem.setAttribute("fill", "#000");
+                    textElem.setAttribute("font-weight", fontWeight);
+                    statementGroup.appendChild(textElem);
+
+                    // Draw underline
+                    if (drawingBold && statement.textLines[i][j] !== " ") {
+                        statementGroup.appendChild(underline);
+                    }
+                }
+                else if (VisualizationSettings.textHighlight == "none") {
+                    // Draw text
+                    textElem.setAttribute("fill", "#000");
+                    textElem.setAttribute("font-weight", "normal");
+                    statementGroup.appendChild(textElem);
                 }
 
                 // Reset font if needed

@@ -60,10 +60,26 @@
                     </span>
 
                     <span>
+                        <div class="dropdownHeader">
+                            <div class="icon">
+                                <svg width="0.75em" height="0.75em" viewBox="0 0 40 40">
+                                    <polygon points="10,5 30,20 10,35" fill="#bbb" />
+                                </svg>
+                            </div>
+                            <p>Name Highlighting</p>
+                        </div>
+                        <ul class="dropdownMenu">
+                            <li class="selectable" id="textHighlighted">Text</li>
+                            <li class="selectable" id="backgroundHighlighted">Background</li>
+                            <li class="selectable" id="nothingHighlighted">None</li>
+                        </ul>
+                    </span>
+
+                    <span>
                         <p>Rounding</p>
                         <div class="slider">
                             <span class="sliderValue"></span>
-                            <input class="selectable" id="cornerRadius" type="range" min="0" max="30" value="15">
+                            <input class="selectable" id="cornerRadius" type="range" min="0" max="30" value="5">
                         </div>
                     </span>
 
@@ -102,7 +118,7 @@
                                 <div class="slider">
                                     <span class="sliderValue"></span>
                                     <input class="selectable" id="outlineWeight" type="range" min="1" max="10"
-                                        value="3">
+                                        value="1">
                                 </div>
                             </li>
                             <li id="outlineColor">
