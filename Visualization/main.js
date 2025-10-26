@@ -14,10 +14,10 @@ let VisualizationSettings = {
     entityRender: "stacked", // How to draw entities (stacked or transparent)
     grayscale: document.getElementById("grayscaleToggle").checked, // Whether or not the entity colors should be grayscaled
     headersIncluded: document.getElementById("headerToggle").checked, // Whether or not to draw entity headers
-    cornerRadius: 5, // How much to round entity and statement corners (0 = no rounding)
+    cornerRadius: document.getElementById('cornerRadius').value, // How much to round entity and statement corners (0 = no rounding)
     enableShadow: document.getElementById("shadowToggle").checked, // Whether or not to draw shadows under entities
     enableOutline: document.getElementById("outlineToggle").checked, // Whether or not to include entity outlines
-    outlineWeight: 2, // Thickness of the outlines
+    outlineWeight: document.getElementById('outlineWeight').value, // Thickness of the outlines
     outlineColor: document.getElementById('outlineColorInput').value, // Color of the outlines
     outlinesUseEntityColor: document.getElementById("outlinesUseEntityColorToggle").checked, // Whether or not to use a darker version of the entity color for outlines
     outlineNonRepeated: document.getElementById("outlineNonRepeatedToggle").checked, // Whether or not to outline non-repeated entities
