@@ -166,15 +166,26 @@ class Statement {
                     else {
                         if (drawingName) {
                             // Draw background rectangle
-                            let height = c.measureText("a").actualBoundingBoxAscent;
-                            c.fillRect(Math.round(this.pixelCoords[0].x + backgroundCellSize + lengthSoFar), Math.round(this.pixelCoords[0].y + (2 + i) * backgroundCellSize - height), Math.round(c.measureText(this.textLines[i][j]).width + 0.3), Math.round(height));
+                            let height = c.measureText("G").actualBoundingBoxAscent + 4;
+                            let color = c.fillStyle;
+                            c.fillStyle = lightenRGB(hexToRgb(c.fillStyle), 0.7);
+                            c.fillRect(Math.round(this.pixelCoords[0].x + backgroundCellSize + lengthSoFar), Math.round(this.pixelCoords[0].y + (2 + i) * (backgroundCellSize + 1) - height) + 2, Math.round(c.measureText(this.textLines[i][j]).width + 0.3), Math.round(height));
+                            c.fillStyle = color;
                         }
                         
                         // Draw next character
                         let current = c.fillStyle;
                         c.fillStyle = "#000";
-                        c.fillText(this.textLines[i][j], this.pixelCoords[0].x + backgroundCellSize + lengthSoFar, this.pixelCoords[0].y + (2 + i) * backgroundCellSize);
+                        if (drawingName) {
+                            // c.font = boldFont;
+                            c.strokeStyle = "rgb(245, 245, 245)";
+                            c.lineWidth = 1;
+                            c.strokeText(this.textLines[i][j], this.pixelCoords[0].x + backgroundCellSize + lengthSoFar, this.pixelCoords[0].y + (2 + i) * (backgroundCellSize + 1));
+                        }
+                        c.fillText(this.textLines[i][j], this.pixelCoords[0].x + backgroundCellSize + lengthSoFar, this.pixelCoords[0].y + (2 + i) * (backgroundCellSize + 1));
+                        
                         c.fillStyle = current;
+                        c.font = font;
                     }
                 }
                 else if (VisualizationSettings.textHighlight == "none") {

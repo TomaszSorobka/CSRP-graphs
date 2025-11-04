@@ -35,8 +35,8 @@ let cellHeights = []; // In background cells
 // Canvas
 const canvas = document.getElementById('canvas');
 const c = canvas.getContext('2d');
-const font = `normal ${backgroundCellSize}px sans-serif`;
-const boldFont = `bolder ${backgroundCellSize}px sans-serif`;
+const font = `normal ${backgroundCellSize}px Times New Roman`;
+const boldFont = `bolder ${backgroundCellSize}px Times New Roman`;
 c.globalCompositeOperation = "source-over";
 
 // Canvas elements to be drawn
