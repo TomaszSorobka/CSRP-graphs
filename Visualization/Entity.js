@@ -18,7 +18,6 @@ class Entity {
         this.coords = coords;
 
         this.cells = this.extractCells();
-        // console.log(this.cells);
         [this.columnsMap, this.rowsMap] = this.createColumnsAndRowsCellsMap();
 
         // Cell dimensions
@@ -27,10 +26,6 @@ class Entity {
         // Intervals for each side
         this.intervals = { top: [], right: [], bottom: [], left: [] };
         this.computeIntervals(VisualizationSettings.headersIncluded);
-
-        if (this.id == 1) {
-            console.log(this.intervals);
-        }
 
         // Pixel coordinates
         this.pixelCoords = [];
@@ -70,7 +65,7 @@ class Entity {
     // Creates a list of Point objects of the cells of the polygon 
     extractCells() {
         // Expand horizontal segments into all filled cells
-        let coords = this.coords
+        let coords = this.coords;
         const filled = new Set();
         for (let i = 0; i < coords.length; i += 2) {
             const start = coords[i];
@@ -119,7 +114,6 @@ class Entity {
             let topXEnd = -1;
             let botXStart = -1;
             let botXEnd = -1;
-            let print = false;
 
             for (let i = 0; i < rowCells.length; i++) { 
                 // top interval starts if it hasnt started and the previous row does not have a cell in this column
@@ -141,10 +135,6 @@ class Entity {
                 }
 
                 // bottom interval ends if: it started and (we are at the end of the row or the end of a segment of this row, or next row has a cell in the next column) 
-                if (!print) {
-                    console.log(rowCells)
-                    print = true;
-                }
                 if (botXStart != -1 && (i == rowCells.length - 1 || rowCells[i + 1] != rowCells[i] + 1 || nextRowCells.includes(rowCells[i + 1]))) {
                     botXEnd = rowCells[i];
                     bottomIntervals.push(new Interval(botXStart, botXEnd, rowIdx, 'bottom', this));
@@ -633,9 +623,9 @@ class Entity {
 
                     // Draw bottom line of crosshatched headers
                     c.fillRect(
-                        this.pixelCoords[0].x + VisualizationSettings.cornerRadius,
+                        this.pixelCoords[0].x + Number(VisualizationSettings.cornerRadius),
                         this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 2 * backgroundCellSize - 1,
-                        this.pixelCoords[1].x - this.pixelCoords[0].x - VisualizationSettings.cornerRadius - 1,
+                        this.pixelCoords[1].x - this.pixelCoords[0].x - Number(VisualizationSettings.cornerRadius) - 1,
                         2
                     );
                 }
