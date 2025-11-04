@@ -4,7 +4,7 @@ class Entity {
         this.id = id;
         this.statements = statements;
 
-        //  // Test whether column coords are computed correctly
+        // //  // Test whether column coords are computed correctly
         // this.coords = [
         //     { x: 1, y: 1 }, { x: 3, y: 1 },   // covers (1,1), (2,1), (3,1)
         //     { x: 5, y: 1 }, { x: 6, y: 1 },   // covers (5,1), (6,1)
@@ -13,13 +13,12 @@ class Entity {
         //     { x: 5, y: 3 }, { x: 6, y: 3 }    // covers (5,3), (6,3)
         // ];
 
-        // console.log(this.computeColumnCoords());
-
 
         // Cell coordinates
         this.coords = coords;
-        this.coordsCols = this.computeColumnCoords();
 
+        this.cells = this.extractCells();
+        [this.columnsMap, this.rowsMap] = this.createColumnsAndRowsCellsMap();
 
         // Cell dimensions
         this.computeDimensions();
@@ -63,59 +62,148 @@ class Entity {
         this.height = tempCoords[tempCoords.length - 1].y - tempCoords[0].y;
     }
 
-    computeColumnCoords() {
+    // Creates a list of Point objects of the cells of the polygon 
+    extractCells() {
         // Expand horizontal segments into all filled cells
-        let coords = this.coords
+        let coords = this.coords;
         const filled = new Set();
         for (let i = 0; i < coords.length; i += 2) {
             const start = coords[i];
             const end = coords[i + 1];
             for (let x = start.x; x <= end.x; x++) {
-                filled.add(`${x},${start.y}`);
+                filled.add(new Point(x, start.y));
             }
         }
+        return filled;
+    }
 
-        // Build map of x -> list of y where cell (x,y) is filled
+    // Create maps:
+    // rowsMap: for each row, which cells from that row are part of the polygon
+    // columnsMap: for each column, which cells from that column are part of the polygon
+    createColumnsAndRowsCellsMap() {
         const columns = new Map();
-        for (const key of filled) {
-            const [xStr, yStr] = key.split(",");
-            const x = parseInt(xStr);
-            const y = parseInt(yStr);
-            if (!columns.has(x)) columns.set(x, []);
-            columns.get(x).push(y);
+        for (const cell of this.cells) {
+            if (!columns.has(cell.x)) columns.set(cell.x, []);
+            columns.get(cell.x).push(cell.y);
         }
 
-        // Sort and compress each column's y values into continuous segments
-        const columnSegments = {};
-        for (const [x, ys] of columns.entries()) {
-
-            // I think they should be already sorted, but I don't want to make assumptions
-            ys.sort((a, b) => a - b);
-
-            const segments = [];
-            let start = ys[0];
-            let prev = ys[0];
-
-            for (let i = 1; i < ys.length; i++) {
-                if (ys[i] === prev + 1) {
-                    prev = ys[i]; // continue segment
-                } else {
-                    // segment ended
-                    segments.push({ x, yStart: start, yEnd: prev });
-                    start = ys[i];
-                    prev = ys[i];
-                }
-            }
-
-            // push last segment
-            segments.push({ x, yStart: start, yEnd: prev });
-            columnSegments[x] = segments;
+        const rows = new Map();
+        for (const cell of this.cells) {
+            if (!rows.has(cell.y)) rows.set(cell.y, []);
+            rows.get(cell.y).push(cell.x);
         }
 
-        return columnSegments;
+
+        // Sort lists of cells in the maps
+        columns.forEach(l => l.sort());
+        rows.forEach(l => l.sort());
+
+        return [columns, rows];
     }
 
     computeIntervals(headersIncluded) {
+        // Calculate top and bottom intervals
+        let topIntervals = [];
+        let bottomIntervals = [];
+
+        for (let [rowIdx, rowCells] of this.rowsMap.entries()) {
+            let prevRowCells = this.rowsMap.has(rowIdx - 1) ? this.rowsMap.get(rowIdx - 1) : [];
+            let nextRowCells = this.rowsMap.has(rowIdx + 1) ? this.rowsMap.get(rowIdx + 1) : [];
+
+            let topXStart = -1;
+            let topXEnd = -1;
+            let botXStart = -1;
+            let botXEnd = -1;
+
+            for (let i = 0; i < rowCells.length; i++) { 
+                // top interval starts if it hasnt started and the previous row does not have a cell in this column
+                if (topXStart == -1 && !prevRowCells.includes(rowCells[i])) {
+                    topXStart = rowCells[i];
+                }
+
+                // top interval ends if: it started and (we are at the end of the row or the end of a segment of this row, or previous row has a cell in the next column) 
+                if (topXStart != -1 && (i == rowCells.length - 1 || rowCells[i + 1] != rowCells[i] + 1 || prevRowCells.includes(rowCells[i + 1]))) {
+                    topXEnd = rowCells[i];
+                    topIntervals.push(new Interval(topXStart, topXEnd, rowIdx, 'top', this));
+                    topXStart = -1;
+                    topXEnd = -1;
+                }
+
+                // bottom interval starts if it hasnt started and the next row does not have a cell in this column
+                if (botXStart == -1 && !nextRowCells.includes(rowCells[i])) {
+                    botXStart = rowCells[i];
+                }
+
+                // bottom interval ends if: it started and (we are at the end of the row or the end of a segment of this row, or next row has a cell in the next column) 
+                if (botXStart != -1 && (i == rowCells.length - 1 || rowCells[i + 1] != rowCells[i] + 1 || nextRowCells.includes(rowCells[i + 1]))) {
+                    botXEnd = rowCells[i];
+                    bottomIntervals.push(new Interval(botXStart, botXEnd, rowIdx, 'bottom', this));
+                    botXStart = -1;
+                    botXEnd = -1;
+                }
+            }
+        }
+
+        // Calculate left and right intervals
+        let leftIntervals = [];
+        let rightIntervals = [];
+
+        for (let [colIdx, colCells] of this.columnsMap.entries()) {
+            let prevColCells = this.columnsMap.has(colIdx - 1) ? this.columnsMap.get(colIdx - 1) : [];
+            let nextColCells = this.columnsMap.has(colIdx + 1) ? this.columnsMap.get(colIdx + 1) : [];
+
+            let leftYStart = -1;
+            let leftYEnd = -1;
+            let rightYStart = -1;
+            let rightYEnd = -1;
+
+            for (let i = 0; i < colCells.length; i++) { 
+                // top interval starts if it hasnt started and the previous row does not have a cell in this column
+                if (leftYStart == -1 && !prevColCells.includes(colCells[i])) {
+                    leftYStart = colCells[i];
+                }
+
+                // top interval ends if: it started and (we are at the end of the row or the end of a segment of this row, or previous row has a cell in the next column) 
+                if (leftYStart != -1 && (i == colCells.length - 1 || colCells[i + 1] != colCells[i] + 1 || prevColCells.includes(colCells[i + 1]))) {
+                    leftYEnd = colCells[i];
+                    leftIntervals.push(new Interval(leftYStart, leftYEnd, colIdx, 'left', this));
+                    leftYStart = -1;
+                    leftYEnd = -1;
+                }
+
+                // bottom interval starts if it hasnt started and the next row does not have a cell in this column
+                if (rightYStart == -1 && !nextColCells.includes(colCells[i])) {
+                    rightYStart = colCells[i];
+                }
+
+                // bottom interval ends if: it started and (we are at the end of the row or the end of a segment of this row, or next row has a cell in the next column) 
+                if (rightYStart != -1 && (i == colCells.length - 1 || colCells[i + 1] != colCells[i] + 1 || nextColCells.includes(colCells[i + 1]))) {
+                    rightYEnd = colCells[i];
+                    rightIntervals.push(new Interval(rightYStart, rightYEnd, colIdx, 'right', this));
+                    rightYStart = -1;
+                    rightYEnd = -1;
+                }
+            }
+        }
+
+        // Add calculated top and bottom intervals to the entity
+        this.intervals.top = topIntervals;
+        this.intervals.bottom = bottomIntervals;
+        this.intervals.left = leftIntervals;
+        this.intervals.right = rightIntervals;
+
+        
+        // Set the top-left interval if headers are drawn
+        this.intervals.top[0].setTopLeft(true, headersIncluded);
+        
+        // Sort intervals on each side by their starting coordinate
+        this.intervals.top.sort((a, b) => a.start - b.start);
+        this.intervals.right.sort((a, b) => a.start - b.start);
+        this.intervals.bottom.sort((a, b) => a.start - b.start);
+        this.intervals.left.sort((a, b) => a.start - b.start);
+    }
+
+    computeIntervalsObsolete(headersIncluded) {
         // Calculate top and bottom intervals
         let topIntervals = [new Interval(this.coords[0].x, this.coords[1].x, this.coords[0].y, 'top', this)];
         let bottomIntervals = [new Interval(this.coords[this.coords.length - 2].x, this.coords[this.coords.length - 1].x, this.coords[this.coords.length - 2].y, 'bottom', this)];
@@ -535,9 +623,9 @@ class Entity {
 
                     // Draw bottom line of crosshatched headers
                     c.fillRect(
-                        this.pixelCoords[0].x + VisualizationSettings.cornerRadius,
+                        this.pixelCoords[0].x + Number(VisualizationSettings.cornerRadius),
                         this.pixelCoords[0].y + 2 * headerIndex * backgroundCellSize + 2 * backgroundCellSize - 1,
-                        this.pixelCoords[1].x - this.pixelCoords[0].x - VisualizationSettings.cornerRadius - 1,
+                        this.pixelCoords[1].x - this.pixelCoords[0].x - Number(VisualizationSettings.cornerRadius) - 1,
                         2
                     );
                 }

@@ -142,13 +142,20 @@ function parseData(fileContent) {
     if (type === "rectangles") {
         while ((match = rectEntityRegex.exec(fileContent)) !== null) {
             let [_, name, x1, y1, x2, y2] = match;
+            x1 = Number(x1);
+            y1 = Number(y1);
+            x2 = Number(x2);
+            y2 = Number(y2);
+
             const id = entities.length;
-            const coords = [
-                new Point(Number(x1), Number(y1)),
-                new Point(Number(x2), Number(y1)),
-                new Point(Number(x1), Number(y2)),
-                new Point(Number(x2), Number(y2)),
-            ];
+            const coords = [];
+
+            for (let y = y1; y <= y2; y++) {
+                coords.push(
+                    new Point(x1, y), // start of the row
+                    new Point(x2, y)  // end of the row
+                );
+            }
             entities.push({
                 id,
                 name,
@@ -263,8 +270,8 @@ function setup() {
     calculateCellHeights(cellHeights, statementCells, solutionHeight);
     setCanvasDimensions(rowGaps, columnGaps, cellHeights);
     positionElements(entityRects, statementCells);
-    
-    if(VisualizationSettings.grayscale) {
+
+    if (VisualizationSettings.grayscale) {
         assignGrayscaleColors(entityRects);
     }
     // Make the Export button functional
