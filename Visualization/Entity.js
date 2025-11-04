@@ -4,8 +4,22 @@ class Entity {
         this.id = id;
         this.statements = statements;
 
+        //  // Test whether column coords are computed correctly
+        // this.coords = [
+        //     { x: 1, y: 1 }, { x: 3, y: 1 },   // covers (1,1), (2,1), (3,1)
+        //     { x: 5, y: 1 }, { x: 6, y: 1 },   // covers (5,1), (6,1)
+        //     { x: 1, y: 5 }, { x: 3, y: 5 },
+        //     { x: 1, y: 2 }, { x: 2, y: 2 },   // covers (1,2), (2,2)
+        //     { x: 5, y: 3 }, { x: 6, y: 3 }    // covers (5,3), (6,3)
+        // ];
+
+        // console.log(this.computeColumnCoords());
+
+
         // Cell coordinates
         this.coords = coords;
+        this.coordsCols = this.computeColumnCoords();
+
 
         // Cell dimensions
         this.computeDimensions();
@@ -47,6 +61,58 @@ class Entity {
         tempCoords.sort((a, b) => a.y - b.y);
         // Find the largest difference
         this.height = tempCoords[tempCoords.length - 1].y - tempCoords[0].y;
+    }
+
+    computeColumnCoords() {
+        // Expand horizontal segments into all filled cells
+        let coords = this.coords
+        const filled = new Set();
+        for (let i = 0; i < coords.length; i += 2) {
+            const start = coords[i];
+            const end = coords[i + 1];
+            for (let x = start.x; x <= end.x; x++) {
+                filled.add(`${x},${start.y}`);
+            }
+        }
+
+        // Build map of x -> list of y where cell (x,y) is filled
+        const columns = new Map();
+        for (const key of filled) {
+            const [xStr, yStr] = key.split(",");
+            const x = parseInt(xStr);
+            const y = parseInt(yStr);
+            if (!columns.has(x)) columns.set(x, []);
+            columns.get(x).push(y);
+        }
+
+        // Sort and compress each column's y values into continuous segments
+        const columnSegments = {};
+        for (const [x, ys] of columns.entries()) {
+
+            // I think they should be already sorted, but I don't want to make assumptions
+            ys.sort((a, b) => a - b);
+
+            const segments = [];
+            let start = ys[0];
+            let prev = ys[0];
+
+            for (let i = 1; i < ys.length; i++) {
+                if (ys[i] === prev + 1) {
+                    prev = ys[i]; // continue segment
+                } else {
+                    // segment ended
+                    segments.push({ x, yStart: start, yEnd: prev });
+                    start = ys[i];
+                    prev = ys[i];
+                }
+            }
+
+            // push last segment
+            segments.push({ x, yStart: start, yEnd: prev });
+            columnSegments[x] = segments;
+        }
+
+        return columnSegments;
     }
 
     computeIntervals(headersIncluded) {
@@ -258,7 +324,7 @@ class Entity {
 
                     // Set the end x coordinate to match the left/right interval that exists
                     let xEnd = leftInterval[0] != null ? leftInterval[0].otherPixel : rightInterval[0].otherPixel;
-                    
+
                     // Add a new side with the pixel coordinates of this top interval
                     sides.push(new Side(new Point(xStart, interval.otherPixel), new Point(xEnd, interval.otherPixel)));
                 }
@@ -404,7 +470,7 @@ class Entity {
             else {
                 c.strokeStyle = rgbToRgba(VisualizationSettings.outlineColor, 0.5);
             }
-            
+
             if (!this.deleted.includes(true) && VisualizationSettings.outlineNonRepeated) {
                 c.lineWidth = VisualizationSettings.outlineWeight;
                 c.stroke(region);
