@@ -79,7 +79,8 @@ const colors = [
 ];
 
 // Color palette to be used for the current visualization
-let colorPalette = getReadyPalette(colors, colors.length, true);
+let colorPalette = [];
+colors.forEach(c => colorPalette.push(hexToRgb(c)));
 
 // Read solution from input
 document.getElementById('fileInput').addEventListener('change', function (event) {
@@ -252,7 +253,8 @@ function reset() {
     columnEntities = [];
 
     // Reset the color palette
-    colorPalette = getReadyPalette(colors, colors.length, true);
+    colorPalette = [];
+    colors.forEach(c => colorPalette.push(hexToRgb(c)));
 }
 
 // Prepare and process data

@@ -71,15 +71,6 @@ function lightenRGB(rgbString, factor = 0.9) {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-function getReadyPalette(colorPalette, n, format) {
-    let base = colorPalette.map(hex => format ? hexToRgb(hex) : rgbToColorArray(hexToRgb(hex)));
-    let palette = [];
-    for (let i = 0; i < n; i++) {
-        palette.push(base[i % base.length]);
-    }
-    return palette;
-}
-
 // Generates n perceptually spaced grayscale colors
 function generateGrayscalePalette(n) {
     const { formatRgb } = culori;
