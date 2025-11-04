@@ -14,15 +14,16 @@ let VisualizationSettings = {
     entityRender: "stacked", // How to draw entities (stacked or transparent)
     grayscale: document.getElementById("grayscaleToggle").checked, // Whether or not the entity colors should be grayscaled
     headersIncluded: document.getElementById("headerToggle").checked, // Whether or not to draw entity headers
-    cornerRadius: 15, // How much to round entity and statement corners (0 = no rounding)
+    cornerRadius: document.getElementById('cornerRadius').value, // How much to round entity and statement corners (0 = no rounding)
     enableShadow: document.getElementById("shadowToggle").checked, // Whether or not to draw shadows under entities
     enableOutline: document.getElementById("outlineToggle").checked, // Whether or not to include entity outlines
-    outlineWeight: 3, // Thickness of the outlines
+    outlineWeight: document.getElementById('outlineWeight').value, // Thickness of the outlines
     outlineColor: document.getElementById('outlineColorInput').value, // Color of the outlines
     outlinesUseEntityColor: document.getElementById("outlinesUseEntityColorToggle").checked, // Whether or not to use a darker version of the entity color for outlines
     outlineNonRepeated: document.getElementById("outlineNonRepeatedToggle").checked, // Whether or not to outline non-repeated entities
     outlineRepeated: document.getElementById("outlineRepeatedToggle").checked, // Whether or not to outline repeated entities
-    dashRepeated: document.getElementById("dashRepeatedToggle").checked // Whether or not to use a dashed outline for repeated entities
+    dashRepeated: document.getElementById("dashRepeatedToggle").checked, // Whether or not to use a dashed outline for repeated entities
+    textHighlight: "text" // How to highlight entity names in statements (none, text or background)
 };
 
 
@@ -93,7 +94,6 @@ document.getElementById('fileInput').addEventListener('change', function (event)
         parseData(fileContent); // Ensure data is processed first
 
         setup(); // Compute visualization
-        // setInterval(visualize, 1); // Show the solution
         visualize();
     };
     reader.readAsText(file);
@@ -206,13 +206,6 @@ function parseData(fileContent) {
 
     // Find the names of all entities with multiple copies
     copiedEntityNames = getCopiedEntities(entities);
-
-    // // Assign a unique color for each deleted entity
-    // let nrDeleted = copiedEntityNames.length;
-    // copiedEntityColors = getReadyPalette(colorPalette, nrDeleted, true);
-
-    // // Remove assigned colors from the palette
-    // colorPalette = colorPalette.filter(c => !copiedEntityColors.includes(hexToRgb(c)))
 }
 
 // Clear previous visualizations
@@ -261,7 +254,7 @@ function setup() {
     initializeElements(colorPalette, entities, statements, entityRects, statementCells, VisualizationSettings, copiedEntityColors);
 
     // Prepare entity rectangles to be drawn
-    mergeEntityRectsWithSameStatements(entityRects, VisualizationSettings);
+    if (VisualizationSettings.entityRender == "transparent") mergeEntityRectsWithSameStatements(entityRects, VisualizationSettings);
     mapEntityRectsToStatements(entityRects, statements);
     processEntityRectHeaders(entityRects, copiedEntityNames, VisualizationSettings);
 

@@ -77,6 +77,16 @@ document.querySelectorAll('li').forEach(element => {
         else if (listOption.id == "transparentEntities") {
             VisualizationSettings.entityRender = "transparent";
         }
+
+        if (listOption.id == "textHighlighted") {
+            VisualizationSettings.textHighlight = "text";
+        }
+        else if (listOption.id == "backgroundHighlighted") {
+            VisualizationSettings.textHighlight = "background";
+        }
+        else if (listOption.id == "nothingHighlighted") {
+            VisualizationSettings.textHighlight = "none";
+        }
     });
 });
 

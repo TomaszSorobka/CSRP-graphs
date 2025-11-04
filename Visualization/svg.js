@@ -6,7 +6,7 @@ function exportToSVG(VisualizationSettings) {
 
     // Draw elements
     drawEntities(svg, svgNS, VisualizationSettings);
-    drawStatements(svg, svgNS);
+    drawStatements(svg, svgNS, VisualizationSettings);
 
     // Serialize and download
     const svgData = new XMLSerializer().serializeToString(svg);
@@ -79,32 +79,24 @@ function drawEntity(entity, entityGroup, svgNS, VisualizationSettings) {
             path.setAttribute("stroke", color);
         }
 
-        // Dashed outline for repeated entities
-        // if (entity.deleted.includes(true)) {
-        //     poly.setAttribute("stroke", "#333"); // outline color
-        //     poly.setAttribute("stroke-dasharray", "5,5"); // dash pattern: 5px dash, 5px gap
-        // }
-
-        // // Draw borders
-        // if (VisualizationSettings.enableOutline) {
-        //     path.setAttribute("stroke", VisualizationSettings.outlineColor);
-        //     path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
-        // }
-
         // Draw borders
         if (VisualizationSettings.enableOutline) {
+            if (VisualizationSettings.outlinesUseEntityColor) {
+                path.setAttribute("stroke", darkenRGB(entity.colors[entity.statements.length > 1 ? 0 : (entity.deleted.includes(true) ? entity.deleted.indexOf(true) : 0)], 0.7));
+            }
+            else {
+                path.setAttribute("stroke", rgbToRgba(VisualizationSettings.outlineColor, 0.5));
+            }
+
             if (!entity.deleted.includes(true) && VisualizationSettings.outlineNonRepeated) {
-                path.setAttribute("stroke", VisualizationSettings.outlineColor);
                 path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
             }
             else if (entity.deleted.includes(true) && VisualizationSettings.outlineRepeated) {
                 if (VisualizationSettings.dashRepeated) {
-                    path.setAttribute("stroke", VisualizationSettings.outlineColor);
                     path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
                     path.setAttribute("stroke-dasharray", "5,5");
                 }
                 else {
-                    path.setAttribute("stroke", VisualizationSettings.outlineColor);
                     path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
                 }
             }
@@ -157,7 +149,7 @@ function labelEntity(entity, entityGroup, svgNS) {
     }
 }
 
-function drawStatements(svg, svgNS) {
+function drawStatements(svg, svgNS, VisualizationSettings) {
     // Draw statements
     statementCells.forEach(statement => {
         // Group elements in this statement
@@ -172,7 +164,9 @@ function drawStatements(svg, svgNS) {
         // Draw background rectangle
         const path = document.createElementNS(svgNS, "path");
         path.setAttribute("d", statement.svgPath);
-        path.setAttribute("fill", "rgb(255, 255, 255)");
+        path.setAttribute("fill", "rgb(245, 245, 245)");
+        path.setAttribute("stroke", "rgba(130, 130, 130, 0.5)");
+        path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
         statementGroup.appendChild(path);
 
         // Get entity names and their positions
@@ -226,26 +220,66 @@ function drawStatements(svg, svgNS) {
                     fontWeight = "bold";
                 }
 
-                // Draw character as text
+                const width = c.measureText(statement.textLines[i][j]).width + 0.3;
+
+                // Background behind the text
+                const height = c.measureText("a").actualBoundingBoxAscent;
+                const textBackground = document.createElementNS(svgNS, "rect");
+                textBackground.setAttribute("x", xStart + backgroundCellSize + lengthSoFar);
+                textBackground.setAttribute("y", yStart + (2 + i) * backgroundCellSize - height);
+                textBackground.setAttribute("width", width);
+                textBackground.setAttribute("height", height);
+                textBackground.setAttribute("fill", fillColor);
+                textBackground.textContent = statement.textLines[i][j];
+
+                // Text
                 const textElem = document.createElementNS(svgNS, "text");
                 textElem.setAttribute("x", xStart + backgroundCellSize + lengthSoFar);
                 textElem.setAttribute("y", yStart + (2 + i) * backgroundCellSize);
-                textElem.setAttribute("font-weight", fontWeight);
-                textElem.setAttribute("fill", fillColor);
                 textElem.textContent = statement.textLines[i][j];
-                statementGroup.appendChild(textElem);
 
-                // Draw underline
-                if (drawingBold && statement.textLines[i][j] !== " ") {
-                    const underline = document.createElementNS(svgNS, "line");
-                    const width = c.measureText(statement.textLines[i][j]).width + 0.3;
-                    underline.setAttribute("x1", xStart + backgroundCellSize + lengthSoFar);
-                    underline.setAttribute("x2", xStart + backgroundCellSize + lengthSoFar + width);
-                    underline.setAttribute("y1", yStart + (2 + i) * backgroundCellSize + 1);
-                    underline.setAttribute("y2", yStart + (2 + i) * backgroundCellSize + 1);
-                    underline.setAttribute("stroke", "#000");
-                    underline.setAttribute("stroke-width", "1");
-                    statementGroup.appendChild(underline);
+                // Underline
+                const underline = document.createElementNS(svgNS, "line");
+                underline.setAttribute("x1", xStart + backgroundCellSize + lengthSoFar);
+                underline.setAttribute("x2", xStart + backgroundCellSize + lengthSoFar + width);
+                underline.setAttribute("y1", yStart + (2 + i) * backgroundCellSize + 1);
+                underline.setAttribute("y2", yStart + (2 + i) * backgroundCellSize + 1);
+                underline.setAttribute("stroke", "#000");
+                underline.setAttribute("stroke-width", "1");
+
+
+                if (VisualizationSettings.textHighlight == "text") {
+                    // Draw text
+                    textElem.setAttribute("fill", fillColor);
+                    textElem.setAttribute("font-weight", fontWeight);
+                    statementGroup.appendChild(textElem);
+
+                    // Draw underline
+                    if (drawingBold && statement.textLines[i][j] !== " ") {
+                        statementGroup.appendChild(underline);
+                    }
+                }
+                else if (VisualizationSettings.textHighlight == "background") {
+                    if (drawingName && !drawingBold) {
+                        // Draw text background
+                        statementGroup.appendChild(textBackground);
+                    }
+
+                    // Draw text
+                    textElem.setAttribute("fill", "#000");
+                    textElem.setAttribute("font-weight", fontWeight);
+                    statementGroup.appendChild(textElem);
+
+                    // Draw underline
+                    if (drawingBold && statement.textLines[i][j] !== " ") {
+                        statementGroup.appendChild(underline);
+                    }
+                }
+                else if (VisualizationSettings.textHighlight == "none") {
+                    // Draw text
+                    textElem.setAttribute("fill", "#000");
+                    textElem.setAttribute("font-weight", "normal");
+                    statementGroup.appendChild(textElem);
                 }
 
                 // Reset font if needed

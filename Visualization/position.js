@@ -47,6 +47,8 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
     hardcodedEntityRects.push(entityRects.filter(e => e.id == 1)[0]);
     hardcodedEntityRects.push(entityRects.filter(e => e.id == 17)[0]);
     hardcodedEntityRects.push(entityRects.filter(e => e.id == 13)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 29)[0]);
+    hardcodedEntityRects.push(entityRects.filter(e => e.id == 31)[0]);
 
     for (let i = 0; i < entityRects.length; i++) {
         entityRects[i] = hardcodedEntityRects[i];
