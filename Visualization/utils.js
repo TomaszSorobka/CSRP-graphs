@@ -189,14 +189,14 @@ function stackEntity(nonPlacedEntities) {
         const aIntervals = a.entity.intervals.top.length + a.entity.intervals.bottom.length + a.entity.intervals.left.length + a.entity.intervals.right.length;
         const bIntervals = b.entity.intervals.top.length + b.entity.intervals.bottom.length + b.entity.intervals.left.length + b.entity.intervals.right.length;
         if (aIntervals !== bIntervals) {
-        return bIntervals - aIntervals;
+            return bIntervals - aIntervals;
         }
 
         // If intervals also equal, sort by size (decreasing)
         const aCells = a.entity.cells.size;
         const bCells = b.entity.cells.size;
         // if (aCells !== bCells) {
-            return bCells - aCells;
+        return bCells - aCells;
         // }
     });
 
@@ -219,7 +219,7 @@ function countCoveredIntervals(entity, remainingEntities) {
 function intervalIsCovered(interval, remainingEntities) {
     let intStart = interval.start;
     let intEnd = interval.end;
-    for (let i = intStart; i <= intEnd; i++) {
+    for (let i = intStart - 1; i <= intEnd + 1; i++) {
         let covered = false;
         for (const ent of remainingEntities) {
             if (intervalPartOverlaps(interval, i - intStart, ent)) {
