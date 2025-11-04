@@ -159,6 +159,123 @@ function buildOverlapGraph(entities) {
     return graph;
 }
 
+function computeStacking(entities) {
+    let nonPlacedEntities = entities.slice();
+    let stackedEntities = [];
+
+    while (nonPlacedEntities.length > 0) {
+        stackedEntities.push(stackEntity(nonPlacedEntities));
+    }
+
+    for (let i = 0; i < entities.length; i++) {
+        entities[i] = stackedEntities[i];
+    }
+}
+
+function stackEntity(nonPlacedEntities) {
+    let counts = []
+    for (const entity of nonPlacedEntities) {
+        let remainingEntities = nonPlacedEntities.filter(e => e !== entity);
+        counts.push({ entity: entity, count: countCoveredIntervals(entity, remainingEntities) });
+    }
+
+    counts.sort((a, b) => {
+        // Sort by count (increasing)
+        if (a.count !== b.count) {
+            return a.count - b.count;
+        }
+
+        // If counts are equal, sort by number of intervals (decreasing)
+        const aIntervals = a.entity.intervals.top.length + a.entity.intervals.bottom.length + a.entity.intervals.left.length + a.entity.intervals.right.length;
+        const bIntervals = b.entity.intervals.top.length + b.entity.intervals.bottom.length + b.entity.intervals.left.length + b.entity.intervals.right.length;
+        if (aIntervals !== bIntervals) {
+        return bIntervals - aIntervals;
+        }
+
+        // If intervals also equal, sort by size (decreasing)
+        const aCells = a.entity.cells.size;
+        const bCells = b.entity.cells.size;
+        // if (aCells !== bCells) {
+            return bCells - aCells;
+        // }
+    });
+
+    nonPlacedEntities.splice(nonPlacedEntities.indexOf(counts[0].entity), 1);
+    return counts[0].entity;
+}
+
+function countCoveredIntervals(entity, remainingEntities) {
+    // self explanatory
+    let counter = 0;
+    for (const side in entity.intervals) {
+        for (const interval of entity.intervals[side]) {
+            if (intervalIsCovered(interval, remainingEntities))
+                counter++;
+        }
+    }
+    return counter;
+}
+
+function intervalIsCovered(interval, remainingEntities) {
+    let intStart = interval.start;
+    let intEnd = interval.end;
+    for (let i = intStart; i <= intEnd; i++) {
+        let covered = false;
+        for (const ent of remainingEntities) {
+            if (intervalPartOverlaps(interval, i - intStart, ent)) {
+                covered = true;
+                break;
+            }
+        }
+        if (!covered) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function intervalPartOverlaps(interval, i, entity) {
+    if (interval.side == "top") {
+        return [...entity.cells].some(point =>
+            point.x == interval.start + i &&
+            point.y == interval.otherCoord
+        ) && [...entity.cells].some(point =>
+            point.x == interval.start + i &&
+            point.y == interval.otherCoord - 1
+        )
+    }
+
+    if (interval.side == "bottom") {
+        return [...entity.cells].some(point =>
+            point.x == interval.start + i &&
+            point.y == interval.otherCoord
+        ) && [...entity.cells].some(point =>
+            point.x == interval.start + i &&
+            point.y == interval.otherCoord + 1
+        )
+    }
+
+    if (interval.side == "left") {
+        return [...entity.cells].some(point =>
+            point.y == interval.start + i &&
+            point.x == interval.otherCoord
+        ) && [...entity.cells].some(point =>
+            point.y == interval.start + i &&
+            point.x == interval.otherCoord - 1
+        )
+    }
+
+    if (interval.side == "right") {
+        return [...entity.cells].some(point =>
+            point.y == interval.start + i &&
+            point.x == interval.otherCoord
+        ) && [...entity.cells].some(point =>
+            point.y == interval.start + i &&
+            point.x == interval.otherCoord + 1
+        )
+    }
+}
+
 function roundedPolygonPath(originalPoints, radius, removeLastPoint) {
     let points = originalPoints.slice();
     if (removeLastPoint) points.pop();

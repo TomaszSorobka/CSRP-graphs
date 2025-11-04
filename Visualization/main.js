@@ -267,6 +267,9 @@ function setup() {
     mapEntityRectsToStatements(entityRects, statements);
     processEntityRectHeaders(entityRects, copiedEntityNames, VisualizationSettings);
 
+    // Compute a stacking order of the entities
+    computeStacking(entityRects);
+
     // Calculate and set pixel dimensions
     calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, columnEntities, VisualizationSettings);
     calculateCellHeights(cellHeights, statementCells, solutionHeight);
