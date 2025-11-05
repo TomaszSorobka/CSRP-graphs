@@ -1,3 +1,4 @@
+type: rectangles
 w: 3
 h: 3
 Entity Mr. Albert Greenbags (President of the Bank): (0, 0) - (3, 0)

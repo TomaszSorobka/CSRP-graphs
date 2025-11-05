@@ -1,3 +1,4 @@
+type: rectangles
 w: 7
 h: 6
 Entity Mr. Albert Greenbags (President of the Bank) [Mr. Greenbags, the president's, Mr. Greenbag's]: (5, 4) - (6, 5)

@@ -1,3 +1,4 @@
+type: rectangles
 w: 8
 h: 5
 Entity Mr. Kelley: (5, 0) - (8, 2)

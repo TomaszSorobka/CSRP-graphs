@@ -1,0 +1,103 @@
+{
+  "statements": [
+    {
+      "id": 0,
+      "text": "On October 15, 2009, Richard and Mayumi Heene released a homemade helium balloon over Fort Collins, Colorado, claiming their six-year-old son Falcon was trapped inside."
+    },
+    {
+      "id": 1,
+      "text": "The saucer-shaped balloon, built by the Heenes as an experiment, reached about 7,000 feet during a 90-minute flight before landing near Denver International Airport."
+    },
+    {
+      "id": 2,
+      "text": "Authorities including the National Guard and local police pursued the balloon, but Falcon was later found hiding in the family’s attic."
+    },
+    {
+      "id": 3,
+      "text": "Public suspicion of a hoax arose after Falcon said on CNN’s Larry King Live, 'You guys said we did this for the show,' suggesting the event was staged."
+    },
+    {
+      "id": 4,
+      "text": "Larimer County Sheriff Jim Alderden later declared the incident a publicity stunt designed to attract attention for a potential reality TV show."
+    },
+    {
+      "id": 5,
+      "text": "Richard Heene pleaded guilty to attempting to influence a public servant, receiving 90 days in jail, while Mayumi Heene received 20 days of weekend jail and both were ordered to pay restitution."
+    },
+    {
+      "id": 6,
+      "text": "The Heenes claimed they accepted the plea deal under threat of Mayumi’s deportation and have since maintained their innocence."
+    },
+    {
+      "id": 7,
+      "text": "Colorado Governor Jared Polis pardoned the Heenes in December 2020, citing that they had already paid their public debt and deserved a second chance."
+    },
+    {
+      "id": 8,
+      "text": "Before the hoax, the Heene family had appeared twice on the reality show 'Wife Swap' and had unsuccessfully pitched multiple TV concepts including a science-themed series."
+    },
+    {
+      "id": 9,
+      "text": "Richard Heene was known as a storm chaser and self-promoter, involving his children in storm expeditions and UFO-hunting activities."
+    },
+    {
+      "id": 10,
+      "text": "The balloon, made of plastic tarps and aluminum foil, could lift only about 65 pounds, making it unlikely to have carried a child."
+    },
+    {
+      "id": 11,
+      "text": "Investigators found that the family planned the hoax about two weeks in advance and instructed their children to lie to authorities and media."
+    },
+    {
+      "id": 12,
+      "text": "The event generated massive global media coverage, internet memes, and parodies as the 'Balloon Boy' story dominated online searches."
+    },
+    {
+      "id": 13,
+      "text": "Critics accused the media of sensationalism and poor verification, while scholars noted the incident blurred lines between reality television and journalism."
+    },
+    {
+      "id": 14,
+      "text": "In 2011, Richard Heene auctioned the balloon for charity, donating proceeds to victims of the 2011 Tōhoku earthquake and tsunami."
+    },
+    {
+      "id": 15,
+      "text": "The hoax was later chronicled in documentaries including the 2019 ABC News interview and the 2025 Netflix film 'Trainwreck: Balloon Boy' directed by Gillian Pachter."
+    }
+  ],
+  "entities": [
+    {"id": 0, "name": "Richard Heene [Richard]"},
+    {"id": 1, "name": "Mayumi Heene [Mayumi]"},
+    {"id": 2, "name": "Falcon Heene [Falcon]"},
+    {"id": 3, "name": "Heene family [The Heenes, family]"},
+    {"id": 4, "name": "Balloon"},
+    {"id": 5, "name": "Fort Collins, Colorado"},
+    {"id": 6, "name": "Larimer County Sheriff"},
+    {"id": 7, "name": "Jim Alderden"},
+    {"id": 8, "name": "Governor Jared Polis"},
+    {"id": 9, "name": "CNN’s Larry King Live"},
+    {"id": 10, "name": "National Guard"},
+    {"id": 11, "name": "Television [TV]"},
+    {"id": 12, "name": "Media"},
+    {"id": 13, "name": "Documentaries and films"},
+    {"id": 14, "name": "Balloon Boy"}
+
+  ],
+  "entity_statements": {
+    "0": [0, 5, 9, 14],
+    "1": [0, 5, 6],
+    "2": [0, 2, 3],
+    "3": [1, 2, 6, 7, 8, 11],
+    "4": [0, 1, 2, 10, 14],
+    "5": [0],
+    "6": [4],
+    "7": [4],
+    "8": [7],
+    "9": [3],
+    "10": [2],
+    "11": [4, 8, 13],
+    "12": [11, 12, 13],
+    "13": [15],
+    "14": [12, 15]
+  }
+}

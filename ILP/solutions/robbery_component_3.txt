@@ -1,3 +1,4 @@
+type: rectangles
 w: 3
 h: 4
 Entity Miss Margaret Ellington (Miss Ellington): (0, 1) - (0, 3)

@@ -1,3 +1,4 @@
+type: rectangles
 w: 3
 h: 3
 Entity East Birdwatch, Wisconsin: (0, 0) - (2, 0)
