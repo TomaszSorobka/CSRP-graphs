@@ -44,7 +44,7 @@ function drawEntities(svg, svgNS, VisualizationSettings) {
         const entityGroup = document.createElementNS(svgNS, "g");
         entityGroup.setAttribute("id", `entity-${entity.id}`);
         entityGroup.setAttribute("font-size", `${backgroundCellSize}px`);
-        entityGroup.setAttribute("font-family", "Arial");
+        entityGroup.setAttribute("font-family", "Times New Roman");
         entityGroups.set(entity.id, entityGroup);
     });
 
@@ -156,7 +156,7 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
         const statementGroup = document.createElementNS(svgNS, "g");
         statementGroup.setAttribute("id", `statement-${statement.id || "group"}`);
         statementGroup.setAttribute("font-size", `${backgroundCellSize}px`);
-        statementGroup.setAttribute("font-family", "Arial");
+        statementGroup.setAttribute("font-family", "Times New Roman");
 
         const xStart = statement.pixelCoords[0].x;
         const yStart = statement.pixelCoords[0].y;
@@ -176,6 +176,9 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
         for (let i = 0; i < namesAndColors.length; i++) {
             nameIndices.push(getIndicesOf(namesAndColors[i][0], statement.text, false));
         }
+
+        // Store text to be draw after all entity name backgrounds (for highlight type "background")
+        let statementText = [];
 
         // Pointers
         let currentIndex = 0;
@@ -207,29 +210,29 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
                 }
 
                 // If we are not drawing a name, use black
-                if (!drawingName) fillColor = "#000";
+                if (!drawingName) fillColor = "rgb(0, 0, 0)";
 
                 // If singleton (white), override to black and bold
                 let drawingBold = false;
                 let fontWeight = "normal";
                 if (fillColor == "rgb(255, 255, 255)") {
-                    fillColor = "#000";
+                    fillColor = "rgb(0, 0, 0)";
                     fontWeight = "bolder";
                     drawingBold = true;
-                } else if (fillColor !== "#000") {
+                } else if (fillColor !== "rgb(0, 0, 0)") {
                     fontWeight = "bold";
                 }
 
                 const width = c.measureText(statement.textLines[i][j]).width + 0.3;
 
                 // Background behind the text
-                const height = c.measureText("a").actualBoundingBoxAscent;
+                const height = c.measureText("G").actualBoundingBoxAscent + 4;
                 const textBackground = document.createElementNS(svgNS, "rect");
                 textBackground.setAttribute("x", xStart + backgroundCellSize + lengthSoFar);
-                textBackground.setAttribute("y", yStart + (2 + i) * backgroundCellSize - height);
+                textBackground.setAttribute("y", yStart + (2 + i) * backgroundCellSize - height + 2);
                 textBackground.setAttribute("width", width);
                 textBackground.setAttribute("height", height);
-                textBackground.setAttribute("fill", fillColor);
+                textBackground.setAttribute("fill", lightenRGB(fillColor, 0.7));
                 textBackground.textContent = statement.textLines[i][j];
 
                 // Text
@@ -268,7 +271,10 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
                     // Draw text
                     textElem.setAttribute("fill", "#000");
                     textElem.setAttribute("font-weight", fontWeight);
-                    statementGroup.appendChild(textElem);
+                    textElem.setAttribute("stroke", "rgb(245, 245, 245)");
+                    textElem.setAttribute("stroke-width", 1);
+                    textElem.setAttribute("paint-order", "stroke");
+                    statementText.push(textElem);
 
                     // Draw underline
                     if (drawingBold && statement.textLines[i][j] !== " ") {
@@ -311,6 +317,9 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
             // Reset length after each line
             lengthSoFar = 0;
         }
+
+        // Draw all text on top of backgrounds if necessary
+        statementText.forEach(t => statementGroup.appendChild(t));
 
         svg.appendChild(statementGroup);
     });
