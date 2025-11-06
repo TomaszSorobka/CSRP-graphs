@@ -77,6 +77,16 @@ public class StatementEntitySolver {
 
             // Objective
             objective.apply(ctx);
+            // ctx.model.set(GRB.DoubleParam.TuneTimeLimit, 300);
+            // // Run automatic tuning
+            // ctx.model.tune();
+
+            // // Retrieve best parameter set
+            // int nResults = ctx.model.get(GRB.IntAttr.TuneResultCount);
+            // if (nResults > 0) {
+            //     ctx.model.getTuneResult(0); // load best parameter set
+            //     ctx.model.write("bestparams.prm"); // optional: save for later
+            // }
 
             // Solve
             ctx.model.optimize();
