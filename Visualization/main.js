@@ -267,8 +267,14 @@ function setup() {
     mapEntityRectsToStatements(entityRects, statements);
     processEntityRectHeaders(entityRects, copiedEntityNames, VisualizationSettings);
 
-    // Compute a stacking order of the entities
-    computeStacking(entityRects);
+    if (VisualizationSettings.entityRender == "stacked") {
+        // Compute a stacking order of the entities
+        computeStacking(entityRects);
+    }
+    else if (VisualizationSettings.entityRender == "transparent") {
+        // Sort entities by size in decreasing order
+        entityRects.sort((a, b) => b.cells.size - a.cells.size);
+    }
 
     // Calculate and set pixel dimensions
     calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, columnEntities, VisualizationSettings);

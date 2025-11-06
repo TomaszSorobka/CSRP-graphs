@@ -23,9 +23,6 @@ function initializeElements(colorPalette, entities, statements, entityRects, sta
         singletonEntities[i].colors = ['rgb(255, 255, 255)'];
     }
 
-    // Sort entity rectangles by size
-    // entityRects.sort((a, b) => ((a.width * a.height) - (b.width * b.height)));
-
     // Initialize statement cells
     for (var i = 0; i < statements.length; i++) {
         let id = statements[i].id;

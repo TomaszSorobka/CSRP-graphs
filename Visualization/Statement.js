@@ -114,6 +114,8 @@ class Statement {
         // Draw each character in statement text
         for (let i = 0; i < this.textLines.length; i++) {
             for (let j = 0; j < this.textLines[i].length; j++) {
+                let textX = this.pixelCoords[0].x + backgroundCellSize + lengthSoFar;
+                let textY = this.pixelCoords[0].y + (2 + i) * backgroundCellSize;
 
                 // Check if we are at the start of an entity name
                 for (let k = 0; k < nameIndices.length; k++) {
@@ -148,20 +150,20 @@ class Statement {
 
                 if (VisualizationSettings.textHighlight == "text") {
                     // Draw next character
-                    c.fillText(this.textLines[i][j], this.pixelCoords[0].x + backgroundCellSize + lengthSoFar, this.pixelCoords[0].y + (2 + i) * backgroundCellSize);
+                    c.fillText(this.textLines[i][j], textX, textY);
 
                     // Draw underline
                     if (drawingBold) {
-                        c.fillRect(Math.round(this.pixelCoords[0].x + backgroundCellSize + lengthSoFar), Math.round(this.pixelCoords[0].y + (2 + i) * backgroundCellSize + 1), Math.round(c.measureText(this.textLines[i][j]).width + 0.3), 1);
+                        c.fillRect(Math.round(textX), Math.round(textY + 1), Math.round(c.measureText(this.textLines[i][j]).width + 0.3), 1);
                     }
                 }
                 else if (VisualizationSettings.textHighlight == "background") {
                     if (drawingBold) {
                         // Draw next character
-                        c.fillText(this.textLines[i][j], this.pixelCoords[0].x + backgroundCellSize + lengthSoFar, this.pixelCoords[0].y + (2 + i) * backgroundCellSize);
+                        c.fillText(this.textLines[i][j], textX, textY);
 
                         // Draw underline
-                        c.fillRect(Math.round(this.pixelCoords[0].x + backgroundCellSize + lengthSoFar), Math.round(this.pixelCoords[0].y + (2 + i) * backgroundCellSize + 1), Math.round(c.measureText(this.textLines[i][j]).width + 0.3), 1);
+                        c.fillRect(Math.round(textX), Math.round(textY + 1), Math.round(c.measureText(this.textLines[i][j]).width + 0.3), 1);
                     }
                     else {
                         if (drawingName) {
@@ -169,30 +171,16 @@ class Statement {
                             let height = c.measureText("G").actualBoundingBoxAscent + 4;
                             let color = c.fillStyle;
                             c.fillStyle = lightenRGB(hexToRgb(c.fillStyle), 0.7);
-                            c.fillRect(Math.round(this.pixelCoords[0].x + backgroundCellSize + lengthSoFar), Math.round(this.pixelCoords[0].y + (2 + i) * (backgroundCellSize + 1) - height) + 2, Math.round(c.measureText(this.textLines[i][j]).width + 0.3), Math.round(height));
+                            c.fillRect(Math.round(textX), Math.round(textY - height) + 2, Math.round(c.measureText(this.textLines[i][j]).width + 0.3), Math.round(height));
                             c.fillStyle = color;
                         }
-                        
-                        // Draw next character
-                        let current = c.fillStyle;
-                        c.fillStyle = "#000";
-                        if (drawingName) {
-                            // c.font = boldFont;
-                            c.strokeStyle = "rgb(245, 245, 245)";
-                            c.lineWidth = 1;
-                            c.strokeText(this.textLines[i][j], this.pixelCoords[0].x + backgroundCellSize + lengthSoFar, this.pixelCoords[0].y + (2 + i) * (backgroundCellSize + 1));
-                        }
-                        c.fillText(this.textLines[i][j], this.pixelCoords[0].x + backgroundCellSize + lengthSoFar, this.pixelCoords[0].y + (2 + i) * (backgroundCellSize + 1));
-                        
-                        c.fillStyle = current;
-                        c.font = font;
                     }
                 }
                 else if (VisualizationSettings.textHighlight == "none") {
                     // Draw next character
                     c.fillStyle = "#000";
                     c.font = font;
-                    c.fillText(this.textLines[i][j], this.pixelCoords[0].x + backgroundCellSize + lengthSoFar, this.pixelCoords[0].y + (2 + i) * backgroundCellSize);
+                    c.fillText(this.textLines[i][j], textX, textY);
                 }
 
                 // Reset font if needed
@@ -224,6 +212,83 @@ class Statement {
 
             // Reset length after each line
             lengthSoFar = 0;
+        }
+
+        // If the highlight style is "background" draw all the text separately after all the backgrounds
+        if (VisualizationSettings.textHighlight == "background") {
+            c.fillStyle = "#000";
+            let currentEntityNameColor = "#000";
+            currentIndex = 0;
+
+            for (let i = 0; i < this.textLines.length; i++) {
+                for (let j = 0; j < this.textLines[i].length; j++) {
+                    let textX = this.pixelCoords[0].x + backgroundCellSize + lengthSoFar;
+                    let textY = this.pixelCoords[0].y + (2 + i) * backgroundCellSize;
+
+                    // Check if we are at the start of an entity name
+                    for (let k = 0; k < nameIndices.length; k++) {
+                        for (let l = 0; l < nameIndices[k].length; l++) {
+                            // A name starts at this index
+                            if (currentIndex == nameIndices[k][l]) {
+                                // Add name length and color to list of current names
+                                ongoingNameLengthsAndColors.unshift([namesAndColors[k][0].length, namesAndColors[k][1]]);
+                            }
+                        }
+                    }
+
+                    // Sort names by (remaining) length
+                    ongoingNameLengthsAndColors.sort((a, b) => a[0] - b[0]);
+
+                    // If names start at this index update the drawingName pointer
+                    if (ongoingNameLengthsAndColors.length > 0) {
+                        currentEntityNameColor = ongoingNameLengthsAndColors[0][1];
+                        drawingName = true;
+                    }
+
+                    // Check if we are drawing the name of a singleton
+                    let drawingBold = false;
+                    if (currentEntityNameColor == "rgb(255, 255, 255)") {
+                        drawingBold = true;
+                    }
+
+                    // Draw a white outline only for non-singleton names
+                    if (drawingName && !drawingBold) {
+                        c.strokeStyle = "rgb(245, 245, 245)";
+                        c.lineWidth = 1;
+                        c.strokeText(this.textLines[i][j], textX, textY);
+                    }
+                    // Draw next character
+                    c.fillText(this.textLines[i][j], textX, textY);
+
+                    // 
+                    if (drawingBold) {
+                        currentEntityNameColor = "rgb(255, 255, 255)";
+                    }
+
+                    // Update pointers
+                    ongoingNameLengthsAndColors.forEach(e => {
+                        e[0]--; // Decrease remaining length of all current names
+                        // Remove names from the list when they are done
+                        if (e[0] == 0) ongoingNameLengthsAndColors.splice(ongoingNameLengthsAndColors.indexOf(e), 1);
+                    });
+
+                    // No names left to draw at this index
+                    if (ongoingNameLengthsAndColors.length == 0) {
+                        drawingName = false;
+                        drawingBold = false;
+                    }
+                    else {
+                        currentEntityNameColor = ongoingNameLengthsAndColors[0][1];
+                    }
+
+                    // Move on to next character
+                    currentIndex++;
+                    lengthSoFar += c.measureText(this.textLines[i][j]).width;
+                }
+
+                // Reset length after each line
+                lengthSoFar = 0;
+            }
         }
     }
 }

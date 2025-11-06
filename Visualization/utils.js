@@ -159,6 +159,7 @@ function buildOverlapGraph(entities) {
     return graph;
 }
 
+// Stack entities
 function computeStacking(entities) {
     let nonPlacedEntities = entities.slice();
     let stackedEntities = [];
@@ -172,8 +173,9 @@ function computeStacking(entities) {
     }
 }
 
+// Choose an entity to stack next
 function stackEntity(nonPlacedEntities) {
-    let counts = []
+    let counts = [];
     for (const entity of nonPlacedEntities) {
         let remainingEntities = nonPlacedEntities.filter(e => e !== entity);
         counts.push({ entity: entity, count: countCoveredIntervals(entity, remainingEntities) });
@@ -195,30 +197,30 @@ function stackEntity(nonPlacedEntities) {
         // If intervals also equal, sort by size (decreasing)
         const aCells = a.entity.cells.size;
         const bCells = b.entity.cells.size;
-        // if (aCells !== bCells) {
         return bCells - aCells;
-        // }
     });
 
+    // Remove and return chosen entity
     nonPlacedEntities.splice(nonPlacedEntities.indexOf(counts[0].entity), 1);
     return counts[0].entity;
 }
 
+// Count the number of covered intervals for this entity
 function countCoveredIntervals(entity, remainingEntities) {
-    // self explanatory
     let counter = 0;
     for (const side in entity.intervals) {
         for (const interval of entity.intervals[side]) {
-            if (intervalIsCovered(interval, remainingEntities))
-                counter++;
+            if (intervalIsCovered(interval, remainingEntities)) counter++;
         }
     }
     return counter;
 }
 
+// Check if an interval is covered
 function intervalIsCovered(interval, remainingEntities) {
     let intStart = interval.start;
     let intEnd = interval.end;
+
     for (let i = intStart - 1; i <= intEnd + 1; i++) {
         let covered = false;
         for (const ent of remainingEntities) {
@@ -227,13 +229,13 @@ function intervalIsCovered(interval, remainingEntities) {
                 break;
             }
         }
-        if (!covered) {
-            return false;
-        }
+        if (!covered) return false;
     }
+
     return true;
 }
 
+// Check if the i-th cell of this interval is covered 
 function intervalPartOverlaps(interval, i, entity) {
     if (interval.side == "top") {
         return [...entity.cells].some(point =>
@@ -242,7 +244,7 @@ function intervalPartOverlaps(interval, i, entity) {
         ) && [...entity.cells].some(point =>
             point.x == interval.start + i &&
             point.y == interval.otherCoord - 1
-        )
+        );
     }
 
     if (interval.side == "bottom") {
@@ -252,7 +254,7 @@ function intervalPartOverlaps(interval, i, entity) {
         ) && [...entity.cells].some(point =>
             point.x == interval.start + i &&
             point.y == interval.otherCoord + 1
-        )
+        );
     }
 
     if (interval.side == "left") {
@@ -262,7 +264,7 @@ function intervalPartOverlaps(interval, i, entity) {
         ) && [...entity.cells].some(point =>
             point.y == interval.start + i &&
             point.x == interval.otherCoord - 1
-        )
+        );
     }
 
     if (interval.side == "right") {
@@ -272,7 +274,7 @@ function intervalPartOverlaps(interval, i, entity) {
         ) && [...entity.cells].some(point =>
             point.y == interval.start + i &&
             point.x == interval.otherCoord + 1
-        )
+        );
     }
 }
 
