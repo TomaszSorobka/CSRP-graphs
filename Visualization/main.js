@@ -295,4 +295,6 @@ function visualize() {
 
     // drawBackgroundGrid();
     drawElements(entityRects, statementCells, VisualizationSettings);
+    
+    setTimeout(() => { recomputeAndUpdateCache(colors);}, 1000);
 }

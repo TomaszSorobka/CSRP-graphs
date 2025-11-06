@@ -1,3 +1,9 @@
+let entitiesToColor;
+let spatialMatrix;
+let currentBestE;
+let cacheKey;
+let cached;
+
 function rgbToColorArray(rgb) {
     const match = rgb.match(/^rgb\s*\(\s*(\d+),\s*(\d+),\s*(\d+)\s*\)$/i);
     const [_, r, g, b] = match;
@@ -34,41 +40,41 @@ function hexToRgb(hex) {
 }
 
 function darkenRGB(rgbString, factor = 0.8) {
-  // factor < 1 → darker, e.g. 0.8 = 20% darker
+    // factor < 1 → darker, e.g. 0.8 = 20% darker
 
-  // Extract numeric values from "rgb(…, …, …)"
-  const match = rgbString.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i);
-  if (!match) {
-    throw new Error("Invalid RGB string format");
-  }
+    // Extract numeric values from "rgb(…, …, …)"
+    const match = rgbString.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i);
+    if (!match) {
+        throw new Error("Invalid RGB string format");
+    }
 
-  let [_, r, g, b] = match.map(Number);
+    let [_, r, g, b] = match.map(Number);
 
-  // Scale each channel and clamp to [0, 255]
-  r = Math.max(0, Math.min(255, Math.round(r * factor)));
-  g = Math.max(0, Math.min(255, Math.round(g * factor)));
-  b = Math.max(0, Math.min(255, Math.round(b * factor)));
+    // Scale each channel and clamp to [0, 255]
+    r = Math.max(0, Math.min(255, Math.round(r * factor)));
+    g = Math.max(0, Math.min(255, Math.round(g * factor)));
+    b = Math.max(0, Math.min(255, Math.round(b * factor)));
 
-  return `rgb(${r}, ${g}, ${b})`;
+    return `rgb(${r}, ${g}, ${b})`;
 }
 
 function lightenRGB(rgbString, factor = 0.9) {
-  // factor < 1 → darker, e.g. 0.8 = 20% darker
+    // factor < 1 → darker, e.g. 0.8 = 20% darker
 
-  // Extract numeric values from "rgb(…, …, …)"
-  const match = rgbString.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i);
-  if (!match) {
-    throw new Error("Invalid RGB string format");
-  }
+    // Extract numeric values from "rgb(…, …, …)"
+    const match = rgbString.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i);
+    if (!match) {
+        throw new Error("Invalid RGB string format");
+    }
 
-  let [_, r, g, b] = match.map(Number);
+    let [_, r, g, b] = match.map(Number);
 
-  // Scale each channel and clamp to [0, 255]
-  r = factor * r + (1 - factor) * 255;
-  g = factor * g + (1 - factor) * 255;
-  b = factor * b + (1 - factor) * 255;
+    // Scale each channel and clamp to [0, 255]
+    r = factor * r + (1 - factor) * 255;
+    g = factor * g + (1 - factor) * 255;
+    b = factor * b + (1 - factor) * 255;
 
-  return `rgb(${r}, ${g}, ${b})`;
+    return `rgb(${r}, ${g}, ${b})`;
 }
 
 // Generates n perceptually spaced grayscale colors
@@ -155,127 +161,155 @@ function assignGrayscaleColors(entityRects) {
     });
 }
 
+// 1 = “just noticeable difference”, 100 = “opposite colors”
+function colorDistance(c1, c2) {
+    const { converter, differenceCiede2000 } = culori;
+    const lab = converter('lab');
+    const deltaE = differenceCiede2000();
+    return deltaE(lab(c1), lab(c2));
+}
+
+function assignmentEnergy(entities, colors, assignment, spatialMatrix, sigmaC, sigmaS) {
+    let E = 0;
+
+    for (let i = 0; i < entities.length; i++) {
+        for (let j = i + 1; j < entities.length; j++) {
+            const dc = colorDistance(colors[assignment[i]], colors[assignment[j]]);
+            let ds = spatialMatrix[i][j];
+            // Exponential penalty: high for close and similar
+            const penalty = Math.exp(-dc / sigmaC) * Math.exp(-ds / sigmaS);
+            E += penalty;
+        }
+    }
+
+    return E;
+}
+
+function simulatedAnnealingAssignment(entities, colors, spatialMatrix, {
+    sigmaC = 5,
+    sigmaS = 3,
+    iterations = 10000,
+    tempStart = 1.0,
+    tempEnd = 0.001,
+    changeColorsProb = 0.1
+} = {}) {
+    const n = entities.length;
+    const indices = colors.map((_, i) => i);
+    const assignment = [];
+    for (let i = 0; i < n; i++) {
+        const randIndex = Math.floor(Math.random() * indices.length);
+        assignment.push(indices.splice(randIndex, 1)[0]);
+    }
+    let bestAssign = [...assignment];
+
+    let currentE = assignmentEnergy(entities, colors, assignment, spatialMatrix, sigmaC, sigmaS);
+    let bestE = currentE;
+
+    for (let iter = 0; iter < iterations; iter++) {
+        const T = tempStart * Math.pow(tempEnd / tempStart, iter / iterations);
+        let newAssign = [...assignment];
+
+        // derive unused from current assignment
+        const used = new Set(newAssign);
+        const unused = colors.map((_, idx) => idx).filter(idx => !used.has(idx));
+
+        if (Math.random() < changeColorsProb) { // change the colors in the assignment
+            // Change one entity's color to a new one
+            const i = Math.floor(Math.random() * newAssign.length);
+            const newColorIdx = Math.floor(Math.random() * unused.length);
+            const newColor = unused[newColorIdx];
+
+            unused.push(newAssign[i]);              // old color goes back to unused
+            newAssign[i] = newColor                 // assign new color
+            unused.splice(newColorIdx, 1);          // remove it from unused list
+        } else {
+            // Randomly pick two entities to swap colors
+            const i = Math.floor(Math.random() * n);
+            const j = Math.floor(Math.random() * n);
+            if (i === j) continue;
+            const swap = newAssign[i];
+            newAssign[i] = newAssign[j];
+            newAssign[j] = swap;
+        }
+
+        const newE = assignmentEnergy(entities, colors, newAssign, spatialMatrix, sigmaC, sigmaS);
+        const delta = newE - currentE;
+
+        // Accept swap if better or probabilistically worse
+        if (delta < 0 || Math.random() < Math.exp(-delta / T)) {
+            assignment.splice(0, n, ...newAssign);
+            currentE = newE;
+            if (newE < bestE) {
+                bestE = newE;
+                bestAssign = [...newAssign];
+            }
+        }
+
+        // // occasional logging
+        // if (iter % 1000 === 0) {
+        //     console.log(`Iter ${iter} — E=${bestE.toFixed(3)} T=${T.toFixed(4)}`);
+        //     console.log(bestAssign.slice())
+        // }
+    }
+    // console.log(bestAssign)
+    return { bestAssign, bestE };
+}
+
+
 // sigmaC controls how rapidly the color similarity drops off
 //  - around 10–20 works well for ΔE2000 
 // sigmaS controls spatial decay (depends on distances between polygons).
 //  - looking at oour distances maybe between 2 and 8 will work best?
-function assignColorsBasedOnDistance(colors, sigmaC = 5, sigmaS = 3) {
-    const { converter, differenceCiede2000 } = culori;
-    const lab = converter('lab');
-    const deltaE = differenceCiede2000();
-
-    const entitiesToColor = getEntitiesToColor(entityRects, false);
-    const spatialMatrix = buildSpatialMatrix(entitiesToColor, groupedMap);
-
-    // 1 = “just noticeable difference”, 100 = “opposite colors”
-    function colorDistance(c1, c2) {
-        return deltaE(lab(c1), lab(c2));
-    }
-
-    function assignmentEnergy(entities, colors, assignment) {
-        let E = 0;
-
-        for (let i = 0; i < entities.length; i++) {
-            for (let j = i + 1; j < entities.length; j++) {
-                const dc = colorDistance(colors[assignment[i]], colors[assignment[j]]);
-                let ds = spatialMatrix[i][j];
-                // Exponential penalty: high for close and similar
-                const penalty = Math.exp(-dc / sigmaC) * Math.exp(-ds / sigmaS);
-                E += penalty;
-            }
-        }
-
-        return E;
-    }
-
-    function simulatedAnnealingAssignment(entities, colors, {
-        sigmaC = 5,
-        sigmaS = 3,
-        iterations = 10000,
-        tempStart = 1.0,
-        tempEnd = 0.001,
-        changeColorsProb = 0.1
-    } = {}) {
-        const n = entities.length;
-        const indices = colors.map((_, i) => i);
-        const assignment = [];
-        for (let i = 0; i < n; i++) {
-            const randIndex = Math.floor(Math.random() * indices.length);
-            assignment.push(indices.splice(randIndex, 1)[0]);
-        }
-        let bestAssign = [...assignment];
-
-        let currentE = assignmentEnergy(entities, colors, assignment);
-        let bestE = currentE;
-
-        for (let iter = 0; iter < iterations; iter++) {
-            const T = tempStart * Math.pow(tempEnd / tempStart, iter / iterations);
-            let newAssign = [...assignment];
-
-            // derive unused from current assignment
-            const used = new Set(newAssign);
-            const unused = colors.map((_, idx) => idx).filter(idx => !used.has(idx));
-
-            if (Math.random() < changeColorsProb) { // change the colors in the assignment
-                // Change one entity's color to a new one
-                const i = Math.floor(Math.random() * newAssign.length);
-                const newColorIdx = Math.floor(Math.random() * unused.length);
-                const newColor = unused[newColorIdx];
-
-                unused.push(newAssign[i]);              // old color goes back to unused
-                newAssign[i] = newColor                 // assign new color
-                unused.splice(newColorIdx, 1);          // remove it from unused list
-            } else {
-                // Randomly pick two entities to swap colors
-                const i = Math.floor(Math.random() * n);
-                const j = Math.floor(Math.random() * n);
-                if (i === j) continue;
-                const swap = newAssign[i];
-                newAssign[i] = newAssign[j];
-                newAssign[j] = swap;
-            }
-
-            const newE = assignmentEnergy(entities, colors, newAssign, sigmaC, sigmaS);
-            const delta = newE - currentE;
-
-            // Accept swap if better or probabilistically worse
-            if (delta < 0 || Math.random() < Math.exp(-delta / T)) {
-                assignment.splice(0, n, ...newAssign);
-                currentE = newE;
-                if (newE < bestE) {
-                    bestE = newE;
-                    bestAssign = [...newAssign];
-                }
-            }
-
-            // // occasional logging
-            // if (iter % 1000 === 0) {
-            //     console.log(`Iter ${iter} — E=${bestE.toFixed(3)} T=${T.toFixed(4)}`);
-            //     console.log(bestAssign.slice())
-            // }
-        }
-        // console.log(bestAssign)
-        return { bestAssign, bestE };
-    }
-
+function assignColorsBasedOnDistance(colors) {
+    entitiesToColor = getEntitiesToColor(entityRects, false);
+    spatialMatrix = buildSpatialMatrix(entitiesToColor, groupedMap);
     // return simulatedAnnealingAssignment(entitiesToColor, colors).bestAssign
-    bestAssign = simulatedAnnealingAssignment(entitiesToColor, colors).bestAssign;
-    for (let ent = 0; ent < entitiesToColor.length; ent++) {
-        if (groupedMap.has(entitiesToColor[ent].headers[0])) {
-            let repeatedEnt = groupedMap.get(entitiesToColor[ent].headers[0]);
-            repeatedEnt.forEach(e => e.colors = [colors[bestAssign[ent]]]);
-        }
-        else {
-            entitiesToColor[ent].colors = [colors[bestAssign[ent]]];
-        }
+
+    cacheKey = computeCacheKey(entityRects);
+    cached = loadColorCache(cacheKey);
+    let bestAssign;
+    if (cached) {
+        console.log("Reading cached assignment...")
+        bestAssign = cached.colorAssignment;
+        currentBestE = cached.cost;
+    } else {
+        const result = simulatedAnnealingAssignment(entitiesToColor, colors, spatialMatrix);
+        bestAssign = result.bestAssign;
+        currentBestE = result.bestE
+        saveColorCache(cacheKey, bestAssign, colors, currentBestE);
     }
 
-    copiedEntityColors = [];
-    for (let i = 0; i < copiedEntityNames.length; i++) {
-        copiedEntityColors.push(groupedMap.get(copiedEntityNames[i])[0].colors[0]);
-    }
+    // bestAssign = simulatedAnnealingAssignment(entitiesToColor, colors).bestAssign;
+    applyAssignments(entitiesToColor, colors, bestAssign)
 }
 
+function applyAssignments(entitiesToColor, colors, assignment) {
+    for (let ent = 0; ent < entitiesToColor.length; ent++) {
+        const name = entitiesToColor[ent].headers[0];
+        const color = colors[assignment[ent]];
+
+        if (groupedMap.has(name)) {
+            groupedMap.get(name).forEach(e => (e.colors = [color]));
+        } else {
+            entitiesToColor[ent].colors = [color];
+        }
+    }
+
+    copiedEntityColors = copiedEntityNames.map(name =>
+        groupedMap.get(name)[0].colors[0]
+    );
+}
+
+function recomputeAndUpdateCache(colors, sigmaC = 5, sigmaS = 3) {
+  console.log("Running post-process simulated annealing to search for improvements...");
+  const result = simulatedAnnealingAssignment(entitiesToColor, colors, spatialMatrix, { sigmaC, sigmaS });
+  if (result.bestE < currentBestE) {
+    console.log(`Found better assignment! E=${result.bestE.toFixed(3)} (prev=${currentBestE.toFixed(3)})`);
+    saveColorCache(cacheKey, result.bestAssign, colors);
+  } else {
+    console.log("No better assignment found — keeping cached one.");
+  }
+}
 
 function createCrosshatchPattern(color) {
     const patternCanvas = document.createElement('canvas');
