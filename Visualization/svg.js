@@ -82,22 +82,22 @@ function drawEntity(entity, entityGroup, svgNS, VisualizationSettings) {
         // Draw borders
         if (VisualizationSettings.enableOutline) {
             if (VisualizationSettings.outlinesUseEntityColor) {
-                path.setAttribute("stroke", darkenRGB(entity.colors[entity.statements.length > 1 ? 0 : (entity.deleted.includes(true) ? entity.deleted.indexOf(true) : 0)], 0.7));
+                path.setAttribute("stroke", darkenRGB(color, 0.7));
             }
             else {
                 path.setAttribute("stroke", rgbToRgba(VisualizationSettings.outlineColor, 0.5));
             }
 
             if (!entity.deleted.includes(true) && VisualizationSettings.outlineNonRepeated) {
-                path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
+                path.setAttribute("stroke-width", Number(VisualizationSettings.outlineWeight) + 1);
             }
             else if (entity.deleted.includes(true) && VisualizationSettings.outlineRepeated) {
                 if (VisualizationSettings.dashRepeated) {
-                    path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
+                    path.setAttribute("stroke-width", Number(VisualizationSettings.outlineWeight) + 1);
                     path.setAttribute("stroke-dasharray", "5,5");
                 }
                 else {
-                    path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
+                    path.setAttribute("stroke-width", Number(VisualizationSettings.outlineWeight) + 1);
                 }
             }
         }
