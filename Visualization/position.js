@@ -38,7 +38,7 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
     calculateMargins(VisualizationSettings);
 
     // Set grid gaps
-    calculateGaps();
+    calculateGaps(rowGaps, columnGaps, rowSegments, columnSegments);
 
     entityRects.reverse();
 
@@ -122,51 +122,215 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
             return changes;
         }
     }
+}
 
-    function calculateGaps() {
-        increaseRowGaps();
-        increaseColumnGaps();
-    }
+function calculateGaps(rowGaps, columnGaps, rowSegments, columnSegments) {
+    increaseRowGapsNested(rowGaps, rowSegments);
+    increaseRowGapsNeighbouring(rowGaps, rowSegments);
+    increaseColumnGapsNested(columnGaps, columnSegments);
+    increaseColumnGapsNeighbouring(columnGaps, columnSegments);
+}
 
-    function increaseRowGaps() {
-        increaseRowGapsNested();
-        increaseRowGapsNeighbouring();
-    }
+// Increase row gaps to fit the highest number of nested entities
+function increaseRowGapsNested(rowGaps, rowSegments) {
+    for (let i = 0; i < rowSegments.length; i++) {
+        let maxMargin = 0;
 
-    function increaseColumnGaps() {
-        increaseColumnGapsNested();
-        increaseColumnGapsNeighbouring();
-    }
+        for (let j = 0; j < rowSegments[i].length; j++) {
+            for (let k = 0; k < statementCells.length; k++) {
+                let segment = rowSegments[i][j];
+                if (segment.margin > maxMargin) {
 
-    // Increase row gaps to fit the highest number of nested entities
-    function increaseRowGapsNested() {
-        for (let i = 0; i < rowSegments.length; i++) {
-            let maxMargin = 0;
+                    // Check if there is a statement in the previous row that would overlap with the segment if the gap is not increased
+                    let sx = statementCells[k].x;
+                    let sy = statementCells[k].y;
+                    let statementInPreviousRow = (sy == i);
+                    let statementAndEntityOverlap = (sx <= segment.end && sx >= segment.start);
 
-            for (let j = 0; j < rowSegments[i].length; j++) {
-                for (let k = 0; k < statementCells.length; k++) {
-                    let segment = rowSegments[i][j];
-                    if (segment.margin > maxMargin) {
-
-                        // Check if there is a statement in the previous row that would overlap with the segment if the gap is not increased
-                        let sx = statementCells[k].x;
-                        let sy = statementCells[k].y;
-                        let statementInPreviousRow = (sy == i);
-                        let statementAndEntityOverlap = (sx <= segment.end && sx >= segment.start);
-
-                        // Increase the gap for the first and last row or if such a statement was found
-                        if ((i == 0 || i == rowSegments.length - 1 || (statementInPreviousRow && statementAndEntityOverlap))) {
-                            maxMargin = segment.margin;
-                        }
+                    // Increase the gap for the first and last row or if such a statement was found
+                    if ((i == 0 || i == rowSegments.length - 1 || (statementInPreviousRow && statementAndEntityOverlap))) {
+                        maxMargin = segment.margin;
                     }
                 }
             }
-            rowGaps[i] += maxMargin;
+        }
+        rowGaps[i] += maxMargin;
+    }
+}
+
+// Increase row gaps to fit highest sum of margins from neighbouring rows
+function increaseRowGapsNeighbouring(rowGaps, rowSegments) {
+    for (let i = 0; i < rowSegments.length; i++) {
+        for (let j = 0; j < rowSegments[i].length; j++) {
+            for (let k = j + 1; k < rowSegments[i].length; k++) {
+                // Get segments
+                let s1 = rowSegments[i][j];
+                let s2 = rowSegments[i][k];
+
+                // Segments overlap
+                if (s1.overlaps(s2)) {
+
+                    // Segments are in two different (neighbouring) rows and the sum of their margins is bigger than the gap
+                    if (s1.side != s2.side && s1.margin + s2.margin >= rowGaps[i]) {
+                        // Increase gap to fit the difference
+                        rowGaps[i] = s1.margin + s2.margin + 1;
+                    }
+                }
+            }
         }
     }
+}
 
-    // Increase row gaps to fit highest sum of margins from neighbouring rows
-    function increaseRowGapsNeighbouring() {
+// Increase column gaps to fit the highest number of nested entities
+function increaseColumnGapsNested(columnGaps, columnSegments) {
+    for (let i = 0; i < columnSegments.length; i++) {
+        let maxMargin = 0;
+
+        for (let j = 0; j < columnSegments[i].length; j++) {
+            for (let k = 0; k < statementCells.length; k++) {
+                let segment = columnSegments[i][j];
+                if (segment.margin > maxMargin) {
+
+                    // Check if there is a statement in the previous column that would overlap with the segment if the gap is not increased
+                    let sx = statementCells[k].x;
+                    let sy = statementCells[k].y;
+                    let statementInPreviousColumn = (sx == i);
+                    let statementAndEntityOverlap = (sy <= segment.end && sy >= segment.start);
+
+                    // Increase the gap for the first and last column or if such a statement was found
+                    if (i == 0 || i == columnSegments.length - 1 || (statementInPreviousColumn && statementAndEntityOverlap)) {
+                        maxMargin = segment.margin;
+                    }
+                }
+            }
+        }
+
+        columnGaps[i] += maxMargin;
+    }
+}
+
+// Increase column gaps to fit highest sum of margins from neighbouring columns
+function increaseColumnGapsNeighbouring(columnGaps, columnSegments) {
+    for (let i = 0; i < columnSegments.length; i++) {
+        for (let j = 0; j < columnSegments[i].length; j++) {
+            for (let k = j + 1; k < columnSegments[i].length; k++) {
+                // Get segments
+                let s1 = columnSegments[i][j];
+                let s2 = columnSegments[i][k];
+
+                // Segments overlap
+                if (s1.overlaps(s2)) {
+
+                    // Segments are in two different (neighbouring) columns and the sum of their margins is bigger than the gap
+                    if (s1.side != s2.side && s1.margin + s2.margin >= columnGaps[i]) {
+                        // Increase gap to fit the difference
+                        columnGaps[i] = s1.margin + s2.margin + 1;
+                    }
+                }
+            }
+        }
+    }
+}
+
+function calculatePixelGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, columnSegments, VisualizationSettings) {
+    entityRects.reverse();
+
+    // Set horizontal entity margins
+    for (let i = 0; i < columnSegments.length; i++) {
+        // Check and fix any equal margins that resulted from wrong comparison order
+        while (calculateHorizontalMargins(i, VisualizationSettings) > 0) continue;
+    }
+
+    // Set vertical entity margins
+    for (let i = 0; i < rowSegments.length; i++) {
+        // Check and fix any equal margins that resulted from wrong comparison order
+        while (calculateVerticalMargins(i, VisualizationSettings) > 0) continue;
+    }
+
+    fixGaps();
+
+    entityRects.reverse();
+
+    function calculateVerticalMargins(i, VisualizationSettings) {
+        let changes = 0;
+        for (let j = 0; j < rowSegments[i].length; j++) {
+            for (let k = j + 1; k < rowSegments[i].length; k++) {
+                // Get segments
+                let s1 = rowSegments[i][j];
+                let s2 = rowSegments[i][k];
+
+                // Segments overlap
+                if (s1.pixelOverlaps(s2)) {
+
+                    // if (VisualizationSettings.headersIncluded) {
+                    //     // Handle headers if both are top intervals
+                    //     if (s1.side == s2.side && s1.side == 'top' && ((Math.abs(s2.margin - s1.margin) < (s2.entity.visibleHeaders * 2 + 1)))) {
+                    //         // If their headers overlap, increase (preferably) the bigger entity's top margin such that there is enough space for all its headers
+                    //         if (s2.margin >= s1.margin) {
+                    //             if (s2.isTopLeft) {
+                    //                 s2.margin = s1.margin + s2.entity.visibleHeaders * 2 + 1;
+                    //                 changes++;
+                    //             }
+                    //         }
+                    //         else {
+                    //             // If the smaller entity's header is above the bigger entity's header just increase the smaller entity's header as that's a smaller increase
+                    //             if (s1.isTopLeft) {
+                    //                 s1.margin = s2.margin + s1.entity.visibleHeaders * 2 + 1;
+                    //                 changes++;
+                    //             }
+                    //         }
+                    //     }
+                    // }
+                    // Increase the bigger entity's margin
+                    if (s1.side == s2.side && s1.margin >= s2.margin) {
+                        s2.margin = s1.margin + 1;
+                        s2.entity.position();
+                        changes++;
+
+                    }
+                }
+            }
+        }
+
+        return changes;
+    }
+
+    function calculateHorizontalMargins(i) {
+        let changes = 0;
+        for (let j = 0; j < columnSegments[i].length; j++) {
+            for (let k = j + 1; k < columnSegments[i].length; k++) {
+                // Get segments
+                let s1 = columnSegments[i][j];
+                let s2 = columnSegments[i][k];
+
+                // Segments overlap
+                if (s1.pixelOverlaps(s2)) {
+                    // Increase the bigger entity's margin
+                    if (s1.side == s2.side && s1.margin >= s2.margin) {
+                        s2.margin = s1.margin + 1;
+                        s2.entity.position();
+                        changes++;
+                    }
+                }
+            }
+        }
+        return changes;
+    }
+
+    function fixGaps() {
+        for (let i = 0; i < rowGaps.length; i++) {
+            rowGaps[i] = 1;
+        }
+        for (let i = 0; i < columnGaps.length; i++) {
+            columnGaps[i] = 1;
+        }
+        increaseRowGapsNested(rowGaps, rowSegments);
+        increaseColumnGapsNested(columnGaps, columnSegments);
+        increasePixelRowGapsNeighbouring(rowGaps, rowSegments);
+        increasePixelColumnGapsNeighbouring(columnGaps, columnSegments);
+    }
+
+    function increasePixelRowGapsNeighbouring(rowGaps, rowSegments) {
         for (let i = 0; i < rowSegments.length; i++) {
             for (let j = 0; j < rowSegments[i].length; j++) {
                 for (let k = j + 1; k < rowSegments[i].length; k++) {
@@ -175,7 +339,7 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
                     let s2 = rowSegments[i][k];
 
                     // Segments overlap
-                    if (s1.overlaps(s2)) {
+                    if (s1.pixelOverlaps(s2)) {
 
                         // Segments are in two different (neighbouring) rows and the sum of their margins is bigger than the gap
                         if (s1.side != s2.side && s1.margin + s2.margin >= rowGaps[i]) {
@@ -188,36 +352,7 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
         }
     }
 
-    // Increase column gaps to fit the highest number of nested entities
-    function increaseColumnGapsNested() {
-        for (let i = 0; i < columnSegments.length; i++) {
-            let maxMargin = 0;
-
-            for (let j = 0; j < columnSegments[i].length; j++) {
-                for (let k = 0; k < statementCells.length; k++) {
-                    let segment = columnSegments[i][j];
-                    if (segment.margin > maxMargin) {
-
-                        // Check if there is a statement in the previous column that would overlap with the segment if the gap is not increased
-                        let sx = statementCells[k].x;
-                        let sy = statementCells[k].y;
-                        let statementInPreviousColumn = (sx == i);
-                        let statementAndEntityOverlap = (sy <= segment.end && sy >= segment.start);
-
-                        // Increase the gap for the first and last column or if such a statement was found
-                        if (i == 0 || i == columnSegments.length - 1 || (statementInPreviousColumn && statementAndEntityOverlap)) {
-                            maxMargin = segment.margin;
-                        }
-                    }
-                }
-            }
-
-            columnGaps[i] += maxMargin;
-        }
-    }
-
-    // Increase column gaps to fit highest sum of margins from neighbouring columns
-    function increaseColumnGapsNeighbouring() {
+    function increasePixelColumnGapsNeighbouring(columnGaps, columnSegments) {
         for (let i = 0; i < columnSegments.length; i++) {
             for (let j = 0; j < columnSegments[i].length; j++) {
                 for (let k = j + 1; k < columnSegments[i].length; k++) {
@@ -226,7 +361,7 @@ function calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, 
                     let s2 = columnSegments[i][k];
 
                     // Segments overlap
-                    if (s1.overlaps(s2)) {
+                    if (s1.pixelOverlaps(s2)) {
 
                         // Segments are in two different (neighbouring) columns and the sum of their margins is bigger than the gap
                         if (s1.side != s2.side && s1.margin + s2.margin >= columnGaps[i]) {
@@ -303,10 +438,19 @@ function setCanvasDimensions(rowGaps, columnGaps, cellHeights) {
         canvas.style.top = '0px';
         canvas.style.transform = 'translateX(-50%)';
     }
+
+    c.setTransform(1, 0, 0, 1, 0, 0);
+    c.font = font;
 }
 
 // Calculate each entity and statement's position
-function positionElements(entityRects, statementCells) {
+function positionElements(entityRects, statementCells, rowGaps, columnGaps, rowSegments, columnSegments, VisualizationSettings) {
+    for (let i = 0; i < entityRects.length; i++) {
+        entityRects[i].position();
+    }
+
+    calculatePixelGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, columnSegments, VisualizationSettings);
+
     for (let i = 0; i < entityRects.length; i++) {
         entityRects[i].position();
     }

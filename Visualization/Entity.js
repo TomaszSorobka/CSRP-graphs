@@ -415,6 +415,8 @@ class Entity {
 
                     // Add a new side with the pixel coordinates of this top interval
                     sides.push(new Side(new Point(xStart, interval.otherPixel), new Point(xEnd, interval.otherPixel)));
+                    interval.setStart(xStart);
+                    interval.setEnd(xEnd);
                 }
                 else if (interval.side === 'right') {
                     // Find the top or bottom interval connecting with the start of this right interval
@@ -433,6 +435,8 @@ class Entity {
 
                     // Add a new side with the pixel coordinates of this right interval
                     sides.push(new Side(new Point(interval.otherPixel, yStart), new Point(interval.otherPixel, yEnd)));
+                    interval.setStart(yStart);
+                    interval.setEnd(yEnd);
                 }
                 else if (interval.side === 'bottom') {
                     // Find the left or right interval connecting with the start of this bottom interval
@@ -451,6 +455,8 @@ class Entity {
 
                     // Add a new side with the pixel coordinates of this bottom interval
                     sides.push(new Side(new Point(xEnd, interval.otherPixel), new Point(xStart, interval.otherPixel)));
+                    interval.setStart(xStart);
+                    interval.setEnd(xEnd);
                 }
                 else if (interval.side === 'left') {
                     // Find the top or bottom interval connecting with the start of this left interval
@@ -469,6 +475,8 @@ class Entity {
 
                     // Add a new side with the pixel coordinates of this left interval
                     sides.push(new Side(new Point(interval.otherPixel, yEnd), new Point(interval.otherPixel, yStart)));
+                    interval.setStart(yStart);
+                    interval.setEnd(yEnd);
                 }
             }
         }

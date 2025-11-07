@@ -123,8 +123,8 @@ function parseData(fileContent) {
         solutionHeight,
         rowGaps,
         columnGaps,
-        rowEntities,
-        columnEntities
+        rowSegments,
+        columnSegments
     );
 
     // --- Regex to capture entity lines ---
@@ -277,10 +277,10 @@ function setup() {
     }
 
     // Calculate and set pixel dimensions
-    calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowEntities, columnEntities, VisualizationSettings);
+    calculateGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, columnSegments, VisualizationSettings);
     calculateCellHeights(cellHeights, statementCells, solutionHeight);
+    positionElements(entityRects, statementCells, rowGaps, columnGaps, rowSegments, columnSegments, VisualizationSettings);
     setCanvasDimensions(rowGaps, columnGaps, cellHeights);
-    positionElements(entityRects, statementCells);
 
     if (VisualizationSettings.grayscale) {
         assignGrayscaleColors(entityRects);
@@ -293,6 +293,6 @@ function setup() {
 function visualize() {
     c.clearRect(0, 0, canvas.width, canvas.height);
 
-    // drawBackgroundGrid();
+    drawBackgroundGrid();
     drawElements(entityRects, statementCells, VisualizationSettings);
 }

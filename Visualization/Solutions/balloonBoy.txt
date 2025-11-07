@@ -1,0 +1,55 @@
+type: polygons
+
+w: 4
+
+h: 2
+
+Entity Falcon Heene [Falcon]: (2, 0) - (3, 0) - (1, 1) - (4, 1)
+
+Entity family: (1, 1) - (2, 1) - (2, 2) - (2, 2)
+
+Entity Richard Heene [Richard]: (0, 1) - (1, 1)
+
+Entity Naomi Heene [Naomi]: (0, 1) - (0, 1)
+
+Entity Balloon: (3, 0) - (4, 0) - (2, 1) - (3, 1) - (1, 2) - (2, 2)
+
+Entity Box: (3, 0) - (4, 0)
+
+Entity Family attic: (2, 1) - (2, 1)
+
+Entity Larimer County Sheriff [Sheriff]: (4, 0) - (4, 0) - (4, 1) - (4, 1)
+
+Entity Fort Collins police [police]: (3, 1) - (4, 1) - (2, 2) - (3, 2)
+
+Entity Kathy Messick: (4, 0) - (4, 0)
+
+Entity The New York Times: (4, 0) - (4, 0)
+
+Entity Prospect Springs: (1, 2) - (1, 2)
+
+Entity Witnesses: (1, 2) - (1, 2)
+
+Entity Wife Swap (TV show): (0, 1) - (0, 1)
+
+Entity ABC News: (0, 1) - (0, 1)
+
+Statement Six-year-old Falcon Heene from Fort Collins, Colorado, was reported to have floated away in a homemade experimental balloon but was later found safe hiding in his family’s attic.: (2, 1)
+
+Statement The Larimer County sheriff announced Falcon’s discovery at 6:11 p.m. after a large search operation involving local police and residents.: (4, 1)
+
+Statement Authorities initially believed Falcon was inside a box attached to the balloon, though reports about the box’s existence were conflicting.: (3, 0)
+
+Statement Sheriff spokeswoman Kathy Messick said the box was found damaged, while The New York Times identified it as part of the balloon’s compartment.: (4, 0)
+
+Statement Fort Collins police clarified that the balloon was never designed to carry people and was part of a family science project.: (2, 2)
+
+Statement The balloon landed south of Prospect Springs after reaching around 7,000 feet, and witnesses reported seeing something fall from it.: (1, 2)
+
+Statement Police searched based on statements from Falcon’s brothers, who claimed he climbed inside the balloon before it detached and drifted away.: (3, 1)
+
+Statement Authorities later concluded that Falcon had been hiding to avoid punishment rather than being inside the balloon.: (2, 0)
+
+Statement Falcon’s father, Richard Heene, a storm chaser and scientist, said the family built the experimental balloon to explore transportation ideas for commuters.: (1, 1)
+
+Statement Richard and his wife Naomi previously appeared on the U.S. TV show 'Wife Swap,' and Richard was featured on an ABC News segment about storm chasing.: (0, 1)
