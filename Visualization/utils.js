@@ -914,3 +914,22 @@ function roundedPolygonPath(originalPoints, radius, removeLastPoint) {
 
     return [path, d];
 }
+
+function computeCacheKey(entities) {
+    return entities.map(e => e.headers[0]).join('|');
+}
+
+function saveColorCache(cacheKey, assignment, colors, cost) {
+    const cache = JSON.parse(localStorage.getItem('colorCache') || '{}');
+    cache[cacheKey] = {
+        colorAssignment: assignment,
+        colors,
+        cost
+    };
+    localStorage.setItem('colorCache', JSON.stringify(cache));
+}
+
+function loadColorCache(cacheKey) {
+  const cache = JSON.parse(localStorage.getItem('colorCache') || '{}');
+  return cache[cacheKey] || null;
+}
