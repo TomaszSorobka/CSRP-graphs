@@ -178,7 +178,7 @@ public class PolygonAreaDimensionsComplexity implements ObjectiveModule {
 
                                         // if b_active_consecutive (j, and j+1 are active), then sumComplexity =
                                         // diff_InLeftSide + diff_InRightSide
-                                        GRBVar sumComplexity = ctx.model.addVar(0.0, 2.0, 0.0, GRB.INTEGER,
+                                        GRBVar sumComplexity = ctx.model.addVar(0.0, 2.0, 0.0, GRB.CONTINUOUS,
                                                         "complexity_consecutive_rows_" + j);
                                         GRBLinExpr expression = new GRBLinExpr();
                                         expression.addTerm(1.0, sumComplexity);

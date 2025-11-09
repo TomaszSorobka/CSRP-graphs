@@ -102,9 +102,9 @@ public final class VarsFactory {
         }
 
         // extra vars
-        v.maxWidth = model.addVar(0.0, coordUpperBound, 0.0, GRB.INTEGER, "maxWidth");
-        v.maxHeight = model.addVar(0.0, coordUpperBound, 0.0, GRB.INTEGER, "maxHeight");
-        v.diff = model.addVar(0.0, coordUpperBound, 0.0, GRB.INTEGER, "diff");
+        v.maxWidth = model.addVar(0.0, coordUpperBound, 0.0, GRB.CONTINUOUS, "maxWidth");
+        v.maxHeight = model.addVar(0.0, coordUpperBound, 0.0, GRB.CONTINUOUS, "maxHeight");
+        v.diff = model.addVar(0.0, coordUpperBound, 0.0, GRB.CONTINUOUS, "diff");
 
         return v;
     }
