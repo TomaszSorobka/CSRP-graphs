@@ -25,8 +25,23 @@ public class PolygonAreaDimensionsComplexity implements ObjectiveModule {
                                 for (int j = 0; j <= ctx.dimensions; j++) {
 
                                         // If e_j == 1 -> span_j = e_j1 - e_j0 + 1, that is span_j - e_j1 + e_j0 = 1
-                                        GRBVar span_j = ctx.model.addVar(0, ctx.dimensions + 1, 0, GRB.CONTINUOUS,
+                                        GRBVar span_j = ctx.model.addVar(0, ctx.dimensions + 1, 0.0, GRB.CONTINUOUS,
                                                         "span_j");
+
+                                        // Upper linking constraint: span_j ≤ (dimensions + 1) * activeRows[j]
+                                        GRBLinExpr linkUpper = new GRBLinExpr();
+                                        linkUpper.addTerm(1.0, span_j);
+                                        linkUpper.addTerm(-(ctx.dimensions + 1), v.entities[i].activeRows[j]);
+                                        ctx.model.addConstr(linkUpper, GRB.LESS_EQUAL, 0.0,
+                                                        "link_upper_" + i + "_" + j);
+
+                                        // Lower linking constraint: span_j ≥ activeRows[j]
+                                        GRBLinExpr linkLower = new GRBLinExpr();
+                                        linkLower.addTerm(1.0, span_j);
+                                        linkLower.addTerm(-1.0, v.entities[i].activeRows[j]);
+                                        ctx.model.addConstr(linkLower, GRB.GREATER_EQUAL, 0.0,
+                                                        "link_lower_" + i + "_" + j);
+
                                         GRBLinExpr span_j_expr1 = new GRBLinExpr();
                                         span_j_expr1.addTerm(1.0, span_j);
                                         span_j_expr1.addTerm(-1.0, v.entities[i].rowBounds[j][1]);
