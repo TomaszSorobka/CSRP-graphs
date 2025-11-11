@@ -166,7 +166,7 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
         path.setAttribute("d", statement.svgPath);
         path.setAttribute("fill", "rgb(245, 245, 245)");
         path.setAttribute("stroke", "rgba(130, 130, 130, 0.5)");
-        path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
+        path.setAttribute("stroke-width", Number(VisualizationSettings.outlineWeight) + 1);
         statementGroup.appendChild(path);
 
         // Get entity names and their positions
@@ -296,9 +296,10 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
                 // Update pointers
                 ongoingNameLengthsAndColors.forEach(e => {
                     e[0]--; // Decrease remaining length of all current names
-                    // Remove names from the list when they are done
-                    if (e[0] == 0) ongoingNameLengthsAndColors.splice(ongoingNameLengthsAndColors.indexOf(e), 1);
                 });
+
+                // Remove names from the list when they are done
+                ongoingNameLengthsAndColors = ongoingNameLengthsAndColors.filter(e => e[0] != 0);
 
                 // No names left to draw at this index
                 if (ongoingNameLengthsAndColors.length == 0) {
