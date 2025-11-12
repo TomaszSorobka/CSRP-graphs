@@ -44,7 +44,7 @@ function drawEntities(svg, svgNS, VisualizationSettings) {
         const entityGroup = document.createElementNS(svgNS, "g");
         entityGroup.setAttribute("id", `entity-${entity.id}`);
         entityGroup.setAttribute("font-size", `${backgroundCellSize}px`);
-        entityGroup.setAttribute("font-family", "Times New Roman");
+        entityGroup.setAttribute("font-family", "Cambria");
         entityGroups.set(entity.id, entityGroup);
     });
 
@@ -156,7 +156,7 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
         const statementGroup = document.createElementNS(svgNS, "g");
         statementGroup.setAttribute("id", `statement-${statement.id || "group"}`);
         statementGroup.setAttribute("font-size", `${backgroundCellSize}px`);
-        statementGroup.setAttribute("font-family", "Times New Roman");
+        statementGroup.setAttribute("font-family", "Cambria");
 
         const xStart = statement.pixelCoords[0].x;
         const yStart = statement.pixelCoords[0].y;
