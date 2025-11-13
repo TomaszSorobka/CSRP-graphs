@@ -192,9 +192,10 @@ class Statement {
                 // Update pointers
                 ongoingNameLengthsAndColors.forEach(e => {
                     e[0]--; // Decrease remaining length of all current names
-                    // Remove names from the list when they are done
-                    if (e[0] == 0) ongoingNameLengthsAndColors.splice(ongoingNameLengthsAndColors.indexOf(e), 1);
                 });
+
+                // Remove names from the list when they are done
+                ongoingNameLengthsAndColors = ongoingNameLengthsAndColors.filter(e => e[0] != 0);
 
                 // No names left to draw at this index
                 if (ongoingNameLengthsAndColors.length == 0) {
@@ -268,9 +269,10 @@ class Statement {
                     // Update pointers
                     ongoingNameLengthsAndColors.forEach(e => {
                         e[0]--; // Decrease remaining length of all current names
-                        // Remove names from the list when they are done
-                        if (e[0] == 0) ongoingNameLengthsAndColors.splice(ongoingNameLengthsAndColors.indexOf(e), 1);
                     });
+
+                    // Remove names from the list when they are done
+                    ongoingNameLengthsAndColors = ongoingNameLengthsAndColors.filter(e => e[0] != 0);
 
                     // No names left to draw at this index
                     if (ongoingNameLengthsAndColors.length == 0) {

@@ -35,8 +35,8 @@ let cellHeights = []; // In background cells
 // Canvas
 const canvas = document.getElementById('canvas');
 const c = canvas.getContext('2d');
-const font = `normal ${backgroundCellSize}px Times New Roman`;
-const boldFont = `bolder ${backgroundCellSize}px Times New Roman`;
+const font = `normal ${backgroundCellSize}px Cambria`;
+const boldFont = `bolder ${backgroundCellSize}px Cambria`;
 c.globalCompositeOperation = "source-over";
 
 // Canvas elements to be drawn
@@ -293,7 +293,7 @@ function setup() {
 function visualize() {
     c.clearRect(0, 0, canvas.width, canvas.height);
 
-    drawBackgroundGrid();
+    // drawBackgroundGrid();
     drawElements(entityRects, statementCells, VisualizationSettings);
     
     setTimeout(() => { recomputeAndUpdateCache(colors);}, 1000);

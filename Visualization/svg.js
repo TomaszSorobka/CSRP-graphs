@@ -44,7 +44,7 @@ function drawEntities(svg, svgNS, VisualizationSettings) {
         const entityGroup = document.createElementNS(svgNS, "g");
         entityGroup.setAttribute("id", `entity-${entity.id}`);
         entityGroup.setAttribute("font-size", `${backgroundCellSize}px`);
-        entityGroup.setAttribute("font-family", "Times New Roman");
+        entityGroup.setAttribute("font-family", "Cambria");
         entityGroups.set(entity.id, entityGroup);
     });
 
@@ -82,22 +82,22 @@ function drawEntity(entity, entityGroup, svgNS, VisualizationSettings) {
         // Draw borders
         if (VisualizationSettings.enableOutline) {
             if (VisualizationSettings.outlinesUseEntityColor) {
-                path.setAttribute("stroke", darkenRGB(entity.colors[entity.statements.length > 1 ? 0 : (entity.deleted.includes(true) ? entity.deleted.indexOf(true) : 0)], 0.7));
+                path.setAttribute("stroke", darkenRGB(color, 0.7));
             }
             else {
                 path.setAttribute("stroke", rgbToRgba(VisualizationSettings.outlineColor, 0.5));
             }
 
             if (!entity.deleted.includes(true) && VisualizationSettings.outlineNonRepeated) {
-                path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
+                path.setAttribute("stroke-width", Number(VisualizationSettings.outlineWeight) + 1);
             }
             else if (entity.deleted.includes(true) && VisualizationSettings.outlineRepeated) {
                 if (VisualizationSettings.dashRepeated) {
-                    path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
+                    path.setAttribute("stroke-width", Number(VisualizationSettings.outlineWeight) + 1);
                     path.setAttribute("stroke-dasharray", "5,5");
                 }
                 else {
-                    path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
+                    path.setAttribute("stroke-width", Number(VisualizationSettings.outlineWeight) + 1);
                 }
             }
         }
@@ -156,7 +156,7 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
         const statementGroup = document.createElementNS(svgNS, "g");
         statementGroup.setAttribute("id", `statement-${statement.id || "group"}`);
         statementGroup.setAttribute("font-size", `${backgroundCellSize}px`);
-        statementGroup.setAttribute("font-family", "Times New Roman");
+        statementGroup.setAttribute("font-family", "Cambria");
 
         const xStart = statement.pixelCoords[0].x;
         const yStart = statement.pixelCoords[0].y;
@@ -166,7 +166,7 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
         path.setAttribute("d", statement.svgPath);
         path.setAttribute("fill", "rgb(245, 245, 245)");
         path.setAttribute("stroke", "rgba(130, 130, 130, 0.5)");
-        path.setAttribute("stroke-width", VisualizationSettings.outlineWeight);
+        path.setAttribute("stroke-width", Number(VisualizationSettings.outlineWeight) + 1);
         statementGroup.appendChild(path);
 
         // Get entity names and their positions
@@ -296,9 +296,10 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
                 // Update pointers
                 ongoingNameLengthsAndColors.forEach(e => {
                     e[0]--; // Decrease remaining length of all current names
-                    // Remove names from the list when they are done
-                    if (e[0] == 0) ongoingNameLengthsAndColors.splice(ongoingNameLengthsAndColors.indexOf(e), 1);
                 });
+
+                // Remove names from the list when they are done
+                ongoingNameLengthsAndColors = ongoingNameLengthsAndColors.filter(e => e[0] != 0);
 
                 // No names left to draw at this index
                 if (ongoingNameLengthsAndColors.length == 0) {
