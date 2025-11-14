@@ -9,9 +9,13 @@ public class GurobiEntity {
     // for each row, its start cell and end cell coordinates
     public GRBVar[][] rowBounds;
 
-    public GurobiEntity(GRBVar[] activeRows, GRBVar[][] rowBounds) {
+    // for each row, its span
+    public GRBVar[] rowSpans;
+
+    public GurobiEntity(GRBVar[] activeRows, GRBVar[][] rowBounds, GRBVar[] span) {
         this.activeRows = activeRows;
         this.rowBounds = rowBounds;
+        this.rowSpans = span;
     }
 
 }

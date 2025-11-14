@@ -3,12 +3,14 @@ import com.gurobi.gurobi.GRBException;
 
 import ilp.constraints.C1StatementsDistinctCoordinates;
 import ilp.constraints.ConstraintModule;
+import ilp.constraints.P00DefineRowSpans;
 import ilp.constraints.P0ValidEntityRowBounds;
 import ilp.constraints.P10StatementIsOnRowBooleans;
 import ilp.constraints.P11EqualRowStart;
 import ilp.constraints.P12aRowEndMonotonicity;
 import ilp.constraints.P12bRowStartMonotonicity;
-import ilp.constraints.P13aRowSpanNonIncreasing;
+import ilp.constraints.P13aNestedRowBoundsNonIncreasing;
+import ilp.constraints.P14MonotoneRowSpan;
 import ilp.constraints.P1ConsecutiveEntityRows;
 import ilp.constraints.P2ConnectedEntityRows;
 import ilp.constraints.P3VerticalConvexity;
@@ -77,6 +79,7 @@ public class Orchestrator {
 
         List<ConstraintModule> constraints = List.of(
                 new P0ValidEntityRowBounds(),
+                new P00DefineRowSpans(),
                 new P1ConsecutiveEntityRows(),
                 new P2ConnectedEntityRows(),
                 new P3VerticalConvexity(),
@@ -90,16 +93,17 @@ public class Orchestrator {
                 // new P11EqualRowStart(),
                 // new P12aRowEndMonotonicity(),
                 // new P12bRowStartMonotonicity(),
-                // new P13aRowSpanNonIncreasing(),
+                // new P13aNestedRowBoundsNonIncreasing(),
+                new P14MonotoneRowSpan(1.0), // use a double parameter: 1.0 for non-decreasing row span, 0.0 for non-increasing row span
                 new C1StatementsDistinctCoordinates());
 
         ObjectiveModule objective = new PolygonAreaDimensionsComplexity();
 
         StatementEntitySolver solver = new StatementEntitySolver(dimensions, constraints, objective, 1);
         Orchestrator orchestrator = new Orchestrator(solver, 5, 1.0 / 3);
-        String inputFolder = "ILP/data/";
-        String outputFolder = "Visualization/Solutions/";
-        ArrayList<String> instances = new ArrayList<String>(List.of("small_world_4"));
+        String inputFolder = "data/";
+        String outputFolder = "solutions/";
+        ArrayList<String> instances = new ArrayList<String>(List.of("balloon_boy_small"));
 
         for (String inst : instances) {
             try {
@@ -113,7 +117,7 @@ public class Orchestrator {
                         finalLayout.solutions,
                         finalLayout.width,
                         finalLayout.height,
-                        outputFolder + inst + "_poly.txt");
+                        outputFolder + inst + "_poly_test.txt");
 
             } catch (Exception e) {
                 e.printStackTrace();

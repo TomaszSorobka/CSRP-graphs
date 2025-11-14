@@ -8,7 +8,8 @@ import com.gurobi.gurobi.GRBVar;
 import ilp.ModelContext;
 import ilp.variables.VarsPolygons;
 
-public class P13aRowSpanNonIncreasing implements ConstraintModule {
+// This constraint forces the rows to be subsets of the rows above.
+public class P13aNestedRowBoundsNonIncreasing implements ConstraintModule {
 
     @Override
     public void add(ModelContext ctx) throws GRBException {

@@ -17,7 +17,8 @@ public final class VarsFactory {
 
         switch (modelType) {
             case 0:
-                VarsRectangles v = VarsFactory.createRectangleVars(model, nEntities, nStatements, coordLowerBound, coordUpperBound);
+                VarsRectangles v = VarsFactory.createRectangleVars(model, nEntities, nStatements, coordLowerBound,
+                        coordUpperBound);
                 return v;
             case 1:
                 return createPolygonVars(model, nEntities, nStatements, coordLowerBound, coordUpperBound);
@@ -79,7 +80,8 @@ public final class VarsFactory {
                     "s" + i + "_y");
 
             for (int j = 0; j <= coordUpperBound; j++) {
-                v.statementIsOnRow[i][j] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "statement_" + i + "_is_on_row_" + j);
+                v.statementIsOnRow[i][j] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY,
+                        "statement_" + i + "_is_on_row_" + j);
             }
         }
 
@@ -90,6 +92,7 @@ public final class VarsFactory {
             GRBVar[] rowBinaries = new GRBVar[coordUpperBound + 1];
             // For each row in the entity: start_x, end_x
             GRBVar[][] rowCoordinates = new GRBVar[coordUpperBound + 1][2];
+            GRBVar[] rowSpans = new GRBVar[coordUpperBound + 1];
             for (int j = 0; j <= coordUpperBound; j++) {
                 rowBinaries[j] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "e_" + i + "_" + j + "_active_row");
 
@@ -97,8 +100,10 @@ public final class VarsFactory {
                         "e" + i + "_row_" + j + "start_x");
                 rowCoordinates[j][1] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER,
                         "e" + i + "_row_" + j + "end_x");
+
+                rowSpans[j] = model.addVar(0, coordUpperBound + 1, 0.0, GRB.CONTINUOUS, "span_j");
             }
-            v.entities[i] = new GurobiEntity(rowBinaries, rowCoordinates);
+            v.entities[i] = new GurobiEntity(rowBinaries, rowCoordinates, rowSpans);
         }
 
         // extra vars
