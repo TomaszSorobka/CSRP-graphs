@@ -31,7 +31,8 @@ public class P2ConnectedEntityRows implements ConstraintModule {
                     rightOverlap.addTerm(1.0, v.entities[i].rowBounds[j + 1][1]);
                     rightOverlap.addTerm(-1.0, v.entities[i].rowBounds[j][0]);
 
-                    ctx.model.addGenConstrIndicator(v.entities[i].activeRows[j], 1, rightOverlap,
+                    // TODO: test
+                    ctx.model.addGenConstrIndicator(v.entities[i].activeRows[j+1], 1, rightOverlap,
                             GRB.GREATER_EQUAL, 0.0, "e_" + i + "_row_" + j + "_right_overlap");
                 }
             }

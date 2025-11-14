@@ -35,7 +35,7 @@ public class P5OutsideNonMembers implements ConstraintModule {
                             ctx.model.addGenConstrIndicator(b1, 1, left_of_ent,
                                     GRB.GREATER_EQUAL, 1.0, "e_" + i + "_row_" + j + "_b1=1_implies_leftOfEntity");
 
-                            GRBVar b2 = ctx.model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "left_of_entity_b1");
+                            GRBVar b2 = ctx.model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "right_of_entity_b2");
                             GRBLinExpr right_of_ent = new GRBLinExpr();
                             right_of_ent.addTerm(1.0, v.entities[i].rowBounds[j][1]);
                             right_of_ent.addTerm(-1.0, v.statementCoordinates[st][0]);

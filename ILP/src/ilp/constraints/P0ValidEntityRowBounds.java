@@ -24,6 +24,16 @@ public class P0ValidEntityRowBounds implements ConstraintModule {
                     ctx.model.addGenConstrIndicator(v.entities[i].activeRows[j], 1, differenceOfCoord,
                             GRB.GREATER_EQUAL, 0.0, "e_" + i + "_row_" + j + "_well_defined");
 
+                    // For each non active row, row bounds are always 0
+                    GRBLinExpr start = new GRBLinExpr();
+                    GRBLinExpr end = new GRBLinExpr();
+                    start.addTerm(1.0, v.entities[i].rowBounds[j][0]);
+                    end.addTerm(1.0, v.entities[i].rowBounds[j][1]);
+                    ctx.model.addGenConstrIndicator(v.entities[i].activeRows[j], 0, start,
+                            GRB.EQUAL, 0.0, "e_" + i + "_row_" + j + "_well_defined");
+                    ctx.model.addGenConstrIndicator(v.entities[i].activeRows[j], 0, end,
+                            GRB.EQUAL, 0.0, "e_" + i + "_row_" + j + "_well_defined");
+
                 }
             }
         }
