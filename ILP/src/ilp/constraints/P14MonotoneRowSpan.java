@@ -10,6 +10,7 @@ import ilp.variables.VarsPolygons;
 
 public class P14MonotoneRowSpan implements ConstraintModule {
     private double non_decreasing = 2.0;
+
     public P14MonotoneRowSpan(double non_decr) {
         super();
         this.non_decreasing = non_decr;
@@ -25,19 +26,20 @@ public class P14MonotoneRowSpan implements ConstraintModule {
             int nEntities = ctx.entityIds.size();
             // Move this variables inside the first for loop if you want to allow different
             // entities to be monotonic in different direction
-            GRBVar increasing = ctx.model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "span_non-decreasing");
+            GRBVar nonDecrBool = ctx.model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "span_non-decreasing");
 
             // if you want to set the direction yourself:
             if (non_decreasing == 1.0 || non_decreasing == 0.0) {
-                ctx.model.addConstr(increasing, GRB.EQUAL, non_decreasing, "row_span increases for all entities");
-            } 
+                ctx.model.addConstr(nonDecrBool, GRB.EQUAL, non_decreasing,
+                        "row_span does not decrease for all entities");
+            }
 
-            GRBVar notInc = ctx.model.addVar(0, 1, 0, GRB.BINARY, "notInc");
+            GRBVar nonIncrBool = ctx.model.addVar(0, 1, 0, GRB.BINARY, "notInc");
 
             // notInc = 1 - increasing
             GRBLinExpr notExpr = new GRBLinExpr();
-            notExpr.addTerm(1.0, increasing);
-            notExpr.addTerm(1.0, notInc);
+            notExpr.addTerm(1.0, nonDecrBool);
+            notExpr.addTerm(1.0, nonIncrBool);
             ctx.model.addConstr(notExpr, GRB.EQUAL, 1.0, "not_increasing");
 
             for (int i = 0; i < nEntities; i++) {
@@ -53,7 +55,7 @@ public class P14MonotoneRowSpan implements ConstraintModule {
                     // span[j-1]
                     GRBVar bothActive_increasing = ctx.model.addVar(0.0, 1.0, 0.0, GRB.BINARY,
                             "increasing_active_" + j + "_" + i);
-                    ctx.model.addGenConstrAnd(bothActive_increasing, new GRBVar[] { increasing, bothActive }, "andGen");
+                    ctx.model.addGenConstrAnd(bothActive_increasing, new GRBVar[] { nonDecrBool, bothActive }, "andGen");
 
                     GRBLinExpr expr = new GRBLinExpr();
                     expr.addTerm(1.0, v.entities[i].rowSpans[j]);
@@ -65,7 +67,7 @@ public class P14MonotoneRowSpan implements ConstraintModule {
 
                     GRBVar bothActive_notincreasing = ctx.model.addVar(0.0, 1.0, 0.0, GRB.BINARY,
                             "notincreasing_active_" + j + "_" + i);
-                    ctx.model.addGenConstrAnd(bothActive_notincreasing, new GRBVar[] { notInc, bothActive }, "andGen");
+                    ctx.model.addGenConstrAnd(bothActive_notincreasing, new GRBVar[] { nonIncrBool, bothActive }, "andGen");
 
                     GRBLinExpr expr1 = new GRBLinExpr();
                     expr1.addTerm(1.0, v.entities[i].rowSpans[j]);
