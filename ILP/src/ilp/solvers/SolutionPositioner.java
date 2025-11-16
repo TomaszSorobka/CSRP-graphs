@@ -121,8 +121,26 @@ public class SolutionPositioner {
             GRBLinExpr totalSize = new GRBLinExpr();
             totalSize.addTerm(1.0, W);
             totalSize.addTerm(1.0, H);
-            model.setObjective(totalSize, GRB.MINIMIZE);
 
+            // Squareness
+            GRBVar A = model.addVar(0.0, GRID_WIDTH, 0.0, GRB.CONTINUOUS, "AspectDiff");
+            GRBLinExpr expr1 = new GRBLinExpr();
+            expr1.addTerm(1.0, A);
+            expr1.addTerm(1.0, W);
+            expr1.addTerm(-1.0, H);
+            
+            GRBLinExpr expr2 = new GRBLinExpr();
+            expr2.addTerm(1.0, A);
+            expr2.addTerm(-1.0, W);
+            expr2.addTerm(1.0, H);
+            
+
+            model.addConstr(expr1, GRB.GREATER_EQUAL, 0, "A_ge_HW");
+            model.addConstr(expr2, GRB.GREATER_EQUAL, 0, "A_ge_WH");
+
+            totalSize.addTerm(0.1, A);
+
+            model.setObjective(totalSize, GRB.MINIMIZE);
             model.optimize();
 
             // Extract solution
@@ -147,7 +165,7 @@ public class SolutionPositioner {
 
         } catch (GRBException e) {
             System.out.println("Error code: " + e.getErrorCode() + ". " + e.getMessage());
-        } 
+        }
 
         return null;
     }
@@ -172,18 +190,17 @@ public class SolutionPositioner {
 
             if (components.get(s) instanceof RectangleSolution rs) {
                 for (int[] entity : rs.entityCoordinates) {
-                entity[0] += x;
-                entity[1] += y;
-                entity[2] += x;
-                entity[3] += y;
+                    entity[0] += x;
+                    entity[1] += y;
+                    entity[2] += x;
+                    entity[3] += y;
                 }
 
                 for (int[] statement : rs.statementCoordinates) {
                     statement[0] += x;
                     statement[1] += y;
                 }
-            }
-            else if (components.get(s) instanceof PolygonSolution ps) {
+            } else if (components.get(s) instanceof PolygonSolution ps) {
                 for (int[][] entity : ps.entities) {
                     // Shift x coordinates
                     for (int i = 0; i < entity.length; i++) {
@@ -191,8 +208,10 @@ public class SolutionPositioner {
                         entity[i][2] += x;
                     }
                     // TODO figure out if this works
-                    // Replace the active row booleans with integers storing the y coordinate of the row in the overall solution
-                    // Note: y coordinates are artificially increased by 1 to differentiate them from inactive rows
+                    // Replace the active row booleans with integers storing the y coordinate of the
+                    // row in the overall solution
+                    // Note: y coordinates are artificially increased by 1 to differentiate them
+                    // from inactive rows
                     for (int i = 0; i < entity.length; i++) {
                         if (entity[i][0] == 1) {
                             entity[i][0] += i + y;
