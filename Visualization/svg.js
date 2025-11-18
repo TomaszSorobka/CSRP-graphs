@@ -65,7 +65,8 @@ function drawEntity(entity, entityGroup, svgNS, VisualizationSettings) {
         if (VisualizationSettings.enableShadow) {
             const shadowPath = document.createElementNS(svgNS, "path");
             shadowPath.setAttribute("d", entity.svgShadowPath);
-            shadowPath.setAttribute("fill", "rgba(50, 50, 50, 0.5)");
+            shadowPath.setAttribute("fill", "rgb(50, 50, 50)");
+            shadowPath.setAttribute("fill-opacity", 0.5);
             entityGroup.appendChild(shadowPath);
         }
 
@@ -165,7 +166,8 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
         const path = document.createElementNS(svgNS, "path");
         path.setAttribute("d", statement.svgPath);
         path.setAttribute("fill", "rgb(245, 245, 245)");
-        path.setAttribute("stroke", "rgba(130, 130, 130, 0.5)");
+        path.setAttribute("stroke", "rgb(130, 130, 130)");
+        path.setAttribute("stroke-opacity", 0.5);
         path.setAttribute("stroke-width", Number(VisualizationSettings.outlineWeight) + 1);
         statementGroup.appendChild(path);
 
@@ -258,7 +260,7 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
                     statementGroup.appendChild(textElem);
 
                     // Draw underline
-                    if (drawingBold && statement.textLines[i][j] !== " ") {
+                    if (drawingBold) {
                         statementGroup.appendChild(underline);
                     }
                 }
@@ -277,7 +279,7 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
                     statementText.push(textElem);
 
                     // Draw underline
-                    if (drawingBold && statement.textLines[i][j] !== " ") {
+                    if (drawingBold) {
                         statementGroup.appendChild(underline);
                     }
                 }
