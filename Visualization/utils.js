@@ -46,12 +46,13 @@ function segmentDistance(x1, y1, x2, y2, x3, y3, x4, y4) {
     );
 }
 
-// TODO: Test the function, print distances between all entities and see if they are accurate
 // Calculate polygon distance between entities.
 // Note: this function uses the intervals of the entities so make sure that these are computed before using it!
 function polygonDistance(e1, e2) {
     // if they overlap distance is 0, for practical reasons it is 1e-6
-    if (doEntitiesOverlap(e1, e2)) return 1e-6;
+    if (doEntitiesOverlap(e1, e2))  {
+        return Math.abs(entityRects.indexOf(e1) - entityRects.indexOf(e2)) * 0.01;
+    }
 
     const segs1 = getSegments(e1);
     const segs2 = getSegments(e2);
@@ -61,7 +62,7 @@ function polygonDistance(e1, e2) {
         for (const s2 of segs2) {
             const d = segmentDistance(s1.x1, s1.y1, s1.x2, s1.y2, s2.x1, s2.y1, s2.x2, s2.y2);
             if (d < minDist) minDist = d;
-            if (minDist === 0) return 1e-6; // early exit
+            if (minDist === 0) return Math.abs(entityRects.indexOf(e1) - entityRects.indexOf(e2)) * 0.01; // early exit
         }
     }
 
@@ -202,7 +203,6 @@ function stackEntity(nonPlacedEntities) {
 
     // Remove and return chosen entity
     nonPlacedEntities.splice(nonPlacedEntities.indexOf(counts[0].entity), 1);
-    console.log(counts[0].count);
     if (counts[0].count > 0) {
         for (const side in counts[0].entity.intervals) {
             for (const interval of counts[0].entity.intervals[side]) {

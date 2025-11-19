@@ -185,20 +185,24 @@ function assignmentEnergy(entities, colors, assignment, spatialMatrix, sigmaC, s
     return E;
 }
 
+// sigmaC controls how rapidly the color similarity drops off
+//  - around 10–20 works well for ΔE2000 
+// sigmaS controls spatial decay (depends on distances between polygons).
+//  - looking at oour distances maybe between 2 and 8 will work best?
 function simulatedAnnealingAssignment(entities, colors, spatialMatrix, {
     sigmaC = 5,
     sigmaS = 3,
     iterations = 10000,
     tempStart = 1.0,
     tempEnd = 0.001,
-    changeColorsProb = 0.1
+    changeColorsProb = 0.0
 } = {}) {
     const n = entities.length;
     const indices = colors.map((_, i) => i);
     const assignment = [];
     for (let i = 0; i < n; i++) {
-        const randIndex = Math.floor(Math.random() * indices.length);
-        assignment.push(indices.splice(randIndex, 1)[0]);
+        // const randIndex = Math.floor(Math.random() * (indices.length));
+        assignment.push(indices[i] % n);
     }
     let bestAssign = [...assignment];
 
@@ -213,16 +217,16 @@ function simulatedAnnealingAssignment(entities, colors, spatialMatrix, {
         const used = new Set(newAssign);
         const unused = colors.map((_, idx) => idx).filter(idx => !used.has(idx));
 
-        if (Math.random() < changeColorsProb) { // change the colors in the assignment
-            // Change one entity's color to a new one
-            const i = Math.floor(Math.random() * newAssign.length);
-            const newColorIdx = Math.floor(Math.random() * unused.length);
-            const newColor = unused[newColorIdx];
+        // if (unused.length >= 1 && Math.random() < changeColorsProb) { // change the colors in the assignment
+        //     // Change one entity's color to a new one
+        //     const i = Math.floor(Math.random() * newAssign.length);
+        //     const newColorIdx = Math.floor(Math.random() * unused.length);
+        //     const newColor = unused[newColorIdx];
 
-            unused.push(newAssign[i]);              // old color goes back to unused
-            newAssign[i] = newColor                 // assign new color
-            unused.splice(newColorIdx, 1);          // remove it from unused list
-        } else {
+        //     unused.push(newAssign[i]);              // old color goes back to unused
+        //     newAssign[i] = newColor                 // assign new color
+        //     unused.splice(newColorIdx, 1);          // remove it from unused list
+        // } else {
             // Randomly pick two entities to swap colors
             const i = Math.floor(Math.random() * n);
             const j = Math.floor(Math.random() * n);
@@ -230,7 +234,7 @@ function simulatedAnnealingAssignment(entities, colors, spatialMatrix, {
             const swap = newAssign[i];
             newAssign[i] = newAssign[j];
             newAssign[j] = swap;
-        }
+        // }
 
         const newE = assignmentEnergy(entities, colors, newAssign, spatialMatrix, sigmaC, sigmaS);
         const delta = newE - currentE;
@@ -256,10 +260,6 @@ function simulatedAnnealingAssignment(entities, colors, spatialMatrix, {
 }
 
 
-// sigmaC controls how rapidly the color similarity drops off
-//  - around 10–20 works well for ΔE2000 
-// sigmaS controls spatial decay (depends on distances between polygons).
-//  - looking at oour distances maybe between 2 and 8 will work best?
 function assignColorsBasedOnDistance(colors) {
     entitiesToColor = getEntitiesToColor(entityRects, false);
     spatialMatrix = buildSpatialMatrix(entitiesToColor, groupedMap);

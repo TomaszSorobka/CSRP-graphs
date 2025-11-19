@@ -57,25 +57,25 @@ let columnSegments = [];
 // Tableau20 palette
 const colors = [
     "#4E79A7",
-    "#A0CBE8",
-    "#F28E2B",
-    "#FFBE7D",
-    "#59A14F",
-    "#8CD17D",
-    "#B6992D",
-    "#F1CE63",
-    "#499894",
-    "#86BCB6",
     "#E15759",
-    // "#FF9D9A",
-    "#79706E",
-    "#BAB0AC",
-    "#D37295",
-    // "#FABFD2",
+    "#499894",
+    "#F28E2B",
+    "#59A14F",
     "#B07AA1",
-    // "#D4A6C8",
     "#9D7660",
-    "#D7B5A6"
+    "#D37295",
+    "#B6992D",
+    "#79706E",
+    "#8CD17D",
+    "#86BCB6",
+    "#A0CBE8",    
+    "#D4A6C8",
+    "#BAB0AC",
+    "#D7B5A6",
+    "#F1CE63",
+    "#FF9D9A",
+    "#FFBE7D",
+    "#FABFD2"
 ];
 
 // Color palette to be used for the current visualization
@@ -259,6 +259,8 @@ function reset() {
 
 // Prepare and process data
 function setup() {
+    // localStorage.clear();
+
     // Initialize the elements to be drawn on screen from the data
     initializeElements(colorPalette, entities, statements, entityRects, statementCells, VisualizationSettings, copiedEntityColors);
 
