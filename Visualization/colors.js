@@ -202,7 +202,7 @@ function simulatedAnnealingAssignment(entities, colors, spatialMatrix, {
     const assignment = [];
     for (let i = 0; i < n; i++) {
         // const randIndex = Math.floor(Math.random() * (indices.length));
-        assignment.push(indices[i] % n);
+        assignment.push(indices[i] % colors.length);
     }
     let bestAssign = [...assignment];
 
