@@ -6,12 +6,6 @@ let mouse = {
     }
 }
 
-// const colorInput = document.getElementById('colorPicker');
-// let currentColor = colorInput.value;
-// colorInput.addEventListener('input', (e) => {
-//     currentColor = e.target.value;
-// });
-
 document.addEventListener('mousemove', function (m) {
     mouse.x = m.x - canvas.getBoundingClientRect().left;
     mouse.y = m.y - canvas.getBoundingClientRect().top;
@@ -21,13 +15,6 @@ document.addEventListener('contextmenu', function (event) {
         event.preventDefault();
     }
 });
-
-// document.addEventListener('click', function (event) {
-//     entityRects.forEach(e => {
-//         e.changeColor();
-//     });
-// });
-
 
 document.querySelectorAll('.dropdownHeader').forEach(element => {
     element.addEventListener('click', function () {

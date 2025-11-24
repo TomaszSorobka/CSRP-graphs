@@ -251,7 +251,7 @@ function calculatePixelGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegme
 
     entityRects.reverse();
 
-    function calculateVerticalMargins(i, VisualizationSettings) {
+    function calculateVerticalMargins(i) {
         let changes = 0;
         for (let j = 0; j < rowSegments[i].length; j++) {
             for (let k = j + 1; k < rowSegments[i].length; k++) {
@@ -261,32 +261,11 @@ function calculatePixelGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegme
 
                 // Segments overlap
                 if (s1.pixelOverlaps(s2)) {
-
-                    // if (VisualizationSettings.headersIncluded) {
-                    //     // Handle headers if both are top intervals
-                    //     if (s1.side == s2.side && s1.side == 'top' && ((Math.abs(s2.margin - s1.margin) < (s2.entity.visibleHeaders * 2 + 1)))) {
-                    //         // If their headers overlap, increase (preferably) the bigger entity's top margin such that there is enough space for all its headers
-                    //         if (s2.margin >= s1.margin) {
-                    //             if (s2.isTopLeft) {
-                    //                 s2.margin = s1.margin + s2.entity.visibleHeaders * 2 + 1;
-                    //                 changes++;
-                    //             }
-                    //         }
-                    //         else {
-                    //             // If the smaller entity's header is above the bigger entity's header just increase the smaller entity's header as that's a smaller increase
-                    //             if (s1.isTopLeft) {
-                    //                 s1.margin = s2.margin + s1.entity.visibleHeaders * 2 + 1;
-                    //                 changes++;
-                    //             }
-                    //         }
-                    //     }
-                    // }
                     // Increase the bigger entity's margin
                     if (s1.side == s2.side && s1.margin >= s2.margin) {
                         s2.margin = s1.margin + 1;
                         s2.entity.position();
                         changes++;
-
                     }
                 }
             }
@@ -445,16 +424,20 @@ function setCanvasDimensions(rowGaps, columnGaps, cellHeights) {
 
 // Calculate each entity and statement's position
 function positionElements(entityRects, statementCells, rowGaps, columnGaps, rowSegments, columnSegments, VisualizationSettings) {
+    // Position entities
     for (let i = 0; i < entityRects.length; i++) {
         entityRects[i].position();
     }
 
+    // Fix any pixel overlaps resulting from the current entity positions
     calculatePixelGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegments, columnSegments, VisualizationSettings);
 
+    // Reposition entities
     for (let i = 0; i < entityRects.length; i++) {
         entityRects[i].position();
     }
 
+    // Position statements
     for (let i = 0; i < statementCells.length; i++) {
         statementCells[i].position();
     }

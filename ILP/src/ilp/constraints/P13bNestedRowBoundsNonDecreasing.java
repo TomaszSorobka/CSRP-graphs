@@ -3,7 +3,6 @@ package ilp.constraints;
 import com.gurobi.gurobi.GRB;
 import com.gurobi.gurobi.GRBException;
 import com.gurobi.gurobi.GRBLinExpr;
-import com.gurobi.gurobi.GRBVar;
 
 import ilp.ModelContext;
 import ilp.variables.VarsPolygons;

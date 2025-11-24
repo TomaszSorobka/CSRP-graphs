@@ -4,16 +4,6 @@ class Entity {
         this.id = id;
         this.statements = statements;
 
-        // //  // Test whether column coords are computed correctly
-        // this.coords = [
-        //     { x: 1, y: 1 }, { x: 3, y: 1 },   // covers (1,1), (2,1), (3,1)
-        //     { x: 5, y: 1 }, { x: 6, y: 1 },   // covers (5,1), (6,1)
-        //     { x: 1, y: 5 }, { x: 3, y: 5 },
-        //     { x: 1, y: 2 }, { x: 2, y: 2 },   // covers (1,2), (2,2)
-        //     { x: 5, y: 3 }, { x: 6, y: 3 }    // covers (5,3), (6,3)
-        // ];
-
-
         // Cell coordinates
         this.coords = coords;
 
@@ -196,104 +186,6 @@ class Entity {
         // Set the top-left interval if headers are drawn
         this.intervals.top[0].setTopLeft(true, headersIncluded);
         
-        // Sort intervals on each side by their starting coordinate
-        this.intervals.top.sort((a, b) => a.start - b.start);
-        this.intervals.right.sort((a, b) => a.start - b.start);
-        this.intervals.bottom.sort((a, b) => a.start - b.start);
-        this.intervals.left.sort((a, b) => a.start - b.start);
-    }
-
-    computeIntervalsObsolete(headersIncluded) {
-        // Calculate top and bottom intervals
-        let topIntervals = [new Interval(this.coords[0].x, this.coords[1].x, this.coords[0].y, 'top', this)];
-        let bottomIntervals = [new Interval(this.coords[this.coords.length - 2].x, this.coords[this.coords.length - 1].x, this.coords[this.coords.length - 2].y, 'bottom', this)];
-
-        let globalStart, globalEnd;
-
-        // Top intervals
-        globalStart = topIntervals[0].start;
-        globalEnd = topIntervals[0].end;
-        for (let i = 2; i < this.coords.length; i += 2) {
-            // Check if this row starts before the earliest recorded start so far
-            if (this.coords[i].x < globalStart) {
-                let start = this.coords[i].x;
-                let end = globalStart - 1;
-                topIntervals.push(new Interval(start, end, this.coords[i].y, 'top', this));
-                globalStart = start;
-            }
-
-            // Check if this row ends after the latest recorded end so far
-            if (this.coords[i + 1].x > globalEnd) {
-                let start = globalEnd + 1;
-                let end = this.coords[i + 1].x;
-                topIntervals.push(new Interval(start, end, this.coords[i + 1].y, 'top', this));
-                globalEnd = end;
-            }
-        }
-
-        // Bottom intervals
-        globalStart = bottomIntervals[0].start;
-        globalEnd = bottomIntervals[0].end;
-        for (let i = this.coords.length - 4; i >= 0; i -= 2) {
-            // Check if this row starts before the earliest recorded start so far
-            if (this.coords[i].x < globalStart) {
-                let start = this.coords[i].x;
-                let end = globalStart - 1;
-                bottomIntervals.push(new Interval(start, end, this.coords[i].y, 'bottom', this));
-                globalStart = start;
-            }
-            // Check if this row ends after the latest recorded end so far
-            if (this.coords[i + 1].x > globalEnd) {
-                let start = globalEnd + 1;
-                let end = this.coords[i + 1].x;
-                bottomIntervals.push(new Interval(start, end, this.coords[i + 1].y, 'bottom', this));
-                globalEnd = end;
-            }
-        }
-
-        // Add calculated top and bottom intervals to the entity
-        this.intervals.top = topIntervals;
-        this.intervals.bottom = bottomIntervals;
-
-        // Calculate left and right intervals
-        let start, end, x;
-
-        // Left intervals
-        start = this.coords[0].y;
-        x = this.coords[0].x;
-        for (let i = 2; i < this.coords.length; i += 2) {
-            // Check if the next row starts at a different x coordinate
-            if (this.coords[i].x != x) {
-                end = this.coords[i - 2].y;
-                this.intervals.left.push(new Interval(start, end, x, 'left', this));
-                start = this.coords[i].y;
-                x = this.coords[i].x;
-            }
-        }
-
-        // Add the last left interval
-        end = this.coords[this.coords.length - 1].y;
-        this.intervals.left.push(new Interval(start, end, x, 'left', this));
-
-        // Right intervals
-        start = this.coords[1].y;
-        x = this.coords[1].x;
-        for (let i = 3; i < this.coords.length; i += 2) {
-            // Check if the next row starts at a different x coordinate
-            if (this.coords[i].x != x) {
-                end = this.coords[i - 2].y;
-                this.intervals.right.push(new Interval(start, end, x, 'right', this));
-                start = this.coords[i].y;
-                x = this.coords[i].x;
-            }
-        }
-        // Add the last right interval
-        end = this.coords[this.coords.length - 1].y;
-        this.intervals.right.push(new Interval(start, end, x, 'right', this));
-
-        // Set the top-left interval if headers are drawn
-        this.intervals.top[0].setTopLeft(true, headersIncluded);
-
         // Sort intervals on each side by their starting coordinate
         this.intervals.top.sort((a, b) => a.start - b.start);
         this.intervals.right.sort((a, b) => a.start - b.start);
@@ -650,27 +542,6 @@ class Entity {
 
                 // Increase the drawn header counter
                 headerIndex++;
-            }
-        }
-    }
-
-    // Change header color on click
-    changeColor() {
-        if (mouse.x > this.pixelCoords[0].x && mouse.x < this.pixelCoords[1].x) {
-            if (this.statements.length > 1) {
-                for (let i = 0; i < this.headers.length; i++) {
-                    if (mouse.y > this.pixelCoords[0].y + 2 * i * backgroundCellSize + 1 && mouse.y < this.pixelCoords[0].y + 2 * i * backgroundCellSize + 1 + 2 * backgroundCellSize) {
-                        this.colors[i] = hexToRgb(currentColor);
-                    }
-                }
-            }
-            else {
-                let visHeaders = this.headers.filter(h => this.deleted[this.headers.indexOf(h)]);
-                for (let i = 0; i < visHeaders.length; i++) {
-                    if (mouse.y > this.pixelCoords[0].y + 2 * i * backgroundCellSize + 1 && mouse.y < this.pixelCoords[0].y + 2 * i * backgroundCellSize + 1 + 2 * backgroundCellSize) {
-                        this.colors[this.headers.indexOf(visHeaders[i])] = hexToRgb(currentColor);
-                    }
-                }
             }
         }
     }

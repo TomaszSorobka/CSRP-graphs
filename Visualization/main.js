@@ -101,7 +101,7 @@ document.getElementById('fileInput').addEventListener('change', function (event)
 });
 
 function parseData(fileContent) {
-    // --- Extract type ---
+    // Extract type
     const typeRegex = /type:\s*(\w+)/;
     const typeMatch = fileContent.match(typeRegex);
     let type = null;
@@ -109,7 +109,7 @@ function parseData(fileContent) {
         type = typeMatch[1].trim();
     }
 
-    // --- Extract width and height ---
+    // Extract width and height
     const sizeRegex = /w:\s*(\d+)\s*\n\s*h:\s*(\d+)/;
     const sizeMatch = fileContent.match(sizeRegex);
 
@@ -139,7 +139,7 @@ function parseData(fileContent) {
 
     let match;
 
-    // --- Extract entities ---
+    // Extract entities
     if (type === "rectangles") {
         while ((match = rectEntityRegex.exec(fileContent)) !== null) {
             let [_, name, x1, y1, x2, y2] = match;
@@ -186,7 +186,7 @@ function parseData(fileContent) {
         }
     }
 
-    // --- Extract statements ---
+    // Extract statements
     while ((match = statementRegex.exec(fileContent)) !== null) {
         let [_, text, x, y] = match;
         const statementId = statements.length;
