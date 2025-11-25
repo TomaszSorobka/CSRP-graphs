@@ -466,42 +466,8 @@ function singleCellIntervalIsCovered(interval, remainingEntities) {
 // Check if the i-th cell of this interval is covered 
 function intervalPartOverlaps(interval, i, entity) {
     if (interval.side == "top") {
-        // if (i == 0 && i == interval.end - interval.start) {
-        //     return (([...entity.cells].some(point =>
-        //         point.x == interval.start + i - 1 &&
-        //         point.y == interval.otherCoord
-        //     )
-        //         // || [...entity.cells].some(point =>
-        //         //     point.x == interval.start + i - 1 &&
-        //         //     point.y == interval.otherCoord - 1
-        //         // )
-        //     )
-        //         && ([...entity.cells].some(point =>
-        //             point.x == interval.start + i &&
-        //             point.y == interval.otherCoord
-        //         ) && [...entity.cells].some(point =>
-        //             point.x == interval.start + i &&
-        //             point.y == interval.otherCoord - 1
-        //         )))
-        //         && ([...entity.cells].some(point =>
-        //             point.x == interval.start + i + 1 &&
-        //             point.y == interval.otherCoord
-        //         )
-        //             // || [...entity.cells].some(point =>
-        //             //     point.x == interval.start + i + 1 &&
-        //             //     point.y == interval.otherCoord - 1
-        //             // )
-        //         )
-        //         && ([...entity.cells].some(point =>
-        //             point.x == interval.start + i &&
-        //             point.y == interval.otherCoord
-        //         ) && [...entity.cells].some(point =>
-        //             point.x == interval.start + i &&
-        //             point.y == interval.otherCoord - 1
-        //         ));
-        // }
         if (i == 0) {
-            return (([...entity.cells].some(point =>
+            return (([...entity.cells].some(point =>    // Case 2
                 point.x == interval.start + i - 1 &&
                 point.y == interval.otherCoord
             )
@@ -509,7 +475,7 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.x == interval.start + i - 1 &&
                     point.y == interval.otherCoord - 1
                 )
-            ) || ([...entity.cells].some(point =>
+            ) || ([...entity.cells].some(point =>   // Case 1
                 point.x == interval.start + i - 1 &&
                 point.y == interval.otherCoord
             )
@@ -517,7 +483,7 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.x == interval.start + i - 1 &&
                     point.y == interval.otherCoord - 1
                 )
-            ))
+            )) // Same as internal
                 && ([...entity.cells].some(point =>
                     point.x == interval.start + i &&
                     point.y == interval.otherCoord
@@ -527,7 +493,7 @@ function intervalPartOverlaps(interval, i, entity) {
                 ));
         }
         else if (i == interval.end - interval.start) {
-            return (([...entity.cells].some(point =>
+            return (([...entity.cells].some(point =>    // Case 2
                 point.x == interval.start + i + 1 &&
                 point.y == interval.otherCoord
             )
@@ -535,7 +501,7 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.x == interval.start + i + 1 &&
                     point.y == interval.otherCoord - 1
                 )
-            ) || ([...entity.cells].some(point =>
+            ) || ([...entity.cells].some(point =>   // Case 1
                 point.x == interval.start + i + 1 &&
                 point.y == interval.otherCoord
             )
@@ -543,7 +509,7 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.x == interval.start + i + 1 &&
                     point.y == interval.otherCoord - 1
                 )
-            ))
+            ))  // Same as internal
                 && ([...entity.cells].some(point =>
                     point.x == interval.start + i &&
                     point.y == interval.otherCoord
@@ -552,6 +518,7 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.y == interval.otherCoord - 1
                 ));
         }
+        // Internal
         return [...entity.cells].some(point =>
             point.x == interval.start + i &&
             point.y == interval.otherCoord
@@ -562,42 +529,8 @@ function intervalPartOverlaps(interval, i, entity) {
     }
 
     if (interval.side == "bottom") {
-        // if (i == 0 && i == interval.end - interval.start) {
-        //     return (([...entity.cells].some(point =>
-        //         point.x == interval.start + i - 1 &&
-        //         point.y == interval.otherCoord
-        //     )
-        //         // || [...entity.cells].some(point =>
-        //         //     point.x == interval.start + i - 1 &&
-        //         //     point.y == interval.otherCoord + 1
-        //         // )
-        //     )
-        //         && ([...entity.cells].some(point =>
-        //             point.x == interval.start + i &&
-        //             point.y == interval.otherCoord
-        //         ) && [...entity.cells].some(point =>
-        //             point.x == interval.start + i &&
-        //             point.y == interval.otherCoord + 1
-        //         )))
-        //         && (([...entity.cells].some(point =>
-        //             point.x == interval.start + i + 1 &&
-        //             point.y == interval.otherCoord
-        //         )
-        //             // || [...entity.cells].some(point =>
-        //             //     point.x == interval.start + i + 1 &&
-        //             //     point.y == interval.otherCoord + 1
-        //             // )
-        //         )
-        //             && ([...entity.cells].some(point =>
-        //                 point.x == interval.start + i &&
-        //                 point.y == interval.otherCoord
-        //             ) && [...entity.cells].some(point =>
-        //                 point.x == interval.start + i &&
-        //                 point.y == interval.otherCoord + 1
-        //             )));
-        // }
         if (i == 0) {
-            return (([...entity.cells].some(point =>
+            return (([...entity.cells].some(point =>    // Case 2
                 point.x == interval.start + i - 1 &&
                 point.y == interval.otherCoord
             )
@@ -605,7 +538,7 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.x == interval.start + i - 1 &&
                     point.y == interval.otherCoord + 1
                 )
-            ) || ([...entity.cells].some(point =>
+            ) || ([...entity.cells].some(point =>   // Case 1
                 point.x == interval.start + i - 1 &&
                 point.y == interval.otherCoord
             )
@@ -613,7 +546,7 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.x == interval.start + i - 1 &&
                     point.y == interval.otherCoord + 1
                 )
-            ))
+            ))  // Same as internal
                 && ([...entity.cells].some(point =>
                     point.x == interval.start + i &&
                     point.y == interval.otherCoord
@@ -623,7 +556,7 @@ function intervalPartOverlaps(interval, i, entity) {
                 ));
         }
         else if (i == interval.end - interval.start) {
-            return (([...entity.cells].some(point =>
+            return (([...entity.cells].some(point =>    // Case 2
                 point.x == interval.start + i + 1 &&
                 point.y == interval.otherCoord
             )
@@ -631,7 +564,7 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.x == interval.start + i + 1 &&
                     point.y == interval.otherCoord + 1
                 )
-            ) || ([...entity.cells].some(point =>
+            ) || ([...entity.cells].some(point =>   // Case 1
                 point.x == interval.start + i + 1 &&
                 point.y == interval.otherCoord
             )
@@ -639,7 +572,7 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.x == interval.start + i + 1 &&
                     point.y == interval.otherCoord + 1
                 )
-            ))
+            ))  // Same as internal
                 && ([...entity.cells].some(point =>
                     point.x == interval.start + i &&
                     point.y == interval.otherCoord
@@ -648,6 +581,7 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.y == interval.otherCoord + 1
                 ));
         }
+        // Internal
         return [...entity.cells].some(point =>
             point.x == interval.start + i &&
             point.y == interval.otherCoord
@@ -658,42 +592,8 @@ function intervalPartOverlaps(interval, i, entity) {
     }
 
     if (interval.side == "left") {
-        // if (i == 0 && i == interval.end - interval.start) {
-        //     return (([...entity.cells].some(point =>
-        //         point.y == interval.start + i - 1 &&
-        //         point.x == interval.otherCoord
-        //     )
-        //         // || [...entity.cells].some(point =>
-        //         //     point.y == interval.start + i - 1 &&
-        //         //     point.x == interval.otherCoord - 1
-        //         // )
-        //     )
-        //         && ([...entity.cells].some(point =>
-        //             point.y == interval.start + i &&
-        //             point.x == interval.otherCoord
-        //         ) && [...entity.cells].some(point =>
-        //             point.y == interval.start + i &&
-        //             point.x == interval.otherCoord - 1
-        //         )))
-        //         && (([...entity.cells].some(point =>
-        //             point.y == interval.start + i + 1 &&
-        //             point.x == interval.otherCoord
-        //         )
-        //             // || [...entity.cells].some(point =>
-        //             //     point.y == interval.start + i + 1 &&
-        //             //     point.x == interval.otherCoord - 1
-        //             // )
-        //         )
-        //             && ([...entity.cells].some(point =>
-        //                 point.y == interval.start + i &&
-        //                 point.x == interval.otherCoord
-        //             ) && [...entity.cells].some(point =>
-        //                 point.y == interval.start + i &&
-        //                 point.x == interval.otherCoord - 1
-        //             )));
-        // }
         if (i == 0) {
-            return (([...entity.cells].some(point =>
+            return (([...entity.cells].some(point =>    // Case 2
                 point.y == interval.start + i - 1 &&
                 point.x == interval.otherCoord
             )
@@ -701,7 +601,7 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.y == interval.start + i - 1 &&
                     point.x == interval.otherCoord - 1
                 )
-            ) || ([...entity.cells].some(point =>
+            ) || ([...entity.cells].some(point =>   // Case 1
                 point.y == interval.start + i - 1 &&
                 point.x == interval.otherCoord
             )
@@ -709,7 +609,7 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.y == interval.start + i - 1 &&
                     point.x == interval.otherCoord - 1
                 )
-            ))
+            ))  // Same as internal
                 && ([...entity.cells].some(point =>
                     point.y == interval.start + i &&
                     point.x == interval.otherCoord
@@ -719,7 +619,7 @@ function intervalPartOverlaps(interval, i, entity) {
                 ));
         }
         else if (i == interval.end - interval.start) {
-            return (([...entity.cells].some(point =>
+            return (([...entity.cells].some(point =>    // Case 2
                 point.y == interval.start + i + 1 &&
                 point.x == interval.otherCoord
             )
@@ -727,7 +627,7 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.y == interval.start + i + 1 &&
                     point.x == interval.otherCoord - 1
                 )
-            ) || ([...entity.cells].some(point =>
+            ) || ([...entity.cells].some(point =>   // Case 1
                 point.y == interval.start + i + 1 &&
                 point.x == interval.otherCoord
             )
@@ -735,7 +635,7 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.y == interval.start + i + 1 &&
                     point.x == interval.otherCoord - 1
                 )
-            ))
+            ))  // Same as internal
                 && ([...entity.cells].some(point =>
                     point.y == interval.start + i &&
                     point.x == interval.otherCoord
@@ -743,7 +643,8 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.y == interval.start + i &&
                     point.x == interval.otherCoord - 1
                 ));
-        }
+        }   
+        // Internal
         return [...entity.cells].some(point =>
             point.y == interval.start + i &&
             point.x == interval.otherCoord
@@ -754,43 +655,8 @@ function intervalPartOverlaps(interval, i, entity) {
     }
 
     if (interval.side == "right") {
-        // if (i == 0 && i == interval.end - interval.start) {
-        //     return (([...entity.cells].some(point =>
-        //         point.y == interval.start + i - 1 &&
-        //         point.x == interval.otherCoord
-        //     )
-        //         // || [...entity.cells].some(point =>
-        //         //     point.y == interval.start + i - 1 &&
-        //         //     point.x == interval.otherCoord + 1
-        //         // )
-        //     )
-        //         && ([...entity.cells].some(point =>
-        //             point.y == interval.start + i &&
-        //             point.x == interval.otherCoord
-        //         ) && [...entity.cells].some(point =>
-        //             point.y == interval.start + i &&
-        //             point.x == interval.otherCoord + 1
-        //         )))
-        //         &&
-        //         (([...entity.cells].some(point =>
-        //             point.y == interval.start + i + 1 &&
-        //             point.x == interval.otherCoord
-        //         )
-        //             // || [...entity.cells].some(point =>
-        //             //     point.y == interval.start + i + 1 &&
-        //             //     point.x == interval.otherCoord - 1
-        //             // )
-        //         )
-        //             && ([...entity.cells].some(point =>
-        //                 point.y == interval.start + i &&
-        //                 point.x == interval.otherCoord
-        //             ) && [...entity.cells].some(point =>
-        //                 point.y == interval.start + i &&
-        //                 point.x == interval.otherCoord + 1
-        //             )));
-        // }
         if (i == 0) {
-            return (([...entity.cells].some(point =>
+            return (([...entity.cells].some(point =>    // Case 2
                 point.y == interval.start + i - 1 &&
                 point.x == interval.otherCoord
             )
@@ -798,7 +664,7 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.y == interval.start + i - 1 &&
                     point.x == interval.otherCoord + 1
                 )
-            ) || ([...entity.cells].some(point =>
+            ) || ([...entity.cells].some(point =>   // Case 1
                 point.y == interval.start + i - 1 &&
                 point.x == interval.otherCoord
             )
@@ -806,7 +672,7 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.y == interval.start + i - 1 &&
                     point.x == interval.otherCoord + 1
                 )
-            ))
+            ))  // Same as internal
                 && ([...entity.cells].some(point =>
                     point.y == interval.start + i &&
                     point.x == interval.otherCoord
@@ -816,7 +682,7 @@ function intervalPartOverlaps(interval, i, entity) {
                 ));
         }
         else if (i == interval.end - interval.start) {
-            return (([...entity.cells].some(point =>
+            return (([...entity.cells].some(point =>    // Case 2
                 point.y == interval.start + i + 1 &&
                 point.x == interval.otherCoord
             )
@@ -824,7 +690,7 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.y == interval.start + i + 1 &&
                     point.x == interval.otherCoord - 1
                 )
-            ) || ([...entity.cells].some(point =>
+            ) || ([...entity.cells].some(point =>   // Case 1
                 point.y == interval.start + i + 1 &&
                 point.x == interval.otherCoord
             )
@@ -832,7 +698,7 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.y == interval.start + i + 1 &&
                     point.x == interval.otherCoord - 1
                 )
-            ))
+            ))  // Same as internal
                 && ([...entity.cells].some(point =>
                     point.y == interval.start + i &&
                     point.x == interval.otherCoord
@@ -841,6 +707,7 @@ function intervalPartOverlaps(interval, i, entity) {
                     point.x == interval.otherCoord + 1
                 ));
         }
+        // Internal
         return [...entity.cells].some(point =>
             point.y == interval.start + i &&
             point.x == interval.otherCoord

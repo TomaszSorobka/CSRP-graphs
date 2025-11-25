@@ -3,7 +3,6 @@ package ilp.constraints;
 import com.gurobi.gurobi.GRB;
 import com.gurobi.gurobi.GRBException;
 import com.gurobi.gurobi.GRBLinExpr;
-import com.gurobi.gurobi.GRBVar;
 
 import ilp.ModelContext;
 import ilp.variables.VarsPolygons;
@@ -19,8 +18,6 @@ public class P13aNestedRowBoundsNonIncreasing implements ConstraintModule {
                     GRBLinExpr leftDiff = new GRBLinExpr();
                     leftDiff.addTerm(1.0, v.entities[i].rowBounds[r][0]);
                     leftDiff.addTerm(-1.0, v.entities[i].rowBounds[r + 1][0]);
-
-
 
                     //enforce rowBounds[r][0] <= rowBounds[r+1][0]
                     ctx.model.addGenConstrIndicator(v.entities[i].activeRows[r+1], 1, leftDiff, GRB.LESS_EQUAL, 0.0, "monoDec_" + i + "_" + r);
