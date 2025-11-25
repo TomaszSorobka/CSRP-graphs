@@ -69,8 +69,8 @@
     {"id": 0, "name": "Richard Heene [Richard]"},
     {"id": 1, "name": "Mayumi Heene [Mayumi]"},
     {"id": 2, "name": "Falcon Heene [Falcon]"},
-    {"id": 3, "name": "Heene family [The Heenes, family]"},
-    {"id": 4, "name": "Balloon"},
+    {"id": 3, "name": "Heene family [The Heenes, family, the family]"},
+    {"id": 4, "name": "Balloon [the balloon]"},
     {"id": 5, "name": "Fort Collins, Colorado"},
     {"id": 6, "name": "Larimer County Sheriff"},
     {"id": 7, "name": "Jim Alderden"},
@@ -80,8 +80,15 @@
     {"id": 11, "name": "Television [TV]"},
     {"id": 12, "name": "Media"},
     {"id": 13, "name": "Documentaries and films"},
-    {"id": 14, "name": "Balloon Boy"}
-
+    {"id": 14, "name": "Balloon Boy"},
+    {"id": 15, "name": "Denver International Airport"},
+    {"id": 16, "name": "December 2020"},
+    {"id": 17, "name": "October 15, 2009"},
+    {"id": 18, "name": "2011"},
+    {"id": 19, "name": "Local police"},
+    {"id": 20, "name": "Hoax"},
+    {"id": 21, "name": "Gillian Pachter"}
+    
   ],
   "entity_statements": {
     "0": [0, 5, 9, 14],
@@ -98,6 +105,13 @@
     "11": [4, 8, 13],
     "12": [11, 12, 13],
     "13": [15],
-    "14": [12, 15]
+    "14": [12, 15],
+    "15": [1],
+    "16": [7],
+    "17": [0],
+    "18": [14],
+    "19": [2],
+    "20": [3, 8, 11, 15],
+    "21": [15]
   }
 }

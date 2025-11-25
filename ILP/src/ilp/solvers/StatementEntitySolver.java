@@ -5,6 +5,7 @@ import java.util.List;
 import com.gurobi.gurobi.*;
 
 import ilp.ModelContext;
+import ilp.SaveSolutionCallback;
 import ilp.constraints.*;
 import ilp.objective.*;
 import ilp.variables.VarsPolygons;
@@ -78,8 +79,8 @@ public class StatementEntitySolver {
             // Objective
             objective.apply(ctx);
 
-            ctx.model.set(GRB.DoubleParam.Heuristics, 0.2);
-            ctx.model.set(GRB.IntParam.MIPFocus, GRB.MIPFOCUS_FEASIBILITY);
+            ctx.model.set(GRB.DoubleParam.Heuristics, 0.3);
+            // ctx.model.set(GRB.IntParam.MIPFocus, GRB.MIPFOCUS_FEASIBILITY);
 
             // Solve
             // ctx.model.optimize();
@@ -90,6 +91,10 @@ public class StatementEntitySolver {
 
             // Set time limit
             // ctx.model.set(GRB.DoubleParam.TimeLimit, 600.0);
+
+            // Set callback to save solutions when found
+            SaveSolutionCallback cb = new SaveSolutionCallback(ctx, solutionType);
+            ctx.model.setCallback(cb);  
 
             // Solve
             ctx.model.optimize();

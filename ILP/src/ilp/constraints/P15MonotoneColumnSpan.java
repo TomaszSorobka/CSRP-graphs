@@ -157,14 +157,6 @@ public class P15MonotoneColumnSpan implements ConstraintModule {
                         colSpanNext.addTerm(1.0, active_nextInRow);
                     }
 
-                    /*
-                     * make the colSpans monotone, handle cases if spans are 0:
-                     * define activeColJ boolean = 1 if colSpanJ >= 1 (same for j+1)
-                     * define both_active_increasing if ...
-                     * indicator constraint if they are both active, make them monotone in some
-                     * direction.
-                     */
-
                     GRBVar activeCol = ctx.model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "activeCol_" + col + "_ent_" + i);
                     GRBVar activeColNext = ctx.model.addVar(0.0, 1.0, 0.0, GRB.BINARY,
                             "activeCol_" + (col + 1) + "_ent_" + i);
