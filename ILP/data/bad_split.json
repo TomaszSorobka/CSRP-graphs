@@ -1,0 +1,39 @@
+{
+    "statements": [
+    { "id": 0, "text": "Statement 0" },
+    { "id": 1, "text": "Statement 1" },
+    { "id": 2, "text": "Statement 2" },
+    { "id": 3, "text": "Statement 3" },
+    { "id": 4, "text": "Statement 4" },
+    { "id": 5, "text": "Statement 5" },
+    { "id": 6, "text": "Statement 6" },
+    { "id": 7, "text": "Statement 7" },
+    { "id": 8, "text": "Statement 8" },
+    { "id": 9, "text": "Statement 9" },
+    { "id": 10, "text": "Statement 10" }
+],
+    "entities": [
+    { "id": 0, "name": "Entity 0" },
+    { "id": 1, "name": "Entity 1" },
+    { "id": 2, "name": "Entity 2" },
+    { "id": 3, "name": "Entity 3" },
+    { "id": 4, "name": "Entity 4" },
+    { "id": 5, "name": "Entity 5" },
+    { "id": 6, "name": "Entity 6" },
+    { "id": 7, "name": "Entity 7" },
+    { "id": 8, "name": "Entity 8" },
+    { "id": 9, "name": "Entity 9" }
+],
+    "entity_statements": {
+        "0": [0, 1],
+        "1": [0, 2],
+        "2": [0, 3],
+        "3": [0, 4],
+        "4": [0, 5],
+        "5": [0, 6],
+        "6": [0, 7],
+        "7": [0, 8],
+        "8": [0, 9],
+        "9": [0, 10]
+    }
+}

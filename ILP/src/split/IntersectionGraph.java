@@ -1,4 +1,5 @@
 package split;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -252,10 +253,20 @@ public class IntersectionGraph {
 
     // Merge small components until they fit the specified size bound
     public void merge(Double alpha) {
+        // If all nodes were deleted, make two empty components and add each node to both components
         if (components.isEmpty()) {
-            components.add(new ArrayList<Node>());    
+            components.add(new ArrayList<Node>());
+            components.add(new ArrayList<Node>());
+
+            for (ArrayList<Node> component : components) {
+                for (int i = 0; i < intersectionGraph.length; i++) {
+                    component.add(intersectionGraph[i]);
+                }
+            }
+
             return;
         }
+
         final int minAllowed = (int) Math.ceil(alpha * intersectionGraph.length);
         final int maxAllowed = (int) Math.floor((1 - alpha) * intersectionGraph.length);
 
@@ -265,13 +276,15 @@ public class IntersectionGraph {
         // Track current component size interval
         int minCompSize = components.get(0).size();
 
-        // Merge until all components are within the allowed range (except components that are too large even initially)
+        // Merge until all components are within the allowed range (except components
+        // that are too large even initially)
         while (minCompSize < minAllowed && components.size() > 2) {
             ArrayList<Node> smallest = components.get(0);
             ArrayList<Node> secondSmallest = components.get(1);
 
             // If merging would create a component that is too large, stop merging
-            if (smallest.size() + secondSmallest.size() > maxAllowed) break;
+            if (smallest.size() + secondSmallest.size() > maxAllowed)
+                break;
 
             // Add all nodes from the second smallest component to the smallest
             for (Node node : secondSmallest) {
@@ -303,7 +316,8 @@ public class IntersectionGraph {
 
     private boolean isConnectedToComponent(Node node, ArrayList<Node> component) {
         for (Edge e : node.adj) {
-            if (!intersectionGraph[getGraphIndexFromId(e.target)].deleted && containsId(e.target, component)) return true;
+            if (!intersectionGraph[getGraphIndexFromId(e.target)].deleted && containsId(e.target, component))
+                return true;
         }
 
         return false;
@@ -322,7 +336,8 @@ public class IntersectionGraph {
         return compInd;
     }
 
-    // Find the component with the highest number of nodes from the list (in case of a tie pick the smallest one)
+    // Find the component with the highest number of nodes from the list (in case of
+    // a tie pick the smallest one)
     private int findBestComponent(DeletedNodeGroup group) {
         int max = 0;
         int compId = -1;
@@ -330,7 +345,8 @@ public class IntersectionGraph {
         for (ArrayList<Node> component : components) {
             int contains = 0;
             for (Integer entity : group.entities) {
-                if (containsId(entity, component)) contains++;
+                if (containsId(entity, component))
+                    contains++;
             }
 
             if (max <= contains) {
@@ -365,7 +381,8 @@ public class IntersectionGraph {
         }
     }
 
-    // Add a copy of each deleted node to each component if the node is connected to some non deleted node in that component
+    // Add a copy of each deleted node to each component if the node is connected to
+    // some non deleted node in that component
     private void addDeletedCopies() {
         for (Node node : deletedNodes) {
             for (ArrayList<Node> component : components) {
@@ -381,7 +398,6 @@ public class IntersectionGraph {
             }
         }
     }
-
 
     private int findComponent(int id) {
         for (int i = 0; i < this.components.size(); i++) {
@@ -457,8 +473,7 @@ public class IntersectionGraph {
                     int index = findComponentIndex(component);
                     addCopiesToComponent(group, components.get(index));
                 }
-            }
-            else {
+            } else {
                 int compId = findBestComponent(group);
                 group.components.add(compId);
                 addCopiesToComponent(group, components.get(findComponentIndex(compId)));
@@ -466,11 +481,11 @@ public class IntersectionGraph {
         }
     }
 
-    /* 
+    /*
      * For each edge between deleted nodes where the nodes do not share a component,
-     * find the smallest component with a copy of one deleted node and add to it a copy of the other deleted node
-    */
-    
+     * find the smallest component with a copy of one deleted node and add to it a
+     * copy of the other deleted node
+     */
 
     // For all nodes, remove edges to any node that is not in their component
     private void deleteRedundantEdges() {
@@ -499,7 +514,7 @@ public class IntersectionGraph {
                 System.out.print(node.id + " ");
             }
             System.out.println();
-            for (Node node: comp) {
+            for (Node node : comp) {
                 System.out.print("Node " + node.id + " connects to: ");
                 for (Edge e : node.adj) {
                     System.out.print(e.target + " ");

@@ -46,17 +46,34 @@ public class GreedySplit {
 
             split.addDeletedNodes();
 
-            ArrayList<StatementEntityInstance> instances = new SplitIntanceFactory(instance, bestSplit)
-                    .createInstances();
-
             // Evaluate the cost of the split
-            double cost = cost(instances, split, alpha, initSize);
+            double cost = cost(split, alpha, initSize);
 
             // Store the split with minimal cost
             if (cost < bestCost) {
                 bestCost = cost;
                 bestSplit = split;
             }
+        }
+
+        if (bestCost == Double.MAX_VALUE) {
+            // Make a new graph
+            IntersectionGraph split = new IntersectionGraph(instance);
+
+            ArrayList<Integer> allNodes = new ArrayList<>();
+            for (int i = 0; i < split.intersectionGraph.length; i++) {
+                allNodes.add(i);
+            }
+
+            // Make the split
+            split.split(allNodes);
+
+            split.merge(alpha);
+
+            split.addDeletedNodes();
+            // split.printGraph();
+
+            bestSplit = split;
         }
 
         getDeletedEntities(bestSplit);
@@ -95,7 +112,7 @@ public class GreedySplit {
         }
     }
 
-    private double cost(ArrayList<StatementEntityInstance> insts, IntersectionGraph graph, double alpha, int initSize) {
+    private double cost(IntersectionGraph graph, double alpha, int initSize) {
         // Do not consider "splits" that do not actually split the graph
         if (graph.components.size() == 1)
             return Double.MAX_VALUE;
