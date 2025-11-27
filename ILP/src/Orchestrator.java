@@ -10,7 +10,9 @@ import ilp.constraints.P11EqualRowStart;
 import ilp.constraints.P12aRowEndMonotonicity;
 import ilp.constraints.P12bRowStartMonotonicity;
 import ilp.constraints.P13aNestedRowBoundsNonIncreasing;
+import ilp.constraints.P13bNestedRowBoundsNonDecreasing;
 import ilp.constraints.P14MonotoneRowSpan;
+import ilp.constraints.P15MonotoneColumnSpan;
 import ilp.constraints.P1ConsecutiveEntityRows;
 import ilp.constraints.P2ConnectedEntityRows;
 import ilp.constraints.P3VerticalConvexity;
@@ -75,7 +77,7 @@ public class Orchestrator {
 
     public static void main(String[] args) {
         // Solution parameters
-        int dimensions = 4;
+        int dimensions = 3;
 
         List<ConstraintModule> constraints = List.of(
                 new P0ValidEntityRowBounds(),
@@ -94,7 +96,9 @@ public class Orchestrator {
                 // new P12aRowEndMonotonicity(),
                 // new P12bRowStartMonotonicity(),
                 // new P13aNestedRowBoundsNonIncreasing(),
-                new P14MonotoneRowSpan(1.0), // use a double parameter: 1.0 for non-decreasing row span, 0.0 for non-increasing row span
+                // new P13bNestedRowBoundsNonDecreasing(),
+                // new P14MonotoneRowSpan(1.0), // use a double parameter: 1.0 for non-decreasing row span, 0.0 for non-increasing row span
+                // new P15MonotoneColumnSpan(1.0), // parameter is the same as above
                 new C1StatementsDistinctCoordinates());
 
         ObjectiveModule objective = new PolygonAreaDimensionsComplexity();
@@ -103,7 +107,7 @@ public class Orchestrator {
         Orchestrator orchestrator = new Orchestrator(solver, 5, 1.0 / 3);
         String inputFolder = "data/";
         String outputFolder = "solutions/";
-        ArrayList<String> instances = new ArrayList<String>(List.of("balloon_boy_small"));
+        ArrayList<String> instances = new ArrayList<String>(List.of("robin_hood"));
 
         for (String inst : instances) {
             try {
@@ -117,7 +121,7 @@ public class Orchestrator {
                         finalLayout.solutions,
                         finalLayout.width,
                         finalLayout.height,
-                        outputFolder + inst + "_poly_test.txt");
+                        outputFolder + inst + "_4x4.txt");
 
             } catch (Exception e) {
                 e.printStackTrace();
