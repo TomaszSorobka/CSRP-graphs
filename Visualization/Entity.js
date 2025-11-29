@@ -83,10 +83,9 @@ class Entity {
             rows.get(cell.y).push(cell.x);
         }
 
-
         // Sort lists of cells in the maps
-        columns.forEach(l => l.sort());
-        rows.forEach(l => l.sort());
+        columns.forEach(l => l.sort((a, b) => a - b));
+        rows.forEach(l => l.sort((a, b) => a - b));
 
         return [columns, rows];
     }
@@ -105,7 +104,7 @@ class Entity {
             let botXStart = -1;
             let botXEnd = -1;
 
-            for (let i = 0; i < rowCells.length; i++) { 
+            for (let i = 0; i < rowCells.length; i++) {
                 // top interval starts if it hasnt started and the previous row does not have a cell in this column
                 if (topXStart == -1 && !prevRowCells.includes(rowCells[i])) {
                     topXStart = rowCells[i];
@@ -147,13 +146,13 @@ class Entity {
             let rightYStart = -1;
             let rightYEnd = -1;
 
-            for (let i = 0; i < colCells.length; i++) { 
-                // top interval starts if it hasnt started and the previous row does not have a cell in this column
+            for (let i = 0; i < colCells.length; i++) {
+                // left interval starts if it hasnt started and the previous column does not have a cell in this row
                 if (leftYStart == -1 && !prevColCells.includes(colCells[i])) {
                     leftYStart = colCells[i];
                 }
 
-                // top interval ends if: it started and (we are at the end of the row or the end of a segment of this row, or previous row has a cell in the next column) 
+                // left interval ends if: it started and (we are at the end of the column or the end of a segment of this column, or previous column has a cell in the next row) 
                 if (leftYStart != -1 && (i == colCells.length - 1 || colCells[i + 1] != colCells[i] + 1 || prevColCells.includes(colCells[i + 1]))) {
                     leftYEnd = colCells[i];
                     leftIntervals.push(new Interval(leftYStart, leftYEnd, colIdx, 'left', this));
@@ -161,12 +160,12 @@ class Entity {
                     leftYEnd = -1;
                 }
 
-                // bottom interval starts if it hasnt started and the next row does not have a cell in this column
+                // right interval starts if it hasnt started and the next column does not have a cell in this row
                 if (rightYStart == -1 && !nextColCells.includes(colCells[i])) {
                     rightYStart = colCells[i];
                 }
 
-                // bottom interval ends if: it started and (we are at the end of the row or the end of a segment of this row, or next row has a cell in the next column) 
+                // right interval ends if: it started and (we are at the end of the column or the end of a segment of this column, or next column has a cell in the next row) 
                 if (rightYStart != -1 && (i == colCells.length - 1 || colCells[i + 1] != colCells[i] + 1 || nextColCells.includes(colCells[i + 1]))) {
                     rightYEnd = colCells[i];
                     rightIntervals.push(new Interval(rightYStart, rightYEnd, colIdx, 'right', this));
@@ -182,10 +181,10 @@ class Entity {
         this.intervals.left = leftIntervals;
         this.intervals.right = rightIntervals;
 
-        
+
         // Set the top-left interval if headers are drawn
         this.intervals.top[0].setTopLeft(true, headersIncluded);
-        
+
         // Sort intervals on each side by their starting coordinate
         this.intervals.top.sort((a, b) => a.start - b.start);
         this.intervals.right.sort((a, b) => a.start - b.start);
