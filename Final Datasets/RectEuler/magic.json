@@ -1,0 +1,705 @@
+{
+  "statements": [
+    {
+      "id": 0,
+      "text": "Kaya, Orzhov Usurper"
+    },
+    {
+      "id": 1,
+      "text": "Teferi, Hero of Dominaria"
+    },
+    {
+      "id": 2,
+      "text": "Kaya's Wrath"
+    },
+    {
+      "id": 3,
+      "text": "Thought Erasure"
+    },
+    {
+      "id": 4,
+      "text": "Drowned Catacomb"
+    },
+    {
+      "id": 5,
+      "text": "Glacial Fortress"
+    },
+    {
+      "id": 6,
+      "text": "Godless Shrine"
+    },
+    {
+      "id": 7,
+      "text": "Hallowed Fountain"
+    },
+    {
+      "id": 8,
+      "text": "Isolated Chapel"
+    },
+    {
+      "id": 9,
+      "text": "Watery Grave"
+    },
+    {
+      "id": 10,
+      "text": "The Eldest Reborn"
+    },
+    {
+      "id": 11,
+      "text": "Absorb"
+    },
+    {
+      "id": 12,
+      "text": "Cast Down"
+    },
+    {
+      "id": 13,
+      "text": "Chemister's Insight"
+    },
+    {
+      "id": 14,
+      "text": "Mortify"
+    },
+    {
+      "id": 15,
+      "text": "Negate"
+    },
+    {
+      "id": 16,
+      "text": "Vraska's Contempt"
+    },
+    {
+      "id": 17,
+      "text": "Search for Azcanta"
+    },
+    {
+      "id": 18,
+      "text": "Cry of the Carnarium"
+    },
+    {
+      "id": 19,
+      "text": "Carnage Tyrant"
+    },
+    {
+      "id": 20,
+      "text": "Hostage Taker"
+    },
+    {
+      "id": 21,
+      "text": "Hydroid Krasis"
+    },
+    {
+      "id": 22,
+      "text": "Incubation Druid"
+    },
+    {
+      "id": 23,
+      "text": "Jadelight Ranger"
+    },
+    {
+      "id": 24,
+      "text": "Llanowar Elves"
+    },
+    {
+      "id": 25,
+      "text": "Merfolk Branchwalker"
+    },
+    {
+      "id": 26,
+      "text": "Ravenous Chupacabra"
+    },
+    {
+      "id": 27,
+      "text": "Wildgrowth Walker"
+    },
+    {
+      "id": 28,
+      "text": "Vivien Reid"
+    },
+    {
+      "id": 29,
+      "text": "Find // Finality"
+    },
+    {
+      "id": 30,
+      "text": "Breeding Pool"
+    },
+    {
+      "id": 31,
+      "text": "Hinterland Harbor"
+    },
+    {
+      "id": 32,
+      "text": "Memorial to Folly"
+    },
+    {
+      "id": 33,
+      "text": "Overgrown Tomb"
+    },
+    {
+      "id": 34,
+      "text": "Woodland Cemetery"
+    },
+    {
+      "id": 35,
+      "text": "Assassin's Trophy"
+    },
+    {
+      "id": 36,
+      "text": "Dire Fleet Daredevil"
+    },
+    {
+      "id": 37,
+      "text": "Goblin Chainwhirler"
+    },
+    {
+      "id": 38,
+      "text": "Growth-Chamber Guardian"
+    },
+    {
+      "id": 39,
+      "text": "Gruul Spellbreaker"
+    },
+    {
+      "id": 40,
+      "text": "Kraul Harpooner"
+    },
+    {
+      "id": 41,
+      "text": "Rekindling Phoenix"
+    },
+    {
+      "id": 42,
+      "text": "Skarrgan Hellkite"
+    },
+    {
+      "id": 43,
+      "text": "Karn, Scion of Urza"
+    },
+    {
+      "id": 44,
+      "text": "Lava Coil"
+    },
+    {
+      "id": 45,
+      "text": "Gruul Guildgate"
+    },
+    {
+      "id": 46,
+      "text": "Rootbound Crag"
+    },
+    {
+      "id": 47,
+      "text": "Stomping Ground"
+    },
+    {
+      "id": 48,
+      "text": "Unclaimed Territory"
+    },
+    {
+      "id": 49,
+      "text": "Collision // Colossus"
+    },
+    {
+      "id": 50,
+      "text": "Lightning Strike"
+    },
+    {
+      "id": 51,
+      "text": "Shock"
+    },
+    {
+      "id": 52,
+      "text": "Syncopate"
+    },
+    {
+      "id": 53,
+      "text": "Niv-Mizzet, Parun"
+    },
+    {
+      "id": 54,
+      "text": "Steam Vents"
+    },
+    {
+      "id": 55,
+      "text": "Sulfur Falls"
+    },
+    {
+      "id": 56,
+      "text": "Wilderness Reclamation"
+    },
+    {
+      "id": 57,
+      "text": "Expansion // Explosion"
+    },
+    {
+      "id": 58,
+      "text": "Fiery Cannonade"
+    },
+    {
+      "id": 59,
+      "text": "Growth Spiral"
+    },
+    {
+      "id": 60,
+      "text": "Opt"
+    },
+    {
+      "id": 61,
+      "text": "Shivan Fire"
+    },
+    {
+      "id": 62,
+      "text": "Sinister Sabotage"
+    },
+    {
+      "id": 63,
+      "text": "Benalish Marshal"
+    },
+    {
+      "id": 64,
+      "text": "Dauntless Bodyguard"
+    },
+    {
+      "id": 65,
+      "text": "Skymarcher Aspirant"
+    },
+    {
+      "id": 66,
+      "text": "Snubhorn Sentry"
+    },
+    {
+      "id": 67,
+      "text": "Tithe Taker"
+    },
+    {
+      "id": 68,
+      "text": "Venerated Loxodon"
+    },
+    {
+      "id": 69,
+      "text": "Legion's Landing"
+    },
+    {
+      "id": 70,
+      "text": "Baffling End"
+    },
+    {
+      "id": 71,
+      "text": "Conclave Tribunal"
+    },
+    {
+      "id": 72,
+      "text": "History of Benalia"
+    },
+    {
+      "id": 73,
+      "text": "Unbreakable Formation"
+    },
+    {
+      "id": 74,
+      "text": "Adanto Vanguard"
+    },
+    {
+      "id": 75,
+      "text": "Merfolk Trickster"
+    },
+    {
+      "id": 76,
+      "text": "Mist-Cloaked Herald"
+    },
+    {
+      "id": 77,
+      "text": "Pteramander"
+    },
+    {
+      "id": 78,
+      "text": "Siren Stormtamer"
+    },
+    {
+      "id": 79,
+      "text": "Tempest Djinn"
+    },
+    {
+      "id": 80,
+      "text": "Chart a Course"
+    },
+    {
+      "id": 81,
+      "text": "Curious Obsession"
+    },
+    {
+      "id": 82,
+      "text": "Dive Down"
+    },
+    {
+      "id": 83,
+      "text": "Essence Capture"
+    },
+    {
+      "id": 84,
+      "text": "Spell Pierce"
+    },
+    {
+      "id": 85,
+      "text": "Wizard's Retort"
+    },
+    {
+      "id": 86,
+      "text": "Fanatical Firebrand"
+    },
+    {
+      "id": 87,
+      "text": "Ghitu Lavarunner"
+    },
+    {
+      "id": 88,
+      "text": "Runaway Steam-Kin"
+    },
+    {
+      "id": 89,
+      "text": "Viashino Pyromancer"
+    },
+    {
+      "id": 90,
+      "text": "Light Up the Stage"
+    },
+    {
+      "id": 91,
+      "text": "Experimental Frenzy"
+    },
+    {
+      "id": 92,
+      "text": "Wizard's Lightning"
+    },
+    {
+      "id": 93,
+      "text": "Nexus of Fate"
+    },
+    {
+      "id": 94,
+      "text": "Root Snare"
+    },
+    {
+      "id": 95,
+      "text": "Arch of Orazca"
+    },
+    {
+      "id": 96,
+      "text": "Blink of an Eye"
+    },
+    {
+      "id": 97,
+      "text": "Memorial to Genius"
+    },
+    {
+      "id": 98,
+      "text": "Skewer the Critics"
+    },
+    {
+      "id": 99,
+      "text": "Risk Factor"
+    },
+    {
+      "id": 100,
+      "text": "Hunted Witness"
+    },
+    {
+      "id": 101,
+      "text": "Rix Maadi Reveler"
+    },
+    {
+      "id": 102,
+      "text": "Blood Crypt"
+    },
+    {
+      "id": 103,
+      "text": "Dragonskull Summit"
+    },
+    {
+      "id": 104,
+      "text": "Knight of Autumn"
+    },
+    {
+      "id": 105,
+      "text": "Thorn Lieutenant"
+    },
+    {
+      "id": 106,
+      "text": "Emmara, Soul of the Accord"
+    },
+    {
+      "id": 107,
+      "text": "Trostani Discordant"
+    },
+    {
+      "id": 108,
+      "text": "Flower // Flourish"
+    },
+    {
+      "id": 109,
+      "text": "Sunpetal Grove"
+    },
+    {
+      "id": 110,
+      "text": "Temple Garden"
+    },
+    {
+      "id": 111,
+      "text": "March of the Multitudes"
+    }
+  ],
+  "entities": [
+    {
+      "id": 0,
+      "name": "Esper Control"
+    },
+    {
+      "id": 1,
+      "name": "Sultai Midrange"
+    },
+    {
+      "id": 2,
+      "name": "Gruul Aggro"
+    },
+    {
+      "id": 3,
+      "name": "Temur Reclamation"
+    },
+    {
+      "id": 4,
+      "name": "Azorius Aggro"
+    },
+    {
+      "id": 5,
+      "name": "Mono-Blue Tempo"
+    },
+    {
+      "id": 6,
+      "name": "Red-Green Aggro"
+    },
+    {
+      "id": 7,
+      "name": "Simic Reclamation"
+    },
+    {
+      "id": 8,
+      "name": "Mono-Red Aggro"
+    },
+    {
+      "id": 9,
+      "name": "Mono-White Aggro"
+    },
+    {
+      "id": 10,
+      "name": "Rakdos Aggro"
+    },
+    {
+      "id": 11,
+      "name": "Selesnya Tokens"
+    }
+  ],
+  "entity_statements": {
+    "0": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "1": [
+      4,
+      9,
+      12,
+      16,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35
+    ],
+    "2": [
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51
+    ],
+    "3": [
+      13,
+      17,
+      30,
+      31,
+      44,
+      46,
+      47,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62
+    ],
+    "4": [
+      5,
+      7,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74
+    ],
+    "5": [
+      60,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85
+    ],
+    "6": [
+      37,
+      46,
+      47,
+      50,
+      51,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92
+    ],
+    "7": [
+      13,
+      17,
+      21,
+      30,
+      31,
+      56,
+      59,
+      60,
+      62,
+      93,
+      94,
+      95,
+      96,
+      97
+    ],
+    "8": [
+      37,
+      50,
+      51,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      98,
+      99
+    ],
+    "9": [
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      71,
+      72,
+      74,
+      100
+    ],
+    "10": [
+      37,
+      50,
+      51,
+      86,
+      87,
+      89,
+      90,
+      91,
+      92,
+      99,
+      101,
+      102,
+      103
+    ],
+    "11": [
+      67,
+      68,
+      69,
+      71,
+      72,
+      73,
+      74,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111
+    ]
+  }
+}

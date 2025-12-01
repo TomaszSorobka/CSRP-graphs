@@ -1,0 +1,11 @@
+Name,Green,Red,Vegetable,Fruit,Delicious,Sweet,Neutral,Sour,Mellow
+Kiwi,1,0,0,1,0,1,0,0,0
+Cucumber,1,0,1,0,0,0,1,0,0
+Pickle,1,0,1,0,0,0,0,1,0
+Apple,1,1,0,1,1,1,0,0,0
+Carrot,0,1,1,0,0,1,0,0,0
+Pepper,1,1,1,0,1,0,1,0,0
+Lemon,0,0,0,1,1,0,0,1,0
+Banana,0,0,0,1,1,0,0,0,1
+Strawberry,0,0,0,1,1,1,0,0,0
+Pear,0,0,0,1,1,1,0,0,0

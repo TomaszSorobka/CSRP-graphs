@@ -1,0 +1,29 @@
+Name,Ant-Man,Ant-Man and the Wasp,Avengers: Age of Ultron,Avengers: Endgame,Avengers: Infinity War,Black Panther,Captain America: Civil War,Captain America: The First Avenger,Captain America: The Winter Soldier,Captain Marvel,Doctor Strange,Guardians of the Galaxy,Guardians of the Galaxy Vol. 2,Guardians of the Galaxy Vol. 3,Iron Man,Iron Man 2,Iron Man 3,Spider-Man: Far from Home,Spider-Man: Homecoming,The Avengers,The Incredible Hulk,Thor,Thor: Ragnarok,Thor: The Dark World
+Ant-Man,1,1,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0
+Captain America,1,0,0,1,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0
+Falcon,1,0,0,1,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Wasp,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Winter Soldier,1,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Black Widow,0,0,1,1,1,0,1,0,1,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0
+Hawkeye,0,0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0
+Hulk,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,1,0,1,0
+Iron Man,0,0,1,1,1,0,1,0,0,0,0,0,0,0,1,1,1,0,1,1,1,0,0,0
+Nick Fury,0,0,1,0,1,0,0,1,1,1,0,0,0,0,1,1,0,1,0,1,0,1,0,0
+Quicksilver,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Scarlet Witch,0,0,1,1,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Thor,0,0,1,1,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,1,1,1
+Vision,0,0,1,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+War Machine,0,0,1,1,1,0,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0
+Black Panther,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Captain Marvel,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Doctor Strange,0,0,0,1,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0
+Drax the Destroyer,0,0,0,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0
+Gamora,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0
+Groot,0,0,0,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0
+Loki,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1,1
+Mantis,0,0,0,1,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0
+Nebula,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0
+Rocket Racoon,0,0,0,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0
+Spider-Man,0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,1,0,1,1,0,0,0,0,0
+Star-Lord,0,0,0,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0
+Odin,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1

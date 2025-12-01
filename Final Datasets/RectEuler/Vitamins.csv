@@ -1,0 +1,36 @@
+Food,Vitamin A,Vitamin C,Vitamin D,Vitamin B,Vitamin E,Vitamin K
+Egg,1,0,1,0,1,0
+Butter,1,0,1,0,1,0
+Mango,1,0,0,0,0,0
+Carrot,1,0,0,0,0,0
+Cabbage,1,1,0,0,0,0
+Liver,1,0,0,0,0,0
+Mutton,0,0,0,1,0,0
+Cheese,0,0,0,0,0,0
+Peas,0,0,0,0,0,0
+Meat,0,0,0,0,0,1
+Potato,0,0,0,1,0,0
+Soy-Beans,0,0,0,0,1,1
+Wholegrain cereals,0,0,0,1,0,0
+Tomato,0,1,0,1,0,1
+Orange,0,1,0,0,0,0
+Lemon,0,1,0,0,0,0
+Grapes,0,1,0,0,0,0
+Cucumber,0,1,0,0,0,0
+Heart,0,0,0,0,0,0
+Chicken,0,0,0,0,0,0
+Fish,0,0,1,0,0,0
+Vegetables,0,0,0,1,0,1
+Banana,0,0,0,0,1,0
+Apple,0,0,0,0,1,0
+Mango,1,0,0,0,0,0
+Papaya,1,0,0,0,0,0
+Milk,1,0,1,0,1,0
+Cod-Liver Oil,1,0,1,0,0,0
+Guava,0,1,0,0,0,0
+Green vegetables,0,1,0,0,1,0
+Amla,0,1,0,0,0,0
+Peanut,0,0,0,1,0,0
+Yeast,0,0,0,1,0,0
+Wheat Germ Oil,0,0,0,0,1,0
+Vegetable Oil,0,0,0,0,0,1

@@ -1,0 +1,51 @@
+Name,Imaginary,Bipedal,Carnivore,Aquatic,Venomous,Flying,Horned
+Pikachu,1,1,0,0,0,0,0
+Unicorn,1,0,0,0,0,1,1
+Kraken,1,0,1,1,0,0,0
+Centaur,1,0,0,0,0,0,0
+Minotaur,1,1,1,0,0,0,1
+Griffin,1,0,1,0,0,1,0
+Ent,1,1,0,0,0,0,0
+Mermaid,1,0,0,1,0,0,0
+Jackalope,1,0,0,0,0,0,1
+Dragon,1,0,1,0,0,1,1
+Leviathan,1,0,1,1,0,0,0
+Chimera,1,0,0,0,1,1,1
+Sharknado,1,0,1,1,0,1,0
+Human,0,1,0,0,0,0,0
+Eagle,0,1,1,0,0,1,0
+Blue jay,0,1,0,0,0,1,0
+Ostrich,0,1,0,0,0,0,0
+Penguin,0,1,1,1,0,0,0
+Toucan,0,1,0,0,0,1,0
+Tiger,0,0,1,0,0,0,0
+Lionfish,0,0,1,1,1,0,0
+Sea lion,0,0,1,1,0,0,0
+Cobra,0,0,1,0,1,0,0
+Dog,0,0,1,0,0,0,0
+Narwhal,0,0,1,1,0,0,1
+Dragonfly,0,0,1,1,0,1,0
+Polar bear,0,0,1,0,0,0,0
+Otter,0,0,1,1,0,0,0
+Ferret,0,0,1,0,0,0,0
+Platypus,0,0,1,1,1,0,0
+Spider,0,0,1,0,1,0,0
+Alligator,0,0,1,1,0,0,0
+Scorpion,0,0,1,0,1,0,0
+Mantis,0,0,1,0,0,1,0
+Centipede,0,0,1,0,1,0,0
+Lobster,0,0,1,1,0,0,0
+Eel,0,0,1,1,1,0,0
+Goldfish,0,0,0,1,0,0,0
+Sea urchin,0,0,0,1,1,0,0
+Shrimp,0,0,0,1,0,0,0
+Bee,0,0,0,0,1,1,0
+Ant,0,0,0,0,1,0,0
+Hercules beetle,0,0,0,0,0,1,1
+Bat,0,0,0,0,0,1,0
+Butterfly,0,0,0,0,0,1,0
+Hummingbird,0,0,0,0,0,1,0
+Gazelle,0,0,0,0,0,0,1
+Boar,0,0,0,0,0,0,1
+Sheep,0,0,0,0,0,0,1
+Elk,0,0,0,0,0,0,1

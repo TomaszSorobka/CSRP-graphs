@@ -1,0 +1,1069 @@
+{
+  "statements": [
+    {
+      "id": 0,
+      "text": "Amesbauer"
+    },
+    {
+      "id": 1,
+      "text": "Angerer"
+    },
+    {
+      "id": 2,
+      "text": "Baumgartner"
+    },
+    {
+      "id": 3,
+      "text": "Bayr"
+    },
+    {
+      "id": 4,
+      "text": "Becher"
+    },
+    {
+      "id": 5,
+      "text": "Belakowitsch"
+    },
+    {
+      "id": 6,
+      "text": "Berlakovich"
+    },
+    {
+      "id": 7,
+      "text": "Bernhard"
+    },
+    {
+      "id": 8,
+      "text": "Blimlinger"
+    },
+    {
+      "id": 9,
+      "text": "Brandstätter"
+    },
+    {
+      "id": 10,
+      "text": "Brandstötter"
+    },
+    {
+      "id": 11,
+      "text": "Brandweiner"
+    },
+    {
+      "id": 12,
+      "text": "Brückl"
+    },
+    {
+      "id": 13,
+      "text": "Bures"
+    },
+    {
+      "id": 14,
+      "text": "Bösch"
+    },
+    {
+      "id": 15,
+      "text": "Bürstmayr"
+    },
+    {
+      "id": 16,
+      "text": "Deckenbacher"
+    },
+    {
+      "id": 17,
+      "text": "Deimek"
+    },
+    {
+      "id": 18,
+      "text": "Diesner-Wais"
+    },
+    {
+      "id": 19,
+      "text": "Disoski"
+    },
+    {
+      "id": 20,
+      "text": "Doppelbauer"
+    },
+    {
+      "id": 21,
+      "text": "Drobits"
+    },
+    {
+      "id": 22,
+      "text": "Ecker(FPÖ)"
+    },
+    {
+      "id": 23,
+      "text": "Ecker(SPÖ)"
+    },
+    {
+      "id": 24,
+      "text": "Egger"
+    },
+    {
+      "id": 25,
+      "text": "Einwaller"
+    },
+    {
+      "id": 26,
+      "text": "El-Nagashi"
+    },
+    {
+      "id": 27,
+      "text": "Engelbert"
+    },
+    {
+      "id": 28,
+      "text": "Erasim"
+    },
+    {
+      "id": 29,
+      "text": "Ernst-Dziedzic"
+    },
+    {
+      "id": 30,
+      "text": "Eßl"
+    },
+    {
+      "id": 31,
+      "text": "Feichtinger"
+    },
+    {
+      "id": 32,
+      "text": "Fiedler"
+    },
+    {
+      "id": 33,
+      "text": "Fischer"
+    },
+    {
+      "id": 34,
+      "text": "Fuchs"
+    },
+    {
+      "id": 35,
+      "text": "Fürlinger"
+    },
+    {
+      "id": 36,
+      "text": "Fürst"
+    },
+    {
+      "id": 37,
+      "text": "Gahr"
+    },
+    {
+      "id": 38,
+      "text": "Gerstl"
+    },
+    {
+      "id": 39,
+      "text": "Graf(FPÖ)"
+    },
+    {
+      "id": 40,
+      "text": "Graf(ÖVP)"
+    },
+    {
+      "id": 41,
+      "text": "Grebien"
+    },
+    {
+      "id": 42,
+      "text": "Greiner"
+    },
+    {
+      "id": 43,
+      "text": "Großbauer"
+    },
+    {
+      "id": 44,
+      "text": "Grünberg"
+    },
+    {
+      "id": 45,
+      "text": "Götze"
+    },
+    {
+      "id": 46,
+      "text": "Hafenecker"
+    },
+    {
+      "id": 47,
+      "text": "Hamann"
+    },
+    {
+      "id": 48,
+      "text": "Hammer"
+    },
+    {
+      "id": 49,
+      "text": "Hammer(ÖVP)"
+    },
+    {
+      "id": 50,
+      "text": "Hanger"
+    },
+    {
+      "id": 51,
+      "text": "Haubner"
+    },
+    {
+      "id": 52,
+      "text": "Hauser"
+    },
+    {
+      "id": 53,
+      "text": "Hechenberger"
+    },
+    {
+      "id": 54,
+      "text": "Heinisch-Hosek"
+    },
+    {
+      "id": 55,
+      "text": "Herr"
+    },
+    {
+      "id": 56,
+      "text": "Himmelbauer"
+    },
+    {
+      "id": 57,
+      "text": "Hintner"
+    },
+    {
+      "id": 58,
+      "text": "Hofer"
+    },
+    {
+      "id": 59,
+      "text": "Hofinger"
+    },
+    {
+      "id": 60,
+      "text": "Holzleitner"
+    },
+    {
+      "id": 61,
+      "text": "Holzner"
+    },
+    {
+      "id": 62,
+      "text": "Hoyos-Trauttmansdorff"
+    },
+    {
+      "id": 63,
+      "text": "Höfinger"
+    },
+    {
+      "id": 64,
+      "text": "Hörl"
+    },
+    {
+      "id": 65,
+      "text": "Jachs"
+    },
+    {
+      "id": 66,
+      "text": "Jeitler-Cincelli"
+    },
+    {
+      "id": 67,
+      "text": "Kainz"
+    },
+    {
+      "id": 68,
+      "text": "Kaniak"
+    },
+    {
+      "id": 69,
+      "text": "Kassegger"
+    },
+    {
+      "id": 70,
+      "text": "Kaufmann"
+    },
+    {
+      "id": 71,
+      "text": "Keck"
+    },
+    {
+      "id": 72,
+      "text": "Kickl"
+    },
+    {
+      "id": 73,
+      "text": "Kirchbaumer"
+    },
+    {
+      "id": 74,
+      "text": "Kollross"
+    },
+    {
+      "id": 75,
+      "text": "Kopf"
+    },
+    {
+      "id": 76,
+      "text": "Koza"
+    },
+    {
+      "id": 77,
+      "text": "Krainer"
+    },
+    {
+      "id": 78,
+      "text": "Krisper"
+    },
+    {
+      "id": 79,
+      "text": "Kucharowits"
+    },
+    {
+      "id": 80,
+      "text": "Kucher"
+    },
+    {
+      "id": 81,
+      "text": "Kugler"
+    },
+    {
+      "id": 82,
+      "text": "Kuntzl"
+    },
+    {
+      "id": 83,
+      "text": "Köchl"
+    },
+    {
+      "id": 84,
+      "text": "Köllner"
+    },
+    {
+      "id": 85,
+      "text": "Kühberger"
+    },
+    {
+      "id": 86,
+      "text": "Künsberg-Sarre"
+    },
+    {
+      "id": 87,
+      "text": "Laimer"
+    },
+    {
+      "id": 88,
+      "text": "Leichtfried"
+    },
+    {
+      "id": 89,
+      "text": "Lercher"
+    },
+    {
+      "id": 90,
+      "text": "Lindinger"
+    },
+    {
+      "id": 91,
+      "text": "Lindner"
+    },
+    {
+      "id": 92,
+      "text": "Litschauer"
+    },
+    {
+      "id": 93,
+      "text": "Loacker"
+    },
+    {
+      "id": 94,
+      "text": "Lopatka"
+    },
+    {
+      "id": 95,
+      "text": "Marchetti"
+    },
+    {
+      "id": 96,
+      "text": "Margreiter"
+    },
+    {
+      "id": 97,
+      "text": "Matznetter"
+    },
+    {
+      "id": 98,
+      "text": "Maurer"
+    },
+    {
+      "id": 99,
+      "text": "Meinl-Reisinger"
+    },
+    {
+      "id": 100,
+      "text": "Melchior"
+    },
+    {
+      "id": 101,
+      "text": "Minnich"
+    },
+    {
+      "id": 102,
+      "text": "Muchitsch"
+    },
+    {
+      "id": 103,
+      "text": "Mühlberghuber"
+    },
+    {
+      "id": 104,
+      "text": "Neumann-Hartberger"
+    },
+    {
+      "id": 105,
+      "text": "Neßler"
+    },
+    {
+      "id": 106,
+      "text": "Niss"
+    },
+    {
+      "id": 107,
+      "text": "Nussbaum"
+    },
+    {
+      "id": 108,
+      "text": "Obernosterer"
+    },
+    {
+      "id": 109,
+      "text": "Oberrauner"
+    },
+    {
+      "id": 110,
+      "text": "Ofenauer"
+    },
+    {
+      "id": 111,
+      "text": "Ottenschlager"
+    },
+    {
+      "id": 112,
+      "text": "Pfurtscheller"
+    },
+    {
+      "id": 113,
+      "text": "Prammer"
+    },
+    {
+      "id": 114,
+      "text": "Prinz"
+    },
+    {
+      "id": 115,
+      "text": "Pöttinger"
+    },
+    {
+      "id": 116,
+      "text": "Ragger"
+    },
+    {
+      "id": 117,
+      "text": "Rauch"
+    },
+    {
+      "id": 118,
+      "text": "Rausch"
+    },
+    {
+      "id": 119,
+      "text": "Reifenberger"
+    },
+    {
+      "id": 120,
+      "text": "Reimon"
+    },
+    {
+      "id": 121,
+      "text": "Reiter"
+    },
+    {
+      "id": 122,
+      "text": "Rendi-Wagner"
+    },
+    {
+      "id": 123,
+      "text": "Ribo"
+    },
+    {
+      "id": 124,
+      "text": "Ries"
+    },
+    {
+      "id": 125,
+      "text": "Rössler"
+    },
+    {
+      "id": 126,
+      "text": "Salzmann"
+    },
+    {
+      "id": 127,
+      "text": "Saxinger"
+    },
+    {
+      "id": 128,
+      "text": "Schallmeiner"
+    },
+    {
+      "id": 129,
+      "text": "Schatz"
+    },
+    {
+      "id": 130,
+      "text": "Scherak"
+    },
+    {
+      "id": 131,
+      "text": "Scheucher-Pichler"
+    },
+    {
+      "id": 132,
+      "text": "Schmiedlechner"
+    },
+    {
+      "id": 133,
+      "text": "Schmucken-schlager"
+    },
+    {
+      "id": 134,
+      "text": "Schnedlitz"
+    },
+    {
+      "id": 135,
+      "text": "Schrangl"
+    },
+    {
+      "id": 136,
+      "text": "Schroll"
+    },
+    {
+      "id": 137,
+      "text": "Schwarz(GRÜNE)"
+    },
+    {
+      "id": 138,
+      "text": "Schwarz(ÖVP)"
+    },
+    {
+      "id": 139,
+      "text": "Schwarzenberger"
+    },
+    {
+      "id": 140,
+      "text": "Seemayer"
+    },
+    {
+      "id": 141,
+      "text": "Seidl"
+    },
+    {
+      "id": 142,
+      "text": "Shetty"
+    },
+    {
+      "id": 143,
+      "text": "Sieber"
+    },
+    {
+      "id": 144,
+      "text": "Silvan"
+    },
+    {
+      "id": 145,
+      "text": "Singer"
+    },
+    {
+      "id": 146,
+      "text": "Smodics-Neumann"
+    },
+    {
+      "id": 147,
+      "text": "Smolle"
+    },
+    {
+      "id": 148,
+      "text": "Sobotka"
+    },
+    {
+      "id": 149,
+      "text": "Stammler"
+    },
+    {
+      "id": 150,
+      "text": "Stark"
+    },
+    {
+      "id": 151,
+      "text": "Stefan"
+    },
+    {
+      "id": 152,
+      "text": "Steger"
+    },
+    {
+      "id": 153,
+      "text": "Steinacker"
+    },
+    {
+      "id": 154,
+      "text": "Stocker"
+    },
+    {
+      "id": 155,
+      "text": "Strasser"
+    },
+    {
+      "id": 156,
+      "text": "Stöger"
+    },
+    {
+      "id": 157,
+      "text": "Stögmüller"
+    },
+    {
+      "id": 158,
+      "text": "Taschner"
+    },
+    {
+      "id": 159,
+      "text": "Tomaselli"
+    },
+    {
+      "id": 160,
+      "text": "Totter"
+    },
+    {
+      "id": 161,
+      "text": "Troch"
+    },
+    {
+      "id": 162,
+      "text": "Voglauer"
+    },
+    {
+      "id": 163,
+      "text": "Vorderwinkler"
+    },
+    {
+      "id": 164,
+      "text": "Weber"
+    },
+    {
+      "id": 165,
+      "text": "Weidinger"
+    },
+    {
+      "id": 166,
+      "text": "Weratschnig"
+    },
+    {
+      "id": 167,
+      "text": "Werner"
+    },
+    {
+      "id": 168,
+      "text": "Wimmer(1)"
+    },
+    {
+      "id": 169,
+      "text": "Wimmer(2)"
+    },
+    {
+      "id": 170,
+      "text": "Wurm"
+    },
+    {
+      "id": 171,
+      "text": "Wöginger"
+    },
+    {
+      "id": 172,
+      "text": "Yildrim"
+    },
+    {
+      "id": 173,
+      "text": "Yilmaz"
+    },
+    {
+      "id": 174,
+      "text": "Zanger"
+    },
+    {
+      "id": 175,
+      "text": "Zarits"
+    },
+    {
+      "id": 176,
+      "text": "Zopf"
+    },
+    {
+      "id": 177,
+      "text": "Zorba"
+    }
+  ],
+  "entities": [
+    {
+      "id": 0,
+      "name": "Arbeiterkammer"
+    },
+    {
+      "id": 1,
+      "name": "Burschenschaften"
+    },
+    {
+      "id": 2,
+      "name": "Christlicher Verbindungen"
+    },
+    {
+      "id": 3,
+      "name": "Landwirtschaftskammer"
+    },
+    {
+      "id": 4,
+      "name": "ÖGB"
+    },
+    {
+      "id": 5,
+      "name": "Raiffeisen"
+    },
+    {
+      "id": 6,
+      "name": "St.Georgs-Orden"
+    },
+    {
+      "id": 7,
+      "name": "Wirtschaftskammer"
+    },
+    {
+      "id": 8,
+      "name": "SPÖ"
+    },
+    {
+      "id": 9,
+      "name": "ÖVP"
+    },
+    {
+      "id": 10,
+      "name": "NEOS"
+    },
+    {
+      "id": 11,
+      "name": "GRÜNE"
+    },
+    {
+      "id": 12,
+      "name": "FPÖ"
+    }
+  ],
+  "entity_statements": {
+    "0": [
+      11,
+      21,
+      76,
+      102,
+      107,
+      121,
+      136,
+      140,
+      144,
+      175
+    ],
+    "1": [
+      0,
+      12,
+      14,
+      39,
+      46,
+      58,
+      69,
+      117,
+      119,
+      135,
+      151,
+      174
+    ],
+    "2": [
+      6,
+      35,
+      38,
+      51,
+      57,
+      66,
+      70,
+      93,
+      94,
+      95,
+      101,
+      133,
+      148,
+      153,
+      154,
+      165
+    ],
+    "3": [
+      6,
+      30,
+      37,
+      53,
+      63,
+      104,
+      133,
+      149,
+      155,
+      175,
+      176
+    ],
+    "4": [
+      16,
+      67,
+      71,
+      76,
+      91,
+      102,
+      107,
+      126,
+      140,
+      144,
+      156,
+      160,
+      163,
+      168,
+      171,
+      176
+    ],
+    "5": [
+      2,
+      18,
+      30,
+      37,
+      63,
+      90,
+      95,
+      101,
+      104,
+      133,
+      153
+    ],
+    "6": [
+      58,
+      75,
+      94
+    ],
+    "7": [
+      40,
+      51,
+      56,
+      64,
+      66,
+      68,
+      69,
+      73,
+      75,
+      97,
+      115,
+      146,
+      166,
+      170
+    ],
+    "8": [
+      3,
+      4,
+      13,
+      21,
+      23,
+      25,
+      28,
+      31,
+      42,
+      54,
+      55,
+      60,
+      71,
+      74,
+      77,
+      79,
+      80,
+      82,
+      83,
+      84,
+      87,
+      88,
+      89,
+      91,
+      97,
+      102,
+      107,
+      109,
+      122,
+      129,
+      136,
+      140,
+      144,
+      156,
+      161,
+      163,
+      168,
+      169,
+      172,
+      173
+    ],
+    "9": [
+      2,
+      6,
+      11,
+      16,
+      18,
+      24,
+      27,
+      30,
+      35,
+      37,
+      38,
+      40,
+      43,
+      44,
+      49,
+      50,
+      51,
+      53,
+      56,
+      57,
+      59,
+      61,
+      63,
+      64,
+      65,
+      66,
+      70,
+      73,
+      75,
+      81,
+      85,
+      90,
+      94,
+      95,
+      100,
+      101,
+      104,
+      106,
+      108,
+      110,
+      111,
+      112,
+      114,
+      115,
+      118,
+      121,
+      126,
+      127,
+      131,
+      133,
+      138,
+      139,
+      143,
+      145,
+      146,
+      147,
+      148,
+      150,
+      153,
+      154,
+      155,
+      158,
+      160,
+      164,
+      165,
+      171,
+      175,
+      176
+    ],
+    "10": [
+      7,
+      9,
+      10,
+      20,
+      32,
+      62,
+      78,
+      86,
+      93,
+      96,
+      99,
+      130,
+      141,
+      142,
+      167
+    ],
+    "11": [
+      8,
+      15,
+      19,
+      26,
+      29,
+      33,
+      41,
+      45,
+      47,
+      48,
+      76,
+      92,
+      98,
+      105,
+      113,
+      120,
+      123,
+      125,
+      128,
+      137,
+      149,
+      157,
+      159,
+      162,
+      166,
+      177
+    ],
+    "12": [
+      0,
+      1,
+      5,
+      12,
+      14,
+      17,
+      22,
+      34,
+      36,
+      39,
+      46,
+      52,
+      58,
+      67,
+      68,
+      69,
+      72,
+      103,
+      116,
+      117,
+      119,
+      124,
+      132,
+      134,
+      135,
+      151,
+      152,
+      170,
+      174
+    ]
+  }
+}

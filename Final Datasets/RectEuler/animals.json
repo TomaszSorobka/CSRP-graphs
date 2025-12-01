@@ -1,0 +1,352 @@
+{
+  "statements": [
+    {
+      "id": 0,
+      "text": "Pikachu"
+    },
+    {
+      "id": 1,
+      "text": "Unicorn"
+    },
+    {
+      "id": 2,
+      "text": "Kraken"
+    },
+    {
+      "id": 3,
+      "text": "Centaur"
+    },
+    {
+      "id": 4,
+      "text": "Minotaur"
+    },
+    {
+      "id": 5,
+      "text": "Griffin"
+    },
+    {
+      "id": 6,
+      "text": "Ent"
+    },
+    {
+      "id": 7,
+      "text": "Mermaid"
+    },
+    {
+      "id": 8,
+      "text": "Jackalope"
+    },
+    {
+      "id": 9,
+      "text": "Dragon"
+    },
+    {
+      "id": 10,
+      "text": "Leviathan"
+    },
+    {
+      "id": 11,
+      "text": "Chimera"
+    },
+    {
+      "id": 12,
+      "text": "Sharknado"
+    },
+    {
+      "id": 13,
+      "text": "Human"
+    },
+    {
+      "id": 14,
+      "text": "Eagle"
+    },
+    {
+      "id": 15,
+      "text": "Blue jay"
+    },
+    {
+      "id": 16,
+      "text": "Ostrich"
+    },
+    {
+      "id": 17,
+      "text": "Penguin"
+    },
+    {
+      "id": 18,
+      "text": "Toucan"
+    },
+    {
+      "id": 19,
+      "text": "Tiger"
+    },
+    {
+      "id": 20,
+      "text": "Lionfish"
+    },
+    {
+      "id": 21,
+      "text": "Sea lion"
+    },
+    {
+      "id": 22,
+      "text": "Cobra"
+    },
+    {
+      "id": 23,
+      "text": "Dog"
+    },
+    {
+      "id": 24,
+      "text": "Narwhal"
+    },
+    {
+      "id": 25,
+      "text": "Dragonfly"
+    },
+    {
+      "id": 26,
+      "text": "Polar bear"
+    },
+    {
+      "id": 27,
+      "text": "Otter"
+    },
+    {
+      "id": 28,
+      "text": "Ferret"
+    },
+    {
+      "id": 29,
+      "text": "Platypus"
+    },
+    {
+      "id": 30,
+      "text": "Spider"
+    },
+    {
+      "id": 31,
+      "text": "Alligator"
+    },
+    {
+      "id": 32,
+      "text": "Scorpion"
+    },
+    {
+      "id": 33,
+      "text": "Mantis"
+    },
+    {
+      "id": 34,
+      "text": "Centipede"
+    },
+    {
+      "id": 35,
+      "text": "Lobster"
+    },
+    {
+      "id": 36,
+      "text": "Eel"
+    },
+    {
+      "id": 37,
+      "text": "Goldfish"
+    },
+    {
+      "id": 38,
+      "text": "Sea urchin"
+    },
+    {
+      "id": 39,
+      "text": "Shrimp"
+    },
+    {
+      "id": 40,
+      "text": "Bee"
+    },
+    {
+      "id": 41,
+      "text": "Ant"
+    },
+    {
+      "id": 42,
+      "text": "Hercules beetle"
+    },
+    {
+      "id": 43,
+      "text": "Bat"
+    },
+    {
+      "id": 44,
+      "text": "Butterfly"
+    },
+    {
+      "id": 45,
+      "text": "Hummingbird"
+    },
+    {
+      "id": 46,
+      "text": "Gazelle"
+    },
+    {
+      "id": 47,
+      "text": "Boar"
+    },
+    {
+      "id": 48,
+      "text": "Sheep"
+    },
+    {
+      "id": 49,
+      "text": "Elk"
+    }
+  ],
+  "entities": [
+    {
+      "id": 0,
+      "name": "Imaginary"
+    },
+    {
+      "id": 1,
+      "name": "Bipedal"
+    },
+    {
+      "id": 2,
+      "name": "Carnivore"
+    },
+    {
+      "id": 3,
+      "name": "Aquatic"
+    },
+    {
+      "id": 4,
+      "name": "Venomous"
+    },
+    {
+      "id": 5,
+      "name": "Flying"
+    },
+    {
+      "id": 6,
+      "name": "Horned"
+    }
+  ],
+  "entity_statements": {
+    "0": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "1": [
+      0,
+      4,
+      6,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "2": [
+      2,
+      4,
+      5,
+      9,
+      10,
+      12,
+      14,
+      17,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36
+    ],
+    "3": [
+      2,
+      7,
+      10,
+      12,
+      17,
+      20,
+      21,
+      24,
+      25,
+      27,
+      29,
+      31,
+      35,
+      36,
+      37,
+      38,
+      39
+    ],
+    "4": [
+      11,
+      20,
+      22,
+      29,
+      30,
+      32,
+      34,
+      36,
+      38,
+      40,
+      41
+    ],
+    "5": [
+      1,
+      5,
+      9,
+      11,
+      12,
+      14,
+      15,
+      18,
+      25,
+      33,
+      40,
+      42,
+      43,
+      44,
+      45
+    ],
+    "6": [
+      1,
+      4,
+      8,
+      9,
+      11,
+      24,
+      42,
+      46,
+      47,
+      48,
+      49
+    ]
+  }
+}

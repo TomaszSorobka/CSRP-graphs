@@ -1,0 +1,362 @@
+Spell,Bard,Cleric,Druid,Paladin,Ranger,Sorcerer,Warlock,Wizard
+Acid Splash,0,0,0,0,0,1,0,1
+Blade Ward,1,0,0,0,0,1,1,1
+Chill Touch,0,0,0,0,0,1,1,1
+Dancing Lights,1,0,0,0,0,1,0,1
+Druidcraft,0,0,1,0,0,0,0,0
+Eldritch Blast,0,0,0,0,0,0,1,0
+Fire Bolt,0,0,0,0,0,1,0,1
+Friends,1,0,0,0,0,1,1,1
+Guidance,0,1,1,0,0,0,0,0
+Light,1,1,0,0,0,1,0,1
+Mage Hand,1,0,0,0,0,1,1,1
+Mending,1,1,1,0,0,1,0,1
+Message,1,0,0,0,0,1,0,1
+Minor Illusion,1,0,0,0,0,1,1,1
+Poison Spray,0,0,1,0,0,1,1,1
+Prestidigitation,1,0,0,0,0,1,1,1
+Produce Flame,0,0,1,0,0,0,0,0
+Ray of Frost,0,0,0,0,0,1,0,1
+Resistance,0,1,1,0,0,0,0,0
+Sacred Flame,0,1,0,0,0,0,0,0
+Shillelagh,0,0,1,0,0,0,0,0
+Shocking Grasp,0,0,0,0,0,1,0,1
+Spare the Dying,0,1,0,0,0,0,0,0
+Thaumaturgy,0,1,0,0,0,0,0,0
+Thorn Whip,0,0,1,0,0,0,0,0
+True Strike,1,0,0,0,0,1,1,1
+Vicious Mockery,1,0,0,0,0,0,0,0
+Alarm,0,0,0,0,1,0,0,1
+Animal Friendship,1,0,1,0,1,0,0,0
+Armor of Agathys,0,0,0,0,0,0,1,0
+Arms of Hadar,0,0,0,0,0,0,1,0
+Bane,1,1,0,0,0,0,0,0
+Bless,0,1,0,1,0,0,0,0
+Burning Hands,0,0,0,0,0,1,0,1
+Charm Person,1,0,1,0,0,1,1,1
+Chromatic Orb,0,0,0,0,0,1,0,1
+Color Spray,0,0,0,0,0,1,0,1
+Command,0,1,0,1,0,0,0,0
+Compelled Duel,0,0,0,1,0,0,0,0
+Comprehend Languages,1,0,0,0,0,1,1,1
+Create or Destroy Water,0,1,1,0,0,0,0,0
+Cure Wounds,1,1,1,1,1,0,0,0
+Detect Evil and Good,0,1,0,1,0,0,0,0
+Detect Magic,1,1,1,1,1,1,0,1
+Detect Poison and Disease,0,1,1,1,1,0,0,0
+Disguise Self,1,0,0,0,0,1,0,1
+Dissonant Whispers,1,0,0,0,0,0,0,0
+Divine Favor,0,0,0,1,0,0,0,0
+Ensnaring Strike,0,0,0,0,1,0,0,0
+Entangle,0,0,1,0,0,0,0,0
+Expeditious Retreat,0,0,0,0,0,1,1,1
+Faerie Fire,1,0,1,0,0,0,0,0
+False Life,0,0,0,0,0,1,0,1
+Feather Fall,1,0,0,0,0,1,0,1
+Find Familiar,0,0,0,0,0,0,0,1
+Fog Cloud,0,0,1,0,1,1,0,1
+Goodberry,0,0,1,0,1,0,0,0
+Grease,0,0,0,0,0,0,0,1
+Guiding Bolt,0,1,0,0,0,0,0,0
+Hail of Thorns,0,0,0,0,1,0,0,0
+Healing Word,1,1,1,0,0,0,0,0
+Hellish Rebuke,0,0,0,0,0,0,1,0
+Heroism,1,0,0,1,0,0,0,0
+Hex,0,0,0,0,0,0,1,0
+Hunter's Mark,0,0,0,0,1,0,0,0
+Identify,1,0,0,0,0,0,0,1
+Illusory Script,1,0,0,0,0,0,1,1
+Inflict Wounds,0,1,0,0,0,0,0,0
+Jump,0,0,1,0,1,1,0,1
+Longstrider,1,0,1,0,1,0,0,1
+Mage Armor,0,0,0,0,0,1,0,1
+Magic Missile,0,0,0,0,0,1,0,1
+Protection from Evil and Good,0,1,0,1,0,0,1,1
+Purify Food and Drink,0,1,1,1,0,0,0,0
+Ray of Sickness,0,0,0,0,0,1,0,1
+Sanctuary,0,1,0,0,0,0,0,0
+Searing Smite,0,0,0,1,0,0,0,0
+Shield,0,0,0,0,0,1,0,1
+Shield of Faith,0,1,0,1,0,0,0,0
+Silent Image,1,0,0,0,0,1,0,1
+Sleep,1,0,0,0,0,1,0,1
+Speak with Animals,1,0,1,0,1,0,0,0
+Tasha's Hideous Laughter,1,0,0,0,0,0,0,1
+Tenser's Floating Disk,0,0,0,0,0,0,0,1
+Thunderous Smite,0,0,0,1,0,0,0,0
+Thunderwave,1,0,1,0,0,1,0,1
+Unseen Servant,1,0,0,0,0,0,1,1
+Witch Bolt,0,0,0,0,0,1,1,1
+Wrathful Smite,0,0,0,1,0,0,0,0
+Aid,0,1,0,1,0,0,0,0
+Alter Self,0,0,0,0,0,1,0,1
+Animal Messenger,1,0,1,0,1,0,0,0
+Arcane Lock,0,0,0,0,0,0,0,1
+Augury,0,1,0,0,0,0,0,0
+Barkskin,0,0,1,0,1,0,0,0
+Beast Sense,0,0,1,0,1,0,0,0
+Blindness/Deafness,1,1,0,0,0,1,0,1
+Blur,0,0,0,0,0,1,0,1
+Branding Smite,0,0,0,1,0,0,0,0
+Calm Emotions,1,1,0,0,0,0,0,0
+Cloud of Daggers,1,0,0,0,0,1,1,1
+Continual Flame,0,1,0,0,0,0,0,1
+Cordon of Arrows,0,0,0,0,1,0,0,0
+Crown of Madness,1,0,0,0,0,1,1,1
+Darkness,0,0,0,0,0,1,1,1
+Darkvision,0,0,1,0,1,1,0,1
+Detect Thoughts,1,0,0,0,0,1,0,1
+Enhance Ability,1,1,1,0,0,1,0,0
+Enlarge/Reduce,0,0,0,0,0,1,0,1
+Enthrall,1,0,0,0,0,0,1,0
+Find Steed,0,0,0,1,0,0,0,0
+Find Traps,0,1,1,0,1,0,0,0
+Flame Blade,0,0,1,0,0,0,0,0
+Flaming Sphere,0,0,1,0,0,0,0,1
+Gentle Repose,0,1,0,0,0,0,0,1
+Gust of Wind,0,0,1,0,0,1,0,1
+Heat Metal,1,0,1,0,0,0,0,0
+Hold Person,1,1,1,0,0,1,1,1
+Invisibility,1,0,0,0,0,1,1,1
+Knock,1,0,0,0,0,1,0,1
+Lesser Restoration,1,1,1,1,1,0,0,0
+Levitate,0,0,0,0,0,1,0,1
+Locate Animals or Plants,1,0,1,0,1,0,0,0
+Locate Object,1,1,1,1,1,0,0,1
+Magic Mouth,1,0,0,0,0,0,0,1
+Magic Weapon,0,0,0,1,0,0,0,1
+Melf's Acid Arrow,0,0,0,0,0,0,0,1
+Mirror Image,0,0,0,0,0,1,1,1
+Misty Step,0,0,0,0,0,1,1,1
+Moonbeam,0,0,1,0,0,0,0,0
+Nystul's Magic Aura,0,0,0,0,0,0,0,1
+Pass without Trace,0,0,1,0,1,0,0,0
+Phantasmal Force,1,0,0,0,0,1,0,1
+Prayer of Healing,0,1,0,0,0,0,0,0
+Protection from Poison,0,1,1,1,1,0,0,0
+Ray of Enfeeblement,0,0,0,0,0,0,1,1
+Rope Trick,0,0,0,0,0,0,0,1
+Scorching Ray,0,0,0,0,0,1,0,1
+See Invisibility,1,0,0,0,0,1,0,1
+Shatter,1,0,0,0,0,1,1,1
+Silence,1,1,0,0,1,0,0,0
+Spider Climb,0,0,0,0,0,1,1,1
+Spike Growth,0,0,1,0,1,0,0,0
+Spiritual Weapon,0,1,0,0,0,0,0,0
+Suggestion,1,0,0,0,0,1,1,1
+Warding Bond,0,1,0,0,0,0,0,0
+Web,0,0,0,0,0,1,0,1
+Zone of Truth,1,1,0,1,0,0,0,0
+Animate Dead,0,1,0,0,0,0,0,1
+Aura of Vitality,0,0,0,1,0,0,0,0
+Beacon of Hope,0,1,0,0,0,0,0,0
+Bestow Curse,1,1,0,0,0,0,0,1
+Blinding Smite,0,0,0,1,0,0,0,0
+Blink,0,0,0,0,0,1,0,1
+Call Lightning,0,0,1,0,0,0,0,0
+Clairvoyance,1,1,0,0,0,1,0,1
+Conjure Animals,0,0,1,0,1,0,0,0
+Conjure Barrage,0,0,0,0,1,0,0,0
+Counterspell,0,0,0,0,0,1,1,1
+Create Food and Water,0,1,0,1,0,0,0,0
+Crusader's Mantle,0,0,0,0,0,0,0,0
+Daylight,0,1,1,1,1,1,0,0
+Dispel Magic,1,1,1,1,0,1,1,1
+Elemental Weapon,0,0,0,1,0,0,0,0
+Fear,1,0,0,0,0,1,1,1
+Feign Death,1,1,1,0,0,0,0,1
+Fireball,0,0,0,0,0,1,0,1
+Fly,0,0,0,0,0,1,1,1
+Gaseous Form,0,0,0,0,0,1,1,1
+Glyph of Warding,1,1,0,0,0,0,0,1
+Haste,0,0,0,0,0,1,0,1
+Hunger of Hadar,0,0,0,0,0,0,1,0
+Hypnotic Pattern,1,0,0,0,0,1,1,1
+Leomund's Tiny Hut,1,0,0,0,0,0,0,1
+Lightning Arrow,0,0,0,0,1,0,0,0
+Lightning Bolt,0,0,0,0,0,1,0,1
+Magic Circle,0,1,0,1,0,0,1,1
+Major Image,1,0,0,0,0,1,1,1
+Mass Healing Word,0,1,0,0,0,0,0,0
+Meld into Stone,0,1,1,0,0,0,0,0
+Nondetection,1,0,0,0,1,0,0,1
+Phantom Steed,0,0,0,0,0,0,0,1
+Plant Growth,1,0,1,0,1,0,0,0
+Protection from Energy,0,1,1,0,1,1,0,1
+Remove Curse,0,1,0,1,0,0,1,1
+Revivify,0,1,0,1,0,0,0,0
+Sending,1,1,0,0,0,0,0,1
+Sleet Storm,0,0,1,0,0,1,0,1
+Slow,0,0,0,0,0,1,0,1
+Speak with Dead,1,1,0,0,0,0,0,0
+Speak with Plants,1,0,1,0,1,0,0,0
+Spirit Guardians,0,1,0,0,0,0,0,0
+Stinking Cloud,1,0,0,0,0,1,0,1
+Tongues,1,1,0,0,0,1,1,1
+Vampiric Touch,0,0,0,0,0,0,1,1
+Water Breathing,0,0,1,0,1,1,0,1
+Water Walk,0,1,1,0,1,1,0,0
+Wind Wall,0,0,1,0,1,0,0,0
+Arcane Eye,0,0,0,0,0,0,0,1
+Aura of Life,0,0,0,1,0,0,0,0
+Aura of Purity,0,0,0,1,0,0,0,0
+Banishment,0,1,0,1,0,1,1,1
+Blight,0,0,1,0,0,1,1,1
+Compulsion,1,0,0,0,0,0,0,0
+Confusion,1,0,1,0,0,1,0,1
+Conjure Minor Elementals,0,0,1,0,0,0,0,1
+Conjure Woodland Beings,0,0,1,0,1,0,0,0
+Control Water,0,1,1,0,0,0,0,1
+Death Ward,0,1,0,1,0,0,0,0
+Dimension Door,1,0,0,0,0,1,1,1
+Divination,0,1,0,0,0,0,0,0
+Dominate Beast,0,0,1,0,0,1,0,0
+Evard's Black Tentacles,0,0,0,0,0,0,0,0
+Fabricate,0,0,0,0,0,0,0,1
+Fire Shield,0,0,0,0,0,0,0,1
+Freedom of Movement,1,1,1,0,1,0,0,0
+Giant Insect,0,0,1,0,0,0,0,0
+Grasping Vine,0,0,1,0,1,0,0,0
+Greater Invisibility,1,0,0,0,0,1,0,1
+Guardian of Faith,0,1,0,0,0,0,0,0
+Hallucinatory Terrain,1,0,1,0,0,0,1,1
+Ice Storm,0,0,1,0,0,1,0,1
+Leomund's Secret Chest,0,0,0,0,0,0,0,1
+Locate Creature,1,1,1,1,1,0,0,1
+Mordenkainen's Faithful Hound,0,0,0,0,0,0,0,1
+Mordenkainen's Private Sanctum,0,0,0,0,0,0,0,1
+Otiluke's Resilient Sphere,0,0,0,0,0,0,0,1
+Phantasmal Killer,0,0,0,0,0,0,0,1
+Polymorph,1,0,1,0,0,1,0,1
+Staggering Smite,0,0,0,1,0,0,0,0
+Stone Shape,0,1,1,0,0,0,0,1
+Stoneskin,0,0,1,0,1,1,0,1
+Wall of Fire,0,0,1,0,0,1,0,1
+Animate Objects,1,0,0,0,0,1,0,1
+Antilife Shell,0,0,1,0,0,0,0,0
+Awaken,1,0,1,0,0,0,0,0
+Banishing Smite,0,0,0,1,0,0,0,0
+Bigby's Hand,0,0,0,0,0,0,0,1
+Circle of Power,0,0,0,1,0,0,0,0
+Cloudkill,0,0,0,0,0,1,0,0
+Commune,0,1,0,0,0,0,0,0
+Commune with Nature,0,0,1,0,1,0,0,0
+Cone of Cold,0,0,0,0,0,1,0,1
+Conjure Elemental,0,0,1,0,0,0,0,1
+Conjure Volley,0,0,0,0,1,0,0,0
+Contact Other Plane,0,0,0,0,0,0,1,1
+Contagion,0,1,1,0,0,0,0,0
+Creation,0,0,0,0,0,1,0,1
+Destructive Wave,0,0,0,1,0,0,0,0
+Dispel Evil and Good,0,1,0,1,0,0,0,0
+Dominate Person,1,0,0,0,0,1,0,1
+Dream,1,0,0,0,0,0,1,1
+Flame Strike,0,1,0,0,0,0,0,0
+Geas,1,1,1,1,0,0,0,1
+Greater Restoration,1,1,1,0,0,0,0,0
+Hallow,0,1,0,0,0,0,0,0
+Hold Monster,1,0,0,0,0,1,1,1
+Insect Plague,0,1,1,0,0,1,0,0
+Legend Lore,1,1,0,0,0,0,0,1
+Mass Cure Wounds,1,1,1,0,0,0,0,0
+Mislead,1,0,0,0,0,0,0,1
+Modify Memory,1,0,0,0,0,0,0,1
+Passwall,0,0,0,0,0,0,0,1
+Planar Binding,1,1,1,0,0,0,0,1
+Raise Dead,1,1,0,1,0,0,0,0
+Rary's Telepathic Bond,0,0,0,0,0,0,0,1
+Reincarnate,0,0,1,0,0,0,0,0
+Scrying,1,1,1,0,0,0,1,1
+Seeming,1,0,0,0,0,1,0,1
+Swift Quiver,0,0,0,0,1,0,0,0
+Telekinesis,0,0,0,0,0,1,0,1
+Teleportation Circle,1,0,0,0,0,1,0,1
+Tree Stride,0,0,1,0,1,0,0,0
+Wall of Force,0,0,0,0,0,0,0,1
+Wall of Stone,0,0,1,0,0,1,0,1
+Arcane Gate,0,0,0,0,0,1,1,1
+Blade Barrier,0,1,0,0,0,0,0,0
+Chain Lightning,0,0,0,0,0,1,0,1
+Circle of Death,0,0,0,0,0,1,1,1
+Conjure Fey,0,0,1,0,0,0,1,0
+Contingency,0,0,0,0,0,0,0,1
+Create Undead,0,1,0,0,0,0,1,1
+Disintegrate,0,0,0,0,0,1,0,1
+Drawmij's Instant Summons,0,0,0,0,0,0,0,1
+Eyebite,1,0,0,0,0,1,1,1
+Find the Path,1,1,1,0,0,0,0,0
+Flesh to Stone,0,0,0,0,0,0,1,1
+Forbiddance,0,1,0,0,0,0,0,0
+Globe of Invulnerability,0,0,0,0,0,1,0,1
+Guards and Wards,1,0,0,0,0,0,0,1
+Harm,0,1,0,0,0,0,0,0
+Heal,0,1,1,0,0,0,0,0
+Heroes' Feast,0,1,1,0,0,0,0,0
+Magic Jar,0,0,0,0,0,0,0,1
+Mass Suggestion,1,0,0,0,0,1,1,1
+Move Earth,0,0,1,0,0,1,0,1
+Otiluke's Freezing Sphere,0,0,0,0,0,0,0,1
+Otto's Irresistible Dance,1,0,0,0,0,0,0,1
+Planar Ally,0,1,0,0,0,0,0,0
+Programmed Illusion,1,0,0,0,0,0,0,1
+Sunbeam,0,0,1,0,0,1,0,1
+Transport via Plants,0,0,1,0,0,0,0,0
+True Seeing,1,1,0,0,0,1,1,1
+Wall of Ice,0,0,0,0,0,0,0,1
+Wall of Thorns,0,0,1,0,0,0,0,0
+Wind Walk,0,0,1,0,0,0,0,0
+Word of Recall,0,1,0,0,0,0,0,0
+Conjure Celestial,0,1,0,0,0,0,0,0
+Delayed Blast Fireball,0,0,0,0,0,1,0,1
+Divine Word,0,1,0,0,0,0,0,0
+Etherealness,1,1,0,0,0,1,1,1
+Finger of Death,0,0,0,0,0,1,1,1
+Fire Storm,0,1,1,0,0,1,0,0
+Forcecage,1,0,0,0,0,0,1,1
+Mirage Arcane,1,0,1,0,0,0,0,1
+Mordenkainen's Magnificent Mansion,1,0,0,0,0,0,0,0
+Mordenkainen's Sword,1,0,0,0,0,0,0,1
+Plane Shift,0,1,1,0,0,1,1,1
+Prismatic Spray,0,0,0,0,0,1,0,1
+Project Image,1,0,0,0,0,0,0,1
+Regenerate,1,1,1,0,0,0,0,0
+Resurrection,1,1,0,0,0,0,0,0
+Reverse Gravity,0,0,1,0,0,1,0,1
+Sequester,0,0,0,0,0,0,0,1
+Simulacrum,0,0,0,0,0,0,0,1
+Symbol,1,1,0,0,0,0,0,1
+Teleport,1,0,0,0,0,1,0,1
+Animal Shapes,0,0,1,0,0,0,0,0
+Antimagic Field,0,1,0,0,0,0,0,1
+Antipathy/Sympathy,0,0,1,0,0,0,0,1
+Clone,0,0,0,0,0,0,0,1
+Control Weather,0,1,1,0,0,0,0,1
+Demiplane,0,0,0,0,0,0,1,1
+Dominate Monster,1,0,0,0,0,1,1,1
+Earthquake,0,1,1,0,0,1,0,0
+Feeblemind,1,0,1,0,0,0,1,1
+Glibness,1,0,0,0,0,0,1,0
+Holy Aura,0,1,0,0,0,0,0,0
+Incendiary Cloud,0,0,0,0,0,1,0,1
+Maze,0,0,0,0,0,0,0,1
+Mind Blank,1,0,0,0,0,0,0,1
+Power Word Stun,1,0,0,0,0,1,1,1
+Sunburst,0,0,1,0,0,1,0,1
+Telepathy,0,0,0,0,0,0,0,1
+Tsunami,0,0,1,0,0,0,0,0
+Astral Projection,0,1,0,0,0,0,1,1
+Foresight,1,0,1,0,0,0,1,1
+Gate,0,1,0,0,0,1,0,1
+Imprisonment,0,0,0,0,0,0,1,1
+Mass Heal,0,1,0,0,0,0,0,0
+Meteor Swarm,0,0,0,0,0,1,0,1
+Power Word Heal,1,0,0,0,0,0,0,0
+Power Word Kill,1,0,0,0,0,1,1,1
+Prismatic Wall,0,0,0,0,0,0,0,1
+Shapechange,0,0,1,0,0,0,0,1
+Storm of Vengeance,0,0,1,0,0,0,0,0
+Time Stop,0,0,0,0,0,1,0,1
+True Polymorph,1,0,0,0,0,0,1,1
+True Resurrection,0,1,1,0,0,0,0,0
+Weird,0,0,0,0,0,0,0,1
+Wish,0,0,0,0,0,1,0,1

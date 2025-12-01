@@ -1,0 +1,91 @@
+Name,Romance,World/Adventure,Mystery/Crime,Thriller/Horror/Monster,Action,Sci-Fi,Fantasy,Comedy,War/History,Drama
+Casablanca,1,0,0,0,0,0,0,0,1,0
+Sunrise: A Song of Two Humans,1,0,0,0,0,0,0,0,0,0
+Fight Club,1,0,0,0,0,0,0,0,0,0
+WALL�E,1,0,0,0,0,0,0,0,0,0
+Annie Hall,1,0,0,0,0,0,0,1,0,0
+Groundhog Day,1,0,0,0,0,0,0,1,0,0
+Bonnie and Clyde,1,0,1,0,0,0,0,0,0,0
+Big Fish,1,0,0,0,0,0,1,0,0,0
+Vertigo,1,0,1,1,0,0,0,0,0,0
+Forrest Gump,1,0,0,0,0,0,0,1,0,1
+Le fabuleux destin d'Amelie Poulain,1,0,0,0,0,0,0,1,0,0
+Eternal Sunshine of the Spotless Mind,1,0,0,0,0,1,0,0,0,1
+City Lights,1,0,0,0,0,0,0,1,0,1
+Slumdog Millionaire,1,0,0,0,0,0,0,0,0,1
+Singin' in the Rain,1,0,0,0,0,0,0,1,0,0
+Some Like It Hot,1,0,0,0,0,0,0,1,0,0
+The Apartment,1,0,0,0,0,0,0,1,0,1
+La vita e bella,1,0,0,0,0,0,0,1,0,0
+King Kong,0,1,0,1,0,0,0,0,0,0
+Gandhi,0,1,0,0,0,0,0,0,0,0
+El laberinto del fauno,0,1,0,0,0,0,1,0,1,1
+The Wizard of Oz,0,1,0,0,0,0,0,0,0,0
+Stand by Me,0,1,0,0,0,0,0,0,0,1
+Shichinin no samurai,0,1,0,0,0,0,0,0,0,1
+The Lord of the Rings: The Fellowship of the Ring,0,1,0,0,0,0,1,0,0,1
+Up,0,1,0,0,0,0,0,1,0,0
+Raiders of the Lost Ark,0,1,0,0,1,0,0,0,0,0
+North by Northwest,0,1,1,1,0,0,0,0,0,0
+Lawrence of Arabia,0,1,0,0,0,0,0,0,1,1
+The Treasure of the Sierra Madre,0,1,0,0,0,0,0,0,0,1
+Sen to Chihiro no kamikakushi,0,1,0,0,0,0,0,0,0,0
+Aliens,0,1,0,0,1,1,0,0,0,0
+Monty Python and the Holy Grail,0,1,0,0,0,0,1,1,0,0
+The Bridge on the River Kwai,0,1,0,0,0,0,0,0,1,1
+M,0,0,1,0,0,0,0,0,0,0
+The Ox-Bow Incident,0,0,1,0,0,0,0,0,0,0
+Se7en,0,0,1,1,0,0,0,0,0,0
+Mystic River,0,0,1,0,0,0,0,0,0,1
+The Godfather: Part II,0,0,1,0,0,0,0,0,0,1
+No Country for Old Men,0,0,1,1,0,0,0,0,0,0
+The Godfather,0,0,1,0,0,0,0,0,0,1
+Pulp Fiction,0,0,1,0,0,0,0,0,0,1
+Goodfellas,0,0,1,0,0,0,0,0,0,1
+Rear Window,0,0,1,1,0,0,0,0,0,0
+The Usual Suspects,0,0,1,1,0,0,0,0,0,0
+Psycho,0,0,1,1,0,0,0,0,0,0
+The Silence of the Lambs,0,0,1,1,0,0,0,0,0,1
+Sunset Blvd.,0,0,1,0,0,0,0,0,0,1
+Memento,0,0,1,1,0,0,0,0,0,0
+Leon,0,0,1,1,1,0,0,0,0,1
+Apocalypse Now,0,0,1,0,0,0,0,0,1,1
+Double Indemnity,0,0,1,0,0,0,0,0,0,1
+To Kill a Mockingbird,0,0,1,0,0,0,0,0,0,1
+The Departed,0,0,1,1,0,0,0,0,0,1
+The Third Man,0,0,1,1,0,0,0,0,0,0
+Chinatown,0,0,1,1,0,0,0,0,0,1
+Reservoir Dogs,0,0,1,1,0,0,0,0,0,1
+Rashomon,0,0,1,0,0,0,0,0,0,1
+The Maltese Falcon,0,0,1,0,0,0,0,0,0,0
+The Prestige,0,0,1,0,0,1,0,0,0,1
+Alien,0,0,0,1,0,1,0,0,0,0
+Jaws,0,0,0,1,0,0,0,0,0,0
+Terminator 2: Judgment Day,0,0,0,1,1,0,0,0,0,0
+The Terminator,0,0,0,1,1,0,0,0,0,0
+The Shining,0,0,0,1,0,0,0,0,0,1
+Das Leben der Anderen,0,0,0,1,0,0,0,0,0,1
+Kill Bill: Vol. 2,0,0,0,0,1,0,0,0,0,0
+The Dark Knight,0,0,0,0,1,0,0,0,0,0
+The Matrix,0,0,0,0,1,1,0,0,0,0
+Star Wars,0,0,0,0,0,1,1,0,0,0
+Metropolis,0,0,0,0,0,1,0,0,0,0
+2001: A Space Odyssey,0,0,0,0,0,1,0,0,0,0
+It's a Wonderful Life,0,0,0,0,0,0,1,0,0,1
+The Great Dictator,0,0,0,0,0,0,0,1,1,0
+Stalag 17,0,0,0,0,0,0,0,1,1,0
+Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb,0,0,0,0,0,0,0,1,0,0
+Modern Times,0,0,0,0,0,0,0,1,0,1
+The Deer Hunter,0,0,0,0,0,0,0,0,1,1
+Schindler's List,0,0,0,0,0,0,0,0,1,1
+Saving Private Ryan,0,0,0,0,0,0,0,0,1,1
+The Pianist,0,0,0,0,0,0,0,0,1,1
+Das Boot,0,0,0,0,0,0,0,0,1,1
+Amadeus,0,0,0,0,0,0,0,0,1,1
+12 Angry Men,0,0,0,0,0,0,0,0,0,1
+The Shawshank Redemption,0,0,0,0,0,0,0,0,0,1
+American Beauty,0,0,0,0,0,0,0,0,0,1
+Requiem for a Dream,0,0,0,0,0,0,0,0,0,1
+All About Eve,0,0,0,0,0,0,0,0,0,1
+Gran Torino,0,0,0,0,0,0,0,0,0,1
+The Elephant Man,0,0,0,0,0,0,0,0,0,1

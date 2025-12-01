@@ -1,0 +1,179 @@
+{
+  "statements": [
+    {
+      "id": 0,
+      "text": "Harry"
+    },
+    {
+      "id": 1,
+      "text": "Hermione"
+    },
+    {
+      "id": 2,
+      "text": "Ron"
+    },
+    {
+      "id": 3,
+      "text": "Draco"
+    },
+    {
+      "id": 4,
+      "text": "Petunia"
+    },
+    {
+      "id": 5,
+      "text": "Dudley"
+    },
+    {
+      "id": 6,
+      "text": "Vernon"
+    },
+    {
+      "id": 7,
+      "text": "Hagrid"
+    },
+    {
+      "id": 8,
+      "text": "Ms.Norris"
+    },
+    {
+      "id": 9,
+      "text": "Lily"
+    },
+    {
+      "id": 10,
+      "text": "James"
+    },
+    {
+      "id": 11,
+      "text": "Sirius"
+    },
+    {
+      "id": 12,
+      "text": "Remus"
+    },
+    {
+      "id": 13,
+      "text": "Wormtail"
+    },
+    {
+      "id": 14,
+      "text": "Grindelwald"
+    },
+    {
+      "id": 15,
+      "text": "Dumbledore"
+    },
+    {
+      "id": 16,
+      "text": "Myrte"
+    }
+  ],
+  "entities": [
+    {
+      "id": 0,
+      "name": "Alive"
+    },
+    {
+      "id": 1,
+      "name": "Animagus"
+    },
+    {
+      "id": 2,
+      "name": "Wizard"
+    },
+    {
+      "id": 3,
+      "name": "Deatheater"
+    },
+    {
+      "id": 4,
+      "name": "Animal"
+    },
+    {
+      "id": 5,
+      "name": "Student"
+    },
+    {
+      "id": 6,
+      "name": "Griffindor"
+    },
+    {
+      "id": 7,
+      "name": "Ghost"
+    },
+    {
+      "id": 8,
+      "name": "Muggle-born"
+    }
+  ],
+  "entity_statements": {
+    "0": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      11,
+      12,
+      13,
+      15
+    ],
+    "1": [
+      11,
+      12,
+      13
+    ],
+    "2": [
+      0,
+      1,
+      2,
+      3,
+      7,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "3": [
+      3,
+      13
+    ],
+    "4": [
+      8
+    ],
+    "5": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "6": [
+      0,
+      1,
+      2,
+      7,
+      9,
+      10,
+      11,
+      12,
+      13,
+      15
+    ],
+    "7": [
+      16
+    ],
+    "8": [
+      1,
+      9
+    ]
+  }
+}

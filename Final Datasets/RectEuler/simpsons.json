@@ -1,0 +1,172 @@
+{
+  "statements": [
+    {
+      "id": 0,
+      "text": "Marge"
+    },
+    {
+      "id": 1,
+      "text": "Jacqueline Bouvier"
+    },
+    {
+      "id": 2,
+      "text": "Milhouse"
+    },
+    {
+      "id": 3,
+      "text": "Barney"
+    },
+    {
+      "id": 4,
+      "text": "Mo"
+    },
+    {
+      "id": 5,
+      "text": "Krusty"
+    },
+    {
+      "id": 6,
+      "text": "Homer"
+    },
+    {
+      "id": 7,
+      "text": "Lenny Leonard"
+    },
+    {
+      "id": 8,
+      "text": "Carl Carlson"
+    },
+    {
+      "id": 9,
+      "text": "Sideshow Bob"
+    },
+    {
+      "id": 10,
+      "text": "Fat Tony"
+    },
+    {
+      "id": 11,
+      "text": "Mr. Burns"
+    },
+    {
+      "id": 12,
+      "text": "Smithers"
+    },
+    {
+      "id": 13,
+      "text": "Nelson"
+    },
+    {
+      "id": 14,
+      "text": "Ned"
+    },
+    {
+      "id": 15,
+      "text": "Grampa"
+    },
+    {
+      "id": 16,
+      "text": "Kent Brockman"
+    },
+    {
+      "id": 17,
+      "text": "Bart"
+    },
+    {
+      "id": 18,
+      "text": "Ralph"
+    },
+    {
+      "id": 19,
+      "text": "Martin Prince"
+    },
+    {
+      "id": 20,
+      "text": "Lisa"
+    }
+  ],
+  "entities": [
+    {
+      "id": 0,
+      "name": "Blue Hair"
+    },
+    {
+      "id": 1,
+      "name": "Duff Fan"
+    },
+    {
+      "id": 2,
+      "name": "Evil"
+    },
+    {
+      "id": 3,
+      "name": "Male"
+    },
+    {
+      "id": 4,
+      "name": "Power Plant"
+    },
+    {
+      "id": 5,
+      "name": "School"
+    }
+  ],
+  "entity_statements": {
+    "0": [
+      0,
+      1,
+      2
+    ],
+    "1": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "2": [
+      5,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "3": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "4": [
+      6,
+      7,
+      8,
+      11,
+      12
+    ],
+    "5": [
+      2,
+      13,
+      17,
+      18,
+      19,
+      20
+    ]
+  }
+}
