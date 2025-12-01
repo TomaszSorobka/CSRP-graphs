@@ -100,6 +100,19 @@ public class SolutionPositioner {
             GRBVar W = model.addVar(0, GRID_WIDTH, 0, GRB.INTEGER, "W");
             GRBVar H = model.addVar(0, GRID_HEIGHT, 0, GRB.INTEGER, "H");
 
+            // Orthoconvex hull - min and max x per row
+            GRBVar[] wMin = new GRBVar[GRID_HEIGHT];
+            GRBVar[] wMax = new GRBVar[GRID_HEIGHT];
+            int M = GRID_WIDTH - 1;
+
+            for (int gy = 0; gy < GRID_HEIGHT; gy++) {
+                wMin[gy] = model.addVar(0, GRID_WIDTH - 1, 0, GRB.INTEGER, "wMin_" + gy);
+                wMax[gy] = model.addVar(0, GRID_WIDTH - 1, 0, GRB.INTEGER, "wMax_" + gy);
+
+                // Just to keep them ordered: wMax >= wMin
+                model.addConstr(wMax[gy], GRB.GREATER_EQUAL, wMin[gy], "rowOrder_" + gy);
+            }
+
             // For each cell that might be occupied, enforce bounding box constraints
             for (Map.Entry<String, List<GRBVar>> entry : cellCoveringPlacements.entrySet()) {
                 String[] parts = entry.getKey().split(",");
@@ -114,13 +127,34 @@ public class SolutionPositioner {
                     GRBLinExpr exprH = new GRBLinExpr();
                     exprH.addTerm(gy, var);
                     model.addConstr(H, GRB.GREATER_EQUAL, exprH, "boundH_" + gx + "_" + gy);
+
+                    GRBLinExpr maxExpr = new GRBLinExpr();
+                    maxExpr.addTerm(gx, var);
+                    model.addConstr(wMax[gy], GRB.GREATER_EQUAL, maxExpr, "rowMax_" + gx + "_" + gy);
+
+                
+                    // wMin[gy] ≤ gx + M * (1 - p)
+                    // If p = 1: wMin[gy] ≤ gx (this binds).
+                    // If p = 0: wMin[gy] ≤ gx + M (non-binding upper bound).
+                    GRBLinExpr minExpr = new GRBLinExpr();
+                    minExpr.addTerm(1.0, wMin[gy]);
+                    minExpr.addTerm(M, var);
+                    minExpr.addConstant(-M);
+                    model.addConstr(minExpr, GRB.LESS_EQUAL, gx, "rowMin_" + gx + "_" + gy);
                 }
             }
 
             // Objective: Minimize W + H
             GRBLinExpr totalSize = new GRBLinExpr();
-            totalSize.addTerm(1.0, W);
-            totalSize.addTerm(1.0, H);
+            totalSize.addTerm(GRID_HEIGHT, W);
+            totalSize.addTerm(GRID_WIDTH, H);
+
+            // add orthoconvex hull “area” term
+            for (int gy = 0; gy < GRID_HEIGHT; gy++) {
+                // This approximates sum over rows of (wMax - wMin)
+                totalSize.addTerm(1.0, wMax[gy]);
+                totalSize.addTerm(-1.0, wMin[gy]);
+            }
 
             // Squareness
             GRBVar A = model.addVar(0.0, GRID_WIDTH, 0.0, GRB.CONTINUOUS, "AspectDiff");
@@ -128,17 +162,16 @@ public class SolutionPositioner {
             expr1.addTerm(1.0, A);
             expr1.addTerm(1.0, W);
             expr1.addTerm(-1.0, H);
-            
+
             GRBLinExpr expr2 = new GRBLinExpr();
             expr2.addTerm(1.0, A);
             expr2.addTerm(-1.0, W);
             expr2.addTerm(1.0, H);
-            
 
             model.addConstr(expr1, GRB.GREATER_EQUAL, 0, "A_ge_HW");
             model.addConstr(expr2, GRB.GREATER_EQUAL, 0, "A_ge_WH");
 
-            totalSize.addTerm(0.1, A);
+            totalSize.addTerm(1, A);
 
             model.setObjective(totalSize, GRB.MINIMIZE);
             model.optimize();
@@ -207,7 +240,7 @@ public class SolutionPositioner {
                         entity[i][1] += x;
                         entity[i][2] += x;
                     }
-                    // TODO figure out if this works
+                   
                     // Replace the active row booleans with integers storing the y coordinate of the
                     // row in the overall solution
                     // Note: y coordinates are artificially increased by 1 to differentiate them

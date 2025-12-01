@@ -1,11 +1,9 @@
 package ilp;
 
-import ilp.solvers.SolutionExtractor;
 import ilp.solvers.SolutionPositioner;
 import ilp.variables.VarsPolygons;
 import io.SolutionWriter;
 import model.PolygonSolution;
-import model.RectangleSolution;
 import model.Solution;
 
 import java.util.ArrayList;
@@ -14,7 +12,6 @@ import java.util.List;
 import com.gurobi.gurobi.GRB;
 import com.gurobi.gurobi.GRBCallback;
 import com.gurobi.gurobi.GRBException;
-import com.gurobi.gurobi.GRBModel;
 
 public class SaveSolutionCallback extends GRBCallback {
 
@@ -41,7 +38,7 @@ public class SaveSolutionCallback extends GRBCallback {
                     // SolutionWriter.saveRectangleSolutionToFile((RectangleSolution) sol, "sol_callback.txt");
                 } else {
                     sol = this.extractPolygonSolutionCallback(ctx);
-                    SolutionWriter.saveMultipleToFile(SolutionPositioner.computeCompleteSolution(new ArrayList<>(List.of((Solution) sol))).solutions, sol.getW(), sol.getH(), "solutions/sol_callback.txt");
+                    SolutionWriter.saveMultipleToFile(SolutionPositioner.computeCompleteSolution(new ArrayList<>(List.of((Solution) sol))).solutions, sol.getW(), sol.getH(), "ILP/solutions/sol_callback.txt");
                 }
             }
         } catch (Exception e) {
