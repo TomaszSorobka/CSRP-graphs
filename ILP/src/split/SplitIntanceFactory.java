@@ -53,7 +53,6 @@ public class SplitIntanceFactory {
                     // Add to statement list for this component
                     statements.addAll(entStatements);
                 }
-                // i don't think this else is necessary because it adds shared statements between a deleted and a non deleted node but all those statements are in a non deleted node so they should have been added already
                 // For deleted nodes add only their shared statements to the instance
                 else {
                     ArrayList<Integer> shared = findSharedStatements(ent, component, false);

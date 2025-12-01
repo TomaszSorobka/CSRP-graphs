@@ -75,7 +75,7 @@ public class IntersectionGraph {
             }
         }
 
-        System.out.println("you fucked up");
+        System.out.println("Something went wrong");
         return -1;
     }
 
@@ -406,7 +406,7 @@ public class IntersectionGraph {
             }
         }
 
-        System.out.println("you fucked up");
+        System.out.println("Something went wrong");
         return -1;
     }
 
@@ -429,7 +429,7 @@ public class IntersectionGraph {
             }
         }
 
-        System.out.println("you fucked up");
+        System.out.println("Something went wrong");
         return -1;
     }
 

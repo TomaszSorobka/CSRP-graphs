@@ -88,8 +88,6 @@ function processEntityRectHeaders(entityRects, repeated, VisualizationSettings) 
         });
     });
 
-    // // TODO: set copiedEntitiesColors
-    // copiedEntityColors = []
     // Set copied header colors
     if (!VisualizationSettings.grayscale) {
         entityRects.forEach(e => {

@@ -71,7 +71,6 @@ public class GreedySplit {
             split.merge(alpha);
 
             split.addDeletedNodes();
-            // split.printGraph();
 
             bestSplit = split;
         }

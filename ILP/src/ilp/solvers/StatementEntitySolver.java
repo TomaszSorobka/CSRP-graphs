@@ -5,13 +5,8 @@ import java.util.List;
 import com.gurobi.gurobi.*;
 
 import ilp.ModelContext;
-import ilp.SaveSolutionCallback;
 import ilp.constraints.*;
 import ilp.objective.*;
-import ilp.variables.VarsPolygons;
-import ilp.variables.VarsRectangles;
-import model.PolygonSolution;
-import model.RectangleSolution;
 import model.Solution;
 import model.StatementEntityInstance;
 
@@ -93,8 +88,8 @@ public class StatementEntitySolver {
             // ctx.model.set(GRB.DoubleParam.TimeLimit, 600.0);
 
             // Set callback to save solutions when found
-            SaveSolutionCallback cb = new SaveSolutionCallback(ctx, solutionType);
-            ctx.model.setCallback(cb);  
+            // SaveSolutionCallback cb = new SaveSolutionCallback(ctx, solutionType);
+            // ctx.model.setCallback(cb);  
 
             // Solve
             ctx.model.optimize();
