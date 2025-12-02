@@ -464,7 +464,7 @@ class Entity {
             }
             else if (this.deleted.includes(true) && VisualizationSettings.outlineRepeated) {
                 if (VisualizationSettings.dashRepeated) {
-                    c.setLineDash([7, 7]);
+                    c.setLineDash([6, 2]);
                     c.lineWidth = VisualizationSettings.outlineWeight;
                     c.stroke(region);
                     c.setLineDash([]);

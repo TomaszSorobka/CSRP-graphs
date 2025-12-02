@@ -95,7 +95,7 @@ function drawEntity(entity, entityGroup, svgNS, VisualizationSettings) {
             else if (entity.deleted.includes(true) && VisualizationSettings.outlineRepeated) {
                 if (VisualizationSettings.dashRepeated) {
                     path.setAttribute("stroke-width", Number(VisualizationSettings.outlineWeight) + 1);
-                    path.setAttribute("stroke-dasharray", "5,5");
+                    path.setAttribute("stroke-dasharray", "6,2");
                 }
                 else {
                     path.setAttribute("stroke-width", Number(VisualizationSettings.outlineWeight) + 1);
